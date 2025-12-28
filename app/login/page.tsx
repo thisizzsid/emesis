@@ -150,7 +150,7 @@ export default function LoginPage() {
 
   return (
     /* eslint-disable-next-line react/no-danger */
-    <div className="w-screen min-h-screen overflow-x-hidden select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
+    <div className="w-screen h-screen overflow-hidden select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
       {/* Advanced Particle Background */}
       {/* eslint-disable-next-line react/no-danger */}
       <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-50 will-change-auto" style={{backfaceVisibility: 'hidden'}} />
@@ -348,14 +348,21 @@ export default function LoginPage() {
       </div>
 
       {/* MOBILE LAYOUT - Scrollable */}
-      <div className="md:hidden relative z-10 min-h-screen flex flex-col">
+      <div className="md:hidden relative z-10 min-h-screen flex flex-col overflow-y-auto snap-y snap-mandatory smooth-scroll" style={{scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch'}}>
         {/* Branding Section - Visible on first load */}
-        <div className="h-screen flex flex-col justify-center px-6 relative">
+        <div className="h-screen flex flex-col justify-center px-6 relative snap-start pt-20">
           <div className="animate-slideInDown">
             {/* Logo */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow">
-                <span className="text-2xl">✨</span>
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow overflow-hidden">
+                <Image 
+                  src="/logoemesis.png" 
+                  alt="EMESIS Logo" 
+                  width={48} 
+                  height={48}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               <div className="h-12 w-1 bg-linear-to-b from-[#F5C26B] to-transparent"></div>
             </div>
@@ -408,7 +415,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Section - Below branding */}
-        <div className="min-h-screen flex items-center justify-center px-6 py-12">
+        <div className="min-h-screen flex items-center justify-center px-6 py-12 snap-start pt-20">
           {/* eslint-disable-next-line react/no-danger */}
           <div className="w-full max-w-md glass rounded-3xl shadow-2xl p-8 animate-slideInUp border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
             {/* Shimmer Effect */}
