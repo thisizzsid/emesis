@@ -9,7 +9,7 @@ import {
   isSupported,
 } from "firebase/messaging";
 import { db } from "@/firebase";
-import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, getDoc, setDoc } from "firebase/firestore";
 
 export function useNotifications() {
   const [notificationEnabled, setNotificationEnabled] = useState(false);
@@ -19,35 +19,47 @@ export function useNotifications() {
   useEffect(() => {
     const setupNotifications = async () => {
       try {
-        // Check if notifications are supported
+        const user = auth.currentUser;
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        // 1️⃣ Android WebView token bridge
+        (window as any).onFCMToken = async (token: string) => {
+          console.log("📱 Android FCM token received:", token);
+
+          await setDoc(
+            doc(db, "users", user.uid),
+            {
+              fcmTokens: arrayUnion(token),
+              notificationsEnabled: true,
+            },
+            { merge: true }
+          );
+
+          setNotificationEnabled(true);
+        };
+
+        // 2️⃣ Web browser push (unchanged)
         const supported = await isSupported();
         if (!supported) {
-          console.log("❌ Notifications not supported");
           setLoading(false);
           return;
         }
 
-        // Check if user is logged in
-        if (!auth.currentUser) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data();
+
+        if (userData?.notificationsEnabled === false) {
           setLoading(false);
           return;
         }
 
-        // Check if notifications are already set up
-        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-        const user = userDoc.data();
-
-        if (user?.notificationsEnabled === false) {
-          setLoading(false);
-          return;
-        }
-
-        // Register service worker
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("/firebase-messaging-sw.js");
         }
 
-        // Request notification permission
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
           const messaging = getMessaging();
@@ -57,20 +69,14 @@ export function useNotifications() {
           });
 
           if (token) {
-            // Save token to Firestore
-            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            await updateDoc(doc(db, "users", user.uid), {
               fcmTokens: arrayUnion(token),
               notificationsEnabled: true,
             });
 
-            console.log("✅ Notifications enabled with token:", token);
             setNotificationEnabled(true);
 
-            // Listen for foreground messages
             onMessage(messaging, (payload) => {
-              console.log("📬 Foreground message:", payload);
-
-              // Show custom notification
               if (Notification.permission === "granted") {
                 new Notification(payload.notification?.title || "EMESIS", {
                   body: payload.notification?.body,
@@ -82,13 +88,11 @@ export function useNotifications() {
               }
             });
           }
-        } else {
-          console.log("⚠️ Notification permission denied");
         }
 
         setLoading(false);
       } catch (error) {
-        console.error("❌ Error setting up notifications:", error);
+        console.error("❌ Notification setup error:", error);
         setLoading(false);
       }
     };
@@ -112,7 +116,7 @@ export default function NotificationSetup() {
         </p>
       ) : (
         <p style={{ color: "#fbbf24", fontSize: "0.8em" }}>
-          📱 Allow notifications to get bot updates
+          📱 Allow notifications to get updates
         </p>
       )}
     </div>
