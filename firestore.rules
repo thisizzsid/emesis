@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User docs
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+
+      // User followers/following subcollections
+      match /followers/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      match /following/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Posts
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+
+      // Comments inside posts
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      }
+    }
+
+    // Follows
+    match /follows/{docId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+    }
+
+    // Chats - private conversations between users
+    match /chats/{chatId} {
+      // Only allow access to chat participants
+      allow read: if request.auth != null && (
+        chatId.contains(request.auth.uid)
+      );
+      allow create: if request.auth != null && (
+        chatId.contains(request.auth.uid)
+      );
+
+      // Messages in chat
+      match /messages/{messageId} {
+        // Read all messages in chat you're part of
+        allow read: if request.auth != null && (
+          parent.id.contains(request.auth.uid)
+        );
+        
+        // Create messages in chat you're part of
+        allow create: if request.auth != null && (
+          parent.id.contains(request.auth.uid) &&
+          request.resource.data.uid == request.auth.uid &&
+          request.resource.data.text is string &&
+          request.resource.data.createdAt is timestamp
+        );
+
+        // Update reactions on messages
+        allow update: if request.auth != null && (
+          parent.id.contains(request.auth.uid)
+        ) && (
+          // Can only update reactions field
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+        );
+      }
+    }
+
+    // everything else
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
