@@ -386,19 +386,19 @@ export default function LoginPage() {
             <div className="mt-8 space-y-3">
               <div className="flex items-center gap-3 group">
                 <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/20 group-hover:border-[#F5C26B]/40 transition-all">
-                  <span className="text-sm">🔒</span>
+                  <Image src="/security.png" alt="Encrypted" width={16} height={16} className="opacity-80" />
                 </div>
                 <span className="text-[#F5C26B] text-sm font-medium">End-to-end encrypted</span>
               </div>
               <div className="flex items-center gap-3 group">
                 <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/20 group-hover:border-[#F5C26B]/40 transition-all">
-                  <span className="text-sm">💬</span>
+                  <Image src="/comment.png" alt="AI Support" width={16} height={16} className="opacity-80" />
                 </div>
                 <span className="text-[#F5C26B] text-sm font-medium">AI emotional support</span>
               </div>
               <div className="flex items-center gap-3 group">
                 <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/20 group-hover:border-[#F5C26B]/40 transition-all">
-                  <span className="text-sm">🌐</span>
+                  <Image src="/globall.svg" alt="Global" width={16} height={16} className="opacity-80" />
                 </div>
                 <span className="text-[#F5C26B] text-sm font-medium">Global community</span>
               </div>
