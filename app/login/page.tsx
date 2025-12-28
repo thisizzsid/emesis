@@ -150,7 +150,7 @@ export default function LoginPage() {
 
   return (
     /* eslint-disable-next-line react/no-danger */
-    <div className="w-screen h-screen overflow-hidden select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
+    <div className="w-screen h-screen md:overflow-hidden overflow-y-auto select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)', WebkitOverflowScrolling: 'touch'}}>
       {/* Advanced Particle Background */}
       {/* eslint-disable-next-line react/no-danger */}
       <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-50 will-change-auto" style={{backfaceVisibility: 'hidden'}} />
@@ -348,9 +348,9 @@ export default function LoginPage() {
       </div>
 
       {/* MOBILE LAYOUT - Scrollable */}
-      <div className="md:hidden relative z-10 min-h-screen flex flex-col overflow-y-auto snap-y snap-mandatory smooth-scroll" style={{scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch'}}>
+      <div className="md:hidden relative z-10 flex flex-col">
         {/* Branding Section - Visible on first load */}
-        <div className="h-screen flex flex-col justify-center px-6 relative snap-start pt-20">
+        <div className="min-h-screen flex flex-col justify-center px-4 relative pt-20 pb-8">
           <div className="animate-slideInDown">
             {/* Logo */}
             <div className="flex items-center gap-3 mb-6">
@@ -415,9 +415,9 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Section - Below branding */}
-        <div className="min-h-screen flex items-center justify-center px-6 py-12 snap-start pt-20">
+        <div className="min-h-screen flex items-center justify-center px-4 py-8">
           {/* eslint-disable-next-line react/no-danger */}
-          <div className="w-full max-w-md glass rounded-3xl shadow-2xl p-8 animate-slideInUp border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
+          <div className="w-full max-w-md glass rounded-[2.5rem] shadow-2xl p-6 animate-slideInUp border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300 mb-8" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
             {/* Shimmer Effect */}
             <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
