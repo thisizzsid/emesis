@@ -27,7 +27,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] relative overflow-hidden">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
@@ -35,10 +35,10 @@ export default function OnboardingPage() {
       <div className="w-full max-w-2xl glass rounded-3xl p-8 md:p-12 border-2 border-[#F5C26B]/30 shadow-2xl relative z-10">
         {/* Welcome Message */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow mx-auto mb-4">
             <span className="text-3xl">🇮🇳</span>
           </div>
-          <h2 className="text-4xl font-black text-transparent bg-gradient-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-3">
+          <h2 className="text-4xl font-black text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-3">
             Welcome to EMESIS
           </h2>
           <p className="text-zinc-400 text-sm md:text-base leading-relaxed max-w-lg mx-auto mb-4">
@@ -84,7 +84,7 @@ export default function OnboardingPage() {
 
         <button
           onClick={save}
-          className="w-full mt-6 bg-gradient-to-r from-[#F5C26B] to-[#FFD56A] text-black py-4 rounded-2xl font-bold shadow-xl shadow-[#F5C26B]/30 hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 hover:scale-105 active:scale-95"
+            className="w-full mt-6 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] text-black py-4 rounded-2xl font-bold shadow-xl shadow-[#F5C26B]/30 hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 hover:scale-105 active:scale-95"
         >
           Save & Continue to Feed
         </button>

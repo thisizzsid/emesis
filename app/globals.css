@@ -25,15 +25,6 @@
   --foreground: var(--gold-primary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Poppins', sans-serif;
-  --font-futuristic: 'Orbitron', sans-serif;
-  --font-mono: 'SF Mono', 'Menlo', 'Monaco', monospace;
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--dark-base);
@@ -57,9 +48,7 @@ body {
   contain: layout style paint;
   will-change: scroll-position;
   backface-visibility: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(245, 194, 107, 0.3) transparent;
+  overflow-y: hidden; /* prevent double scroll; main handles scrolling */
 }
 
 body::-webkit-scrollbar {
@@ -93,6 +82,26 @@ body::before {
   animation: gridMove 30s linear infinite;
   will-change: transform;
   backface-visibility: hidden;
+}
+
+.ios-smooth-scroll {
+  overscroll-behavior-y: contain;
+}
+
+.gpu-layer {
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.gpu-soft {
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+}
+
+.muted-subtext {
+  color: #aaa;
+  margin-bottom: 20px;
 }
 
 @keyframes gridMove {
@@ -138,6 +147,7 @@ textarea, input {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   -webkit-backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   position: relative;
   will-change: border-color, transform, box-shadow;
@@ -175,6 +185,8 @@ h1 {
   font-size: clamp(2.5rem, 6vw, 5rem);
   background: linear-gradient(135deg, #F5C26B 0%, #FFD56A 50%, #F5C26B 100%);
   -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -moz-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 0 40px rgba(245, 194, 107, 0.3);
@@ -505,6 +517,7 @@ h1 {
   background: linear-gradient(135deg, #F5C26B 0%, #FFD56A 50%, #F5C26B 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
+  -moz-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: textShine 3s ease-in-out infinite;
@@ -640,7 +653,6 @@ h1 {
 /* === MOBILE FRIENDLY UTILITIES === */
 .scrollbar-hide {
   -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -679,6 +691,7 @@ h1 {
   letter-spacing: 0.3px;
   text-align: center;
   cursor: pointer;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;

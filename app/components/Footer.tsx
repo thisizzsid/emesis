@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full glass border-t border-[#F5C26B]/10 py-1.5 px-2 md:py-2 md:px-6 backdrop-blur-2xl flex-shrink-0 sticky bottom-0 z-40">
+    <footer className="w-full glass border-t border-[#F5C26B]/10 py-1.5 px-2 md:py-2 md:px-6 backdrop-blur-2xl sticky bottom-0 z-40">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between text-zinc-600 text-[10px] md:text-xs font-medium gap-1 md:gap-4">
         <p className="text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text font-bold tracking-wide text-[10px] md:text-xs">
           EMESIS © {new Date().getFullYear()}

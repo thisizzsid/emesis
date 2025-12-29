@@ -29,6 +29,55 @@ export default function ChatRoom({ params }: { params: any }) {
   const [showReactions, setShowReactions] = useState<string | null>(null);
   const bottomRef = useRef<any>(null);
   const typingTimeoutRef = useRef<any>(null);
+  const lastMessageIdRef = useRef<string | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  // Initialize/resume audio context after user interaction (autoplay policy)
+  useEffect(() => {
+    const unlock = () => {
+      try {
+        // @ts-ignore - webkit prefix for Safari
+        const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (!Ctx) return;
+        if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
+        if (audioCtxRef.current?.state === "suspended") audioCtxRef.current.resume();
+      } catch {}
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
+
+  const playPing = () => {
+    try {
+      // @ts-ignore - webkit prefix for Safari
+      const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = audioCtxRef.current || new Ctx();
+      audioCtxRef.current = ctx;
+      if (ctx.state === "suspended") {
+        // Will resume on next user interaction
+        return;
+      }
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.15);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + 0.25);
+    } catch {}
+  };
 
   useEffect(() => {
     if (params && typeof params.then === "function") {
@@ -112,6 +161,16 @@ export default function ChatRoom({ params }: { params: any }) {
       const arr: any[] = [];
       snap.forEach((d) => arr.push({ id: d.id, ...d.data() }));
       setMessages(arr);
+
+      // Play a subtle ping for new incoming messages (not from me)
+      const latest = arr[arr.length - 1];
+      if (!latest) return;
+      const prevId = lastMessageIdRef.current;
+      lastMessageIdRef.current = latest.id;
+      if (!prevId) return; // first load: don't play
+      if (latest.id !== prevId && latest.uid !== user.uid && !document.hidden) {
+        playPing();
+      }
     });
     return () => unsub();
   }, [id, user]);
@@ -134,13 +193,13 @@ export default function ChatRoom({ params }: { params: any }) {
     );
 
   return (
-    <div className="h-full bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white flex flex-col relative overflow-hidden">
+    <div className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
 
       {/* FUTURISTIC HEADER */}
-      <div className="glass border-b border-[#F5C26B]/20 backdrop-blur-3xl px-4 md:px-6 py-2 md:py-2.5 flex items-center gap-3 md:gap-5 shadow-2xl relative z-10 flex-shrink-0">
+      <div className="glass border-b border-[#F5C26B]/20 backdrop-blur-3xl px-4 md:px-6 py-2 md:py-2.5 flex items-center gap-3 md:gap-5 shadow-2xl relative z-10 shrink-0">
         <button
           onClick={() => router.push("/chat")}
           className="alert-btn relative group"
@@ -180,7 +239,7 @@ export default function ChatRoom({ params }: { params: any }) {
       </div>
 
       {/* MESSAGE LIST WITH MODERN DESIGN */}
-      <div className="flex-1 overflow-y-auto px-2 md:px-6 py-4 md:py-6 space-y-3 md:space-y-4 relative z-10">
+      <div className="flex-1 min-h-0 overflow-y-auto px-2 md:px-6 py-4 md:py-6 pb-24 space-y-3 md:space-y-4 relative z-10">
         {messages.map((m, index) => {
           const mine = m.uid === user.uid;
           const showTime = index === 0 || 
@@ -297,9 +356,9 @@ export default function ChatRoom({ params }: { params: any }) {
       </div>
 
       {/* FUTURISTIC INPUT BAR */}
-      <div className="glass border-t border-[#F5C26B]/20 backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-10 flex-shrink-0">
+      <div className="glass border-t border-[#F5C26B]/20 backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-20 shrink-0">
         {/* Emoji Button */}
-        <button className="alert-btn relative group flex-shrink-0" aria-label="Add emoji">
+        <button className="alert-btn relative group shrink-0" aria-label="Add emoji">
           <span className="text-lg md:text-xl group-hover:scale-125 transition-transform">😊</span>
         </button>
 
@@ -321,7 +380,7 @@ export default function ChatRoom({ params }: { params: any }) {
         </div>
 
         {/* Attachment Button */}
-        <button className="alert-btn relative group flex-shrink-0" aria-label="Attach file">
+        <button className="alert-btn relative group shrink-0" aria-label="Attach file">
           <svg className="w-4 md:w-4.5 h-4 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
           </svg>
@@ -331,7 +390,7 @@ export default function ChatRoom({ params }: { params: any }) {
         <button
           onClick={send}
           disabled={!text.trim()}
-          className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 flex-shrink-0 text-sm md:text-base"
+          className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 text-sm md:text-base"
           aria-label="Send message"
         >
           <span className="hidden md:inline">Send</span>

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { initializeBot, BOT_USER_ID } = require('./services/botService');
+const { startChatWatcher } = require('./services/chatWatcher');
 const { createPost, likePost, commentOnPost, fetchRandomPost } = require('./services/postService');
 
 let botActive = false;
@@ -54,12 +55,16 @@ async function startBot() {
       console.log(`✅ Auto-commenting enabled (every ${commentInterval / 1000 / 60} minutes)`);
     }
 
-    console.log('\n✨ Bot is running and monitoring posts...\n');
+    // Start chat notifications watcher
+    const stopChatWatcher = startChatWatcher();
+
+    console.log('\n✨ Bot is running: posts + chat watcher active...\n');
 
     // Graceful shutdown
     process.on('SIGINT', () => {
       console.log('\n\n🛑 Bot shutting down...');
       botActive = false;
+      try { stopChatWatcher && stopChatWatcher(); } catch {}
       setTimeout(() => {
         console.log('👋 Goodbye!');
         process.exit(0);

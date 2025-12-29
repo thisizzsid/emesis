@@ -111,13 +111,9 @@ export default function NotificationSetup() {
   return (
     <div>
       {notificationEnabled ? (
-        <p style={{ color: "#4ade80", fontSize: "0.8em" }}>
-          ✅ Push notifications enabled
-        </p>
+        <p className="text-green-400 text-xs">✅ Push notifications enabled</p>
       ) : (
-        <p style={{ color: "#fbbf24", fontSize: "0.8em" }}>
-          📱 Allow notifications to get updates
-        </p>
+        <p className="text-amber-300 text-xs">📱 Allow notifications to get updates</p>
       )}
     </div>
   );

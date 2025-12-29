@@ -26,12 +26,21 @@ export default function ProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
-  const profileUid = user?.uid;
+  // Get UID from query param or default to logged-in user
+  const [profileUid, setProfileUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get("uid");
+      setProfileUid(uid || user?.uid || null);
+    }
+  }, [user]);
 
   const load = async () => {
-    if (!user) return;
+    if (!user || !profileUid) return;
 
-    const ref = doc(db, "users", profileUid!);
+    const ref = doc(db, "users", profileUid);
     const snap = await getDoc(ref);
     if (snap.exists()) {
       setData(snap.data());
@@ -119,8 +128,10 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    load();
-  }, [user]);
+    if (profileUid) {
+      load();
+    }
+  }, [user, profileUid]);
 
   if (!user)
     return (

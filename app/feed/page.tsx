@@ -31,6 +31,8 @@ export default function FeedPage() {
   const [editText, setEditText] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [followMap, setFollowMap] = useState<{ [key: string]: boolean }>({});
+  const [location, setLocation] = useState<string>("Unknown");
+  const [detectingLocation, setDetectingLocation] = useState(false);
 
   const loadFollows = async (arr: any[]) => {
     if (!user) return;
@@ -68,12 +70,15 @@ export default function FeedPage() {
 
   const createPost = async () => {
     if (!user || !text.trim()) return;
+    const hashtags = extractHashtags(text);
     await addDoc(collection(db, "posts"), {
       text,
       uid: user.uid,
       username: anonymous ? "Anonymous" : user.displayName,
       anonymous,
       likes: [],
+      hashtags,
+      location,
       createdAt: Timestamp.now()
     });
     setText("");
@@ -153,7 +158,57 @@ export default function FeedPage() {
 
   useEffect(() => {
     load();
+    detectLocation();
   }, []);
+
+  const detectLocation = () => {
+    setDetectingLocation(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const city = data.address?.city || data.address?.town || data.address?.village || "Unknown City";
+            const country = data.address?.country || "";
+            setLocation(`${city}, ${country}`);
+          } catch (error) {
+            setLocation("Location unavailable");
+          }
+          setDetectingLocation(false);
+        },
+        () => {
+          setLocation("Location disabled");
+          setDetectingLocation(false);
+        }
+      );
+    } else {
+      setLocation("Location not supported");
+      setDetectingLocation(false);
+    }
+  };
+
+  const extractHashtags = (text: string): string[] => {
+    const hashtagRegex = /#[\w\u0590-\u05ff]+/gi;
+    return text.match(hashtagRegex) || [];
+  };
+
+  const renderTextWithHashtags = (text: string) => {
+    const parts = text.split(/(#[\w\u0590-\u05ff]+)/gi);
+    return parts.map((part, i) => {
+      if (part.startsWith("#")) {
+        return (
+          <span key={i} className="text-[#FFD56A] font-semibold hover:text-[#F5C26B] cursor-pointer">
+            {part}
+          </span>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
 
   if (!user) {
     return (
@@ -187,11 +242,25 @@ export default function FeedPage() {
           value={text}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
         />
-        <div className="flex items-center justify-between mt-4">
-          <label className="text-xs flex items-center gap-2.5 font-medium cursor-pointer group">
-            <input type="checkbox" checked={anonymous} onChange={() => setAnonymous(!anonymous)} className="w-4 h-4 cursor-pointer accent-[#F5C26B]" />
-            <span className="group-hover:text-[#FFD56A] transition-colors">Anonymous Post</span>
-          </label>
+        <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
+          <div className="flex items-center gap-4 flex-wrap">
+            <label className="text-xs flex items-center gap-2.5 font-medium cursor-pointer group">
+              <input type="checkbox" checked={anonymous} onChange={() => setAnonymous(!anonymous)} className="w-4 h-4 cursor-pointer accent-[#F5C26B]" />
+              <span className="group-hover:text-[#FFD56A] transition-colors">Anonymous Post</span>
+            </label>
+            <div className="flex items-center gap-2 text-xs text-[#F5C26B]/70">
+              <Image src="/location.png" width={14} height={14} alt="location" />
+              <span className="truncate max-w-[150px]" title={location}>
+                {detectingLocation ? "Detecting..." : location}
+              </span>
+            </div>
+            {extractHashtags(text).length > 0 && (
+              <div className="text-xs text-[#FFD56A] flex items-center gap-1.5">
+                <span className="font-bold">#</span>
+                <span>{extractHashtags(text).length} hashtag{extractHashtags(text).length !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+          </div>
           <button
             onClick={createPost}
             className="modern-btn px-6 py-2.5 bg-linear-to-r from-[#F5C26B] to-[#F4BC4B] text-black rounded-xl font-bold hover:shadow-lg hover:shadow-[#F5C26B]/30 hover:scale-105 active:scale-95 transition-all duration-300"
@@ -238,11 +307,48 @@ export default function FeedPage() {
               </>
             ) : (
               <>
-                <p className="text-xs opacity-50 font-medium tracking-tight">
-                  {p.anonymous ? "Anonymous" : p.username}
-                </p>
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <p className="text-xs opacity-50 font-medium tracking-tight">
+                    {p.anonymous ? "Anonymous" : p.username}
+                  </p>
+                  <div className="flex items-center gap-3 text-[10px] text-zinc-600">
+                    {p.location && (
+                      <div className="flex items-center gap-1">
+                        <Image src="/location.png" width={10} height={10} alt="location" />
+                        <span className="truncate max-w-[100px]" title={p.location}>{p.location}</span>
+                      </div>
+                    )}
+                    {p.createdAt && (
+                      <span>
+                        {new Date(p.createdAt.seconds * 1000).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                        {" • "}
+                        {new Date(p.createdAt.seconds * 1000).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-                <p className="mt-3 text-[#F4BC4B] leading-relaxed font-normal">{p.text}</p>
+                <p className="mt-3 text-[#F4BC4B] leading-relaxed font-normal">{renderTextWithHashtags(p.text)}</p>
+
+                {p.hashtags && p.hashtags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {p.hashtags.map((tag: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="text-xs px-2.5 py-1 rounded-full bg-[#F5C26B]/10 border border-[#F5C26B]/30 text-[#FFD56A] hover:bg-[#F5C26B]/20 cursor-pointer transition-all"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-5 flex gap-4 text-sm items-center">
                   {p.uid !== user.uid && (

@@ -52,7 +52,7 @@ export default function ChatListPage() {
 
   if (!user) {
     return (
-      <div className="h-screen bg-gradient-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] flex items-center justify-center">
+      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] flex items-center justify-center">
         <div className="glass rounded-3xl p-12 animate-bounceIn">
           <p className="text-2xl font-bold">Login Required</p>
         </div>
@@ -61,7 +61,7 @@ export default function ChatListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] px-8 py-24 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] px-8 py-24 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-40 left-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-40 right-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
@@ -69,12 +69,12 @@ export default function ChatListPage() {
       {/* Header Section */}
       <div className="text-center mb-16 animate-fadeIn relative z-10">
         <div className="inline-block mb-4">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow mx-auto">
+          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow mx-auto">
             <span className="text-4xl">💬</span>
           </div>
         </div>
 
-        <h1 className="text-7xl font-black tracking-tighter bg-gradient-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-[length:200%_auto] animate-textShine">
+        <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-size-[200%_auto] animate-textShine">
           Private Chats
         </h1>
 
@@ -131,17 +131,16 @@ export default function ChatListPage() {
               <div
                 key={u.id}
                 className="glass glass-hover rounded-3xl p-8 shadow-2xl border-2 border-[#F5C26B]/25 group relative overflow-hidden animate-fadeIn"
-                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Status Indicator Line */}
-                <div className={`absolute top-0 left-0 w-full h-1 ${can ? "bg-gradient-to-r from-green-500 to-emerald-500" : "bg-gradient-to-r from-red-500 to-orange-500"}`}></div>
+                <div className={`absolute top-0 left-0 w-full h-1 ${can ? "bg-linear-to-r from-green-500 to-emerald-500" : "bg-linear-to-r from-red-500 to-orange-500"}`}></div>
 
                 <div className="flex items-center justify-between gap-6 relative z-10">
                   {/* User Info */}
                   <div className="flex items-center gap-5 flex-1">
                     {/* Avatar */}
                     <div className="relative">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${can ? "from-green-500 to-emerald-500" : "from-[#F5C26B] to-[#FFD56A]"} flex items-center justify-center shadow-xl font-black text-2xl text-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                      <div className={`w-16 h-16 rounded-2xl bg-linear-to-br ${can ? "from-green-500 to-emerald-500" : "from-[#F5C26B] to-[#FFD56A]"} flex items-center justify-center shadow-xl font-black text-2xl text-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                         {u.username?.[0]?.toUpperCase() || "U"}
                       </div>
                       <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-black ${can ? "bg-green-500 animate-pulse" : "bg-red-500"}`}></div>
@@ -185,7 +184,7 @@ export default function ChatListPage() {
                     {can ? (
                       <Link
                         href={`/chat/${chatId}`}
-                        className="modern-btn px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
+                        className="modern-btn px-8 py-4 bg-linear-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -195,7 +194,7 @@ export default function ChatListPage() {
                     ) : (
                       <button
                         disabled
-                        className="px-8 py-4 bg-gradient-to-r from-zinc-800 to-zinc-900 text-zinc-600 rounded-2xl font-bold border-2 border-zinc-800 cursor-not-allowed flex items-center gap-3"
+                        className="px-8 py-4 bg-linear-to-r from-zinc-800 to-zinc-900 text-zinc-600 rounded-2xl font-bold border-2 border-zinc-800 cursor-not-allowed flex items-center gap-3"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -214,7 +213,7 @@ export default function ChatListPage() {
       {/* Help Section */}
       <div className="max-w-5xl mx-auto mt-16 glass rounded-3xl p-8 shadow-2xl border border-[#F5C26B]/30 relative z-10 animate-fadeIn">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/30">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/30">
             <svg className="w-6 h-6 text-[#F5C26B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

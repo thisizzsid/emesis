@@ -10,6 +10,44 @@ import {
   getDocs,
 } from "firebase/firestore";
 
+const delayClassMap: Record<string, string> = {
+  "0.1s": "animation-delay-[100ms]",
+  "0.2s": "animation-delay-[200ms]",
+  "0.3s": "animation-delay-[300ms]",
+  "0.4s": "animation-delay-[400ms]",
+  "0.5s": "animation-delay-[500ms]",
+};
+
+const widthClassMap: Record<number, string> = {
+  0: "w-[0%]",
+  5: "w-[5%]",
+  10: "w-[10%]",
+  15: "w-[15%]",
+  20: "w-[20%]",
+  25: "w-[25%]",
+  30: "w-[30%]",
+  35: "w-[35%]",
+  40: "w-[40%]",
+  45: "w-[45%]",
+  50: "w-[50%]",
+  55: "w-[55%]",
+  60: "w-[60%]",
+  65: "w-[65%]",
+  70: "w-[70%]",
+  75: "w-[75%]",
+  80: "w-[80%]",
+  85: "w-[85%]",
+  90: "w-[90%]",
+  95: "w-[95%]",
+  100: "w-[100%]",
+};
+
+const progressWidthClass = (value: number) => {
+  const percent = Math.min(100, Math.max(0, value));
+  const step = Math.round(percent / 5) * 5;
+  return widthClassMap[step] || "w-[0%]";
+};
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({
@@ -315,9 +353,7 @@ function StatCard({
   return (
     /* eslint-disable-next-line react/no-danger */
     <div
-      className="glass glass-hover rounded-3xl p-8 shadow-2xl border-2 border-[#F5C26B]/25 group cursor-default relative overflow-hidden hover-card"
-      // @ts-expect-error CSS custom properties in style prop
-      style={{ '--animation-delay': delay }}
+      className={`glass glass-hover rounded-3xl p-8 shadow-2xl border-2 border-[#F5C26B]/25 group cursor-default relative overflow-hidden hover-card ${delayClassMap[delay] ?? ""}`}
     >
       {/* Gradient Background */}
       <div className={`absolute inset-0 bg-linear-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
@@ -345,9 +381,7 @@ function StatCard({
         <div className="mt-4 progress-bar">
           {/* eslint-disable-next-line react/no-danger */}
           <div 
-            className="progress-bar-fill" 
-            // @ts-expect-error CSS custom properties in style prop
-            style={{ '--progress-width': `${Math.min(100, count * 10)}%` }}
+            className={`progress-bar-fill ${progressWidthClass(Math.min(100, count * 10))}`}
           ></div>
         </div>
       </div>
@@ -376,11 +410,8 @@ function EngagementMetric({
       
       {/* Circular Progress */}
       <div className="relative w-full h-3 bg-black/40 rounded-full overflow-hidden">
-        {/* eslint-disable-next-line react/no-danger */}
         <div
-          className={`h-full bg-linear-to-r ${color} rounded-full transition-all duration-1000 ease-out relative overflow-hidden`}
-          // @ts-expect-error CSS custom properties in style prop
-          style={{ '--progress-width': `${value}%` }}
+          className={`h-full bg-linear-to-r ${color} rounded-full transition-all duration-1000 ease-out relative overflow-hidden ${progressWidthClass(value)}`}
         >
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
         </div>

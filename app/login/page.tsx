@@ -150,30 +150,30 @@ export default function LoginPage() {
 
   return (
     /* eslint-disable-next-line react/no-danger */
-    <div className="w-screen h-screen md:overflow-hidden overflow-y-auto select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)', WebkitOverflowScrolling: 'touch'}}>
+    <div className="w-screen h-screen md:overflow-hidden overflow-y-auto select-none bg-linear-to-br from-black via-[#0A0A0A] to-black will-change-transform ios-smooth-scroll gpu-layer">
       {/* Advanced Particle Background */}
       {/* eslint-disable-next-line react/no-danger */}
-      <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-50 will-change-auto" style={{backfaceVisibility: 'hidden'}} />
+      <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-50 will-change-auto gpu-layer" />
       
       {/* Gradient Overlay */}
       {/* eslint-disable-next-line react/no-danger */}
-      <div className="fixed inset-0 bg-linear-to-br from-black/85 via-black/70 to-black/85 backdrop-blur-[2px] z-5 will-change-auto" style={{backfaceVisibility: 'hidden'}} />
+      <div className="fixed inset-0 bg-linear-to-br from-black/85 via-black/70 to-black/85 backdrop-blur-[2px] z-5 will-change-auto gpu-layer" />
 
       {/* Animated Orbs */}
       {/* eslint-disable-next-line react/no-danger */}
-      <div className="fixed top-20 left-20 w-96 h-96 bg-[#F5C26B]/20 rounded-full blur-3xl animate-float z-6 will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}></div>
+      <div className="fixed top-20 left-20 w-96 h-96 bg-[#F5C26B]/20 rounded-full blur-3xl animate-float z-6 will-change-transform gpu-layer"></div>
       {/* eslint-disable-next-line react/no-danger */}
-      <div className="fixed bottom-20 right-20 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-3xl animate-float animation-delay-2000 z-6 will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}></div>
+      <div className="fixed bottom-20 right-20 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-3xl animate-float animation-delay-2000 z-6 will-change-transform gpu-layer"></div>
       
       {/* Desktop: Side-by-side layout */}
       {/* eslint-disable-next-line react/no-danger */}
-      <div className="hidden md:flex fixed inset-0 z-10 h-full w-full" style={{backfaceVisibility: 'hidden'}}>
+      <div className="hidden md:flex fixed inset-0 z-10 h-full w-full gpu-layer">
         {/* LEFT SIDE - BRANDING */}
         {/* eslint-disable-next-line react/no-danger */}
-        <div className="w-1/2 flex flex-col justify-center px-20 bg-linear-to-br from-black/60 via-[#0A0A0A]/50 to-black/70 backdrop-blur-2xl border-r border-[#F5C26B]/20 relative overflow-hidden will-change-auto" style={{backfaceVisibility: 'hidden'}}>
+        <div className="w-1/2 flex flex-col justify-center px-20 bg-linear-to-br from-black/60 via-[#0A0A0A]/50 to-black/70 backdrop-blur-2xl border-r border-[#F5C26B]/20 relative overflow-hidden will-change-auto gpu-soft">
           {/* Decorative Grid */}
           {/* eslint-disable-next-line react/no-danger */}
-          <div className="absolute inset-0 opacity-10 bg-brand-grid will-change-auto" style={{backfaceVisibility: 'hidden'}}></div>
+          <div className="absolute inset-0 opacity-10 bg-brand-grid will-change-auto gpu-layer"></div>
           
           <div className="relative z-10 animate-slideInLeft">
             <div className="flex items-center gap-4 mb-4">
@@ -221,9 +221,9 @@ export default function LoginPage() {
 
         {/* RIGHT SIDE - LOGIN FORM (Desktop) */}
         {/* eslint-disable-next-line react/no-danger */}
-        <div className="hidden md:flex flex-1 items-center justify-center px-12 relative h-full w-full" style={{backfaceVisibility: 'hidden'}}>
+        <div className="hidden md:flex flex-1 items-center justify-center px-12 relative h-full w-full gpu-layer">
           {/* eslint-disable-next-line react/no-danger */}
-          <div className="w-full max-w-md glass rounded-3xl shadow-2xl p-12 animate-slideInRight border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300 will-change-transform" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
+          <div className="w-full max-w-md glass rounded-3xl shadow-2xl p-12 animate-slideInRight border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300 will-change-transform gpu-layer">
             {/* Shimmer Effect */}
             <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
@@ -231,9 +231,16 @@ export default function LoginPage() {
               <h2 className="text-4xl font-black text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-3 text-center tracking-tight">
                 Welcome Back
               </h2>
-              <p className="text-center text-zinc-500 text-sm mb-8 font-light">
+              <p className="text-center text-zinc-500 text-sm mb-6 font-light">
                 Continue your journey of self-discovery
               </p>
+
+              {/* Offer + provenance */}
+              <div className="mb-6 rounded-xl bg-black/30 border border-[#F5C26B]/25 px-4 py-3 text-xs text-zinc-200 leading-relaxed">
+                <p className="font-semibold text-[#F5C26B]">Limited-time: Free access</p>
+                <p className="mt-1">After the free period, subscription is ₹9,999 (INR) to unlock all Pro features.</p>
+                <p className="mt-1 text-[#FFD56A]">Crafted in France, made in India.</p>
+              </div>
 
               {/* Email Input */}
               <div className="mb-5 relative group">
@@ -350,7 +357,7 @@ export default function LoginPage() {
       {/* MOBILE LAYOUT - Scrollable */}
       <div className="md:hidden relative z-10 flex flex-col">
         {/* Branding Section - Visible on first load */}
-        <div className="min-h-screen flex flex-col justify-center px-4 relative pt-20 pb-8">
+        <div className="min-h-[85vh] flex flex-col justify-center px-4 relative pt-16 pb-6">
           <div className="animate-slideInDown">
             {/* Logo */}
             <div className="flex items-center gap-3 mb-6">
@@ -368,19 +375,25 @@ export default function LoginPage() {
             </div>
 
             {/* Website Name */}
-            <h1 className="text-6xl md:text-7xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent font-[Orbitron] mb-3">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent font-[Orbitron] mb-3">
               EMESIS
             </h1>
 
             {/* Tagline */}
-            <p className="text-xl font-light text-[#F5C26B] mb-3 tracking-tight neon-glow">
+            <p className="text-lg font-light text-[#F5C26B] mb-2 tracking-tight neon-glow">
               Free Your Mind
             </p>
 
             {/* Description */}
-            <p className="text-zinc-400 text-base max-w-sm leading-relaxed font-light tracking-tight">
+            <p className="text-zinc-400 text-sm max-w-sm leading-relaxed font-light tracking-tight">
               A sanctuary for authentic expression. Confess, connect, and heal in a judgment-free space.
             </p>
+
+            <div className="mt-4 rounded-2xl bg-black/30 border border-[#F5C26B]/25 px-4 py-3 text-xs text-zinc-200 leading-relaxed">
+              <p className="font-semibold text-[#F5C26B]">Limited-time: Free access</p>
+              <p className="mt-1">After the free period, subscription is ₹9,999 (INR) for full Pro features.</p>
+              <p className="mt-1 text-[#FFD56A]">Crafted in France, made in India.</p>
+            </div>
 
             {/* Decorative Lines */}
             <div className="mt-8 space-y-3">
@@ -405,7 +418,7 @@ export default function LoginPage() {
             </div>
 
             {/* Scroll Indicator */}
-            <div className="mt-16 flex flex-col items-center gap-3 animate-bounce">
+            <div className="mt-8 flex flex-col items-center gap-3 animate-bounce">
               <p className="text-xs text-[#F5C26B]/60 uppercase tracking-widest font-semibold">Scroll for Login/Signup</p>
               <svg className="w-6 h-6 text-[#F5C26B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -415,9 +428,9 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Section - Below branding */}
-        <div className="min-h-screen flex items-center justify-center px-4 py-8">
+        <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
           {/* eslint-disable-next-line react/no-danger */}
-          <div className="w-full max-w-md glass rounded-[2.5rem] shadow-2xl p-6 animate-slideInUp border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300 mb-8" style={{backfaceVisibility: 'hidden', transform: 'translate3d(0,0,0)'}}>
+          <div className="w-full max-w-md glass rounded-[2.5rem] shadow-2xl p-6 animate-slideInUp border-2 border-[#F5C26B]/30 relative overflow-hidden group hover:border-[#F5C26B]/50 transition-all duration-300 mb-8 gpu-layer">
             {/* Shimmer Effect */}
             <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
@@ -425,9 +438,15 @@ export default function LoginPage() {
               <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-2 text-center tracking-tight">
                 Welcome Back
               </h2>
-              <p className="text-center text-zinc-500 text-xs mb-6 font-light">
+              <p className="text-center text-zinc-500 text-xs mb-4 font-light">
                 Continue your journey
               </p>
+
+              <div className="mb-5 rounded-xl bg-black/30 border border-[#F5C26B]/25 px-4 py-3 text-[11px] text-zinc-200 leading-relaxed">
+                <p className="font-semibold text-[#F5C26B]">Limited-time: Free access</p>
+                <p className="mt-1">After the free period, subscription is ₹9,999 (INR) to unlock Pro features.</p>
+                <p className="mt-1 text-[#FFD56A]">Crafted in France, made in India.</p>
+              </div>
 
               {/* Email Input */}
               <div className="mb-4 relative group">

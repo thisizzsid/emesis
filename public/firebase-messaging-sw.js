@@ -57,16 +57,30 @@ self.addEventListener('notificationclick', (event) => {
     clients
       .matchAll({ type: 'window', includeUncontrolled: true })
       .then((windowClients) => {
+        const data = event.notification?.data || {};
+        const isChat = data?.type === 'chat_message' && data?.chatId;
+        const targetUrl = isChat ? `/chat/${data.chatId}` : '/feed';
+
         // Check if already open
         for (let i = 0; i < windowClients.length; i++) {
           const client = windowClients[i];
+          // Focus a client with same origin; navigate if needed
+          if ('focus' in client) {
+            try {
+              // If the same path, just focus
+              const samePath = new URL(client.url).pathname === targetUrl;
+              if (samePath) return client.focus();
+              // Else try navigate
+              if ('navigate' in client) return client.navigate(targetUrl);
+            } catch {}
+          }
           if (client.url === '/' && 'focus' in client) {
             return client.focus();
           }
         }
         // If not open, open new window
         if (clients.openWindow) {
-          return clients.openWindow('/feed');
+          return clients.openWindow(targetUrl);
         }
       })
   );

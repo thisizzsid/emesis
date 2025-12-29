@@ -87,16 +87,16 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden select-none bg-gradient-to-br from-black via-[#0A0A0A] to-black">
+    <div className="relative w-full h-screen overflow-hidden select-none bg-linear-to-br from-black via-[#0A0A0A] to-black">
       {/* BG CANVAS */}
       <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-40" />
 
-      <div className="fixed inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80 backdrop-blur-sm z-[5]" />
+      <div className="fixed inset-0 bg-linear-to-br from-black/80 via-black/60 to-black/80 backdrop-blur-sm z-5" />
 
-      <div className="relative z-[10] flex h-full overflow-hidden">
+      <div className="relative z-10 flex h-full overflow-hidden">
         {/* LEFT INFO */}
-        <div className="hidden md:flex w-1/2 flex-col justify-center px-20 bg-gradient-to-br from-black/50 via-[#0A0A0A]/40 to-black/60 backdrop-blur-xl border-r border-[#F5C26B]/10">
-          <h1 className="text-7xl font-black tracking-tighter bg-gradient-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent">Join EMESIS</h1>
+        <div className="hidden md:flex w-1/2 flex-col justify-center px-20 bg-linear-to-br from-black/50 via-[#0A0A0A]/40 to-black/60 backdrop-blur-xl border-r border-[#F5C26B]/10">
+          <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent">Join EMESIS</h1>
           <p className="mt-6 text-zinc-300 text-lg max-w-md leading-relaxed font-light tracking-tight">
             A quiet space to release thoughts you can't say out loud.
           </p>
@@ -108,7 +108,7 @@ export default function SignupPage() {
         {/* RIGHT FORM CARD */}
         <div className="flex flex-1 items-center justify-center px-6 md:px-12">
           <div className="w-full max-w-sm glass rounded-3xl shadow-2xl p-10 border border-[#F5C26B]/20">
-            <h2 className="text-3xl font-bold text-transparent bg-gradient-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-8 text-center tracking-tight">
+            <h2 className="text-3xl font-bold text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-8 text-center tracking-tight">
               Create Account
             </h2>
 
@@ -141,7 +141,7 @@ export default function SignupPage() {
 
             <button
               onClick={register}
-              className="modern-btn w-full py-3.5 bg-gradient-to-r from-[#F5C26B] to-[#F4BC4B] text-black rounded-xl font-semibold shadow-lg shadow-[#F5C26B]/30 hover:shadow-xl hover:shadow-[#F5C26B]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                className="modern-btn w-full py-3.5 bg-linear-to-r from-[#F5C26B] to-[#F4BC4B] text-black rounded-xl font-semibold shadow-lg shadow-[#F5C26B]/30 hover:shadow-xl hover:shadow-[#F5C26B]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
             >
               Create Account
             </button>

@@ -225,19 +225,6 @@
       font-size: 0.9em;
     }
 
-    .bot-name-value {
-      font-size: 0.9em;
-    }
-
-    .settings-margin {
-      margin-top: 20px;
-    }
-
-    .save-button {
-      margin-top: 20px;
-      width: 100%;
-    }
-
     @media (max-width: 600px) {
       h1 {
         font-size: 1.8em;
@@ -275,7 +262,7 @@
       </div>
       <div class="status-card">
         <div class="status-label">Bot Name</div>
-        <div class="status-value bot-name-value" id="botNameStatus">-</div>
+        <div class="status-value" id="botNameStatus" style="font-size: 0.9em;">-</div>
       </div>
     </div>
 
@@ -286,28 +273,28 @@
       <div class="controls">
         <div class="control-group">
           <label>Post Interval (minutes)</label>
-          <input type="number" id="postInterval" min="1" value="60" aria-label="Post interval in minutes" title="Post interval in minutes">
+          <input type="number" id="postInterval" min="1" value="60">
         </div>
         <div class="control-group">
           <label>Like Interval (minutes)</label>
-          <input type="number" id="likeInterval" min="1" value="10" aria-label="Like interval in minutes" title="Like interval in minutes">
+          <input type="number" id="likeInterval" min="1" value="10">
         </div>
         <div class="control-group">
           <label>Comment Interval (minutes)</label>
-          <input type="number" id="commentInterval" min="1" value="15" aria-label="Comment interval in minutes" title="Comment interval in minutes">
+          <input type="number" id="commentInterval" min="1" value="15">
         </div>
         <div class="control-group">
           <label>Bot Name</label>
-          <input type="text" id="botName" value="EMESIS Bot" aria-label="Bot name" title="Bot name">
+          <input type="text" id="botName" value="EMESIS Bot">
         </div>
       </div>
 
-      <div class="controls settings-margin">
+      <div class="controls" style="margin-top: 20px;">
         <div class="control-group">
           <label>Enable Auto-Post</label>
           <div class="toggle-switch">
             <label class="switch">
-              <input type="checkbox" id="autoPost" aria-label="Enable auto post">
+              <input type="checkbox" id="autoPost">
               <span class="slider"></span>
             </label>
             <span id="autoPostText">OFF</span>
@@ -317,7 +304,7 @@
           <label>Enable Auto-Like</label>
           <div class="toggle-switch">
             <label class="switch">
-              <input type="checkbox" id="autoLike" aria-label="Enable auto like">
+              <input type="checkbox" id="autoLike">
               <span class="slider"></span>
             </label>
             <span id="autoLikeText">OFF</span>
@@ -327,7 +314,7 @@
           <label>Enable Auto-Comment</label>
           <div class="toggle-switch">
             <label class="switch">
-              <input type="checkbox" id="autoComment" aria-label="Enable auto comment">
+              <input type="checkbox" id="autoComment">
               <span class="slider"></span>
             </label>
             <span id="autoCommentText">OFF</span>
@@ -335,149 +322,115 @@
         </div>
       </div>
 
-      <button class="save-button" type="button">💾 Save Settings</button>
+      <button onclick="saveSettings()" style="margin-top: 20px; width: 100%;">💾 Save Settings</button>
     </div>
 
     <div class="section">
       <h2>🎮 Manual Actions</h2>
-      <p class="muted-subtext">Trigger bot actions manually</p>
+      <p style="color: #aaa; margin-bottom: 20px;">Trigger bot actions manually</p>
       <div class="action-buttons">
-        <button data-action="post" type="button">📝 Create Post</button>
-        <button data-action="like" type="button">❤️ Like Post</button>
-        <button data-action="comment" type="button">💬 Comment</button>
+        <button onclick="manualAction('post')">📝 Create Post</button>
+        <button onclick="manualAction('like')">❤️ Like Post</button>
+        <button onclick="manualAction('comment')">💬 Comment</button>
       </div>
     </div>
   </div>
 
   <script>
-    (function () {
-      const ms = (min) => Math.max(1, Number(min) || 0) * 60000;
-      const getJSON = async (url, options) => {
-        const res = await fetch(url, options || {});
-        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-        try {
-          return await res.json();
-        } catch (e) {
-          throw new Error('Invalid JSON response');
-        }
-      };
+    // Load status on page load
+    async function loadStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const status = await response.json();
 
-      function updateToggleText() {
-        const autoPost = document.getElementById('autoPost');
-        const autoLike = document.getElementById('autoLike');
-        const autoComment = document.getElementById('autoComment');
-        document.getElementById('autoPostText').textContent = autoPost?.checked ? 'ON' : 'OFF';
-        document.getElementById('autoLikeText').textContent = autoLike?.checked ? 'ON' : 'OFF';
-        document.getElementById('autoCommentText').textContent = autoComment?.checked ? 'ON' : 'OFF';
+        document.getElementById('autoPostStatus').textContent = status.autoPost ? '✅ ON' : '❌ OFF';
+        document.getElementById('autoLikeStatus').textContent = status.autoLike ? '✅ ON' : '❌ OFF';
+        document.getElementById('autoCommentStatus').textContent = status.autoComment ? '✅ ON' : '❌ OFF';
+        document.getElementById('botNameStatus').textContent = status.botName;
+
+        document.getElementById('postInterval').value = status.postInterval / 60000;
+        document.getElementById('likeInterval').value = status.likeInterval / 60000;
+        document.getElementById('commentInterval').value = status.commentInterval / 60000;
+        document.getElementById('botName').value = status.botName;
+
+        document.getElementById('autoPost').checked = status.autoPost;
+        document.getElementById('autoLike').checked = status.autoLike;
+        document.getElementById('autoComment').checked = status.autoComment;
+
+        updateToggleText();
+      } catch (error) {
+        showMessage('Error loading status: ' + error, 'error');
       }
+    }
 
-      async function loadStatus() {
-        try {
-          const status = await getJSON('/api/status');
+    // Update toggle text
+    function updateToggleText() {
+      document.getElementById('autoPostText').textContent = document.getElementById('autoPost').checked ? 'ON' : 'OFF';
+      document.getElementById('autoLikeText').textContent = document.getElementById('autoLike').checked ? 'ON' : 'OFF';
+      document.getElementById('autoCommentText').textContent = document.getElementById('autoComment').checked ? 'ON' : 'OFF';
+    }
 
-          document.getElementById('autoPostStatus').textContent = status.autoPost ? '✅ ON' : '❌ OFF';
-          document.getElementById('autoLikeStatus').textContent = status.autoLike ? '✅ ON' : '❌ OFF';
-          document.getElementById('autoCommentStatus').textContent = status.autoComment ? '✅ ON' : '❌ OFF';
-          document.getElementById('botNameStatus').textContent = status.botName;
+    // Toggle listeners
+    document.getElementById('autoPost').addEventListener('change', updateToggleText);
+    document.getElementById('autoLike').addEventListener('change', updateToggleText);
+    document.getElementById('autoComment').addEventListener('change', updateToggleText);
 
-          document.getElementById('postInterval').value = Math.round(status.postInterval / 60000);
-          document.getElementById('likeInterval').value = Math.round(status.likeInterval / 60000);
-          document.getElementById('commentInterval').value = Math.round(status.commentInterval / 60000);
-          document.getElementById('botName').value = status.botName || '';
-
-          document.getElementById('autoPost').checked = !!status.autoPost;
-          document.getElementById('autoLike').checked = !!status.autoLike;
-          document.getElementById('autoComment').checked = !!status.autoComment;
-
-          updateToggleText();
-        } catch (error) {
-          showMessage('Error loading status: ' + error.message, 'error');
-        }
-      }
-
-      async function saveSettings() {
-        const btn = document.querySelector('.save-button');
-        btn?.setAttribute('disabled', 'true');
-        try {
-          const payload = {
+    // Save settings
+    async function saveSettings() {
+      try {
+        const response = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             autoPost: document.getElementById('autoPost').checked,
             autoLike: document.getElementById('autoLike').checked,
             autoComment: document.getElementById('autoComment').checked,
-            postInterval: ms(document.getElementById('postInterval').value),
-            likeInterval: ms(document.getElementById('likeInterval').value),
-            commentInterval: ms(document.getElementById('commentInterval').value),
-            botName: document.getElementById('botName').value.trim(),
+            postInterval: parseInt(document.getElementById('postInterval').value),
+            likeInterval: parseInt(document.getElementById('likeInterval').value),
+            commentInterval: parseInt(document.getElementById('commentInterval').value),
+            botName: document.getElementById('botName').value,
+          }),
+        });
+
+        const result = await response.json();
+        showMessage(result.message, 'success');
+        setTimeout(loadStatus, 1000);
+      } catch (error) {
+        showMessage('Error saving settings: ' + error, 'error');
+      }
+    }
+
+    // Manual actions
+    async function manualAction(action) {
+      try {
+        const response = await fetch(`/api/action/${action}`, { method: 'POST' });
+        const result = await response.json();
+
+        if (result.success) {
+          const actionText = {
+            post: '📝 Post created!',
+            like: '❤️ Liked a post!',
+            comment: '💬 Commented on a post!'
           };
-
-          const res = await fetch('/api/settings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(txt || res.statusText);
-          }
-          const result = await res.json().catch(() => ({ message: 'Settings saved' }));
-          showMessage(result.message || 'Settings saved', 'success');
-          setTimeout(loadStatus, 1000);
-        } catch (error) {
-          showMessage('Error saving settings: ' + error.message, 'error');
-        } finally {
-          btn?.removeAttribute('disabled');
+          showMessage(actionText[action], 'success');
+        } else {
+          showMessage('Error: ' + result.error, 'error');
         }
+      } catch (error) {
+        showMessage('Error: ' + error, 'error');
       }
+    }
 
-      async function manualAction(action) {
-        try {
-          const res = await fetch(`/api/action/${action}`, { method: 'POST' });
-          if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(txt || res.statusText);
-          }
-          const result = await res.json().catch(() => ({ success: true }));
-          if (result.success) {
-            const actionText = {
-              post: '📝 Post created!',
-              like: '❤️ Liked a post!',
-              comment: '💬 Commented on a post!'
-            };
-            showMessage(actionText[action], 'success');
-          } else {
-            showMessage('Error: ' + (result.error || 'Unknown error'), 'error');
-          }
-        } catch (error) {
-          showMessage('Error: ' + error.message, 'error');
-        }
-      }
+    // Show message
+    function showMessage(msg, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = msg;
+      messageDiv.className = `message ${type}`;
+      setTimeout(() => messageDiv.textContent = '', 3000);
+    }
 
-      function showMessage(msg, type) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = msg;
-        messageDiv.className = `message ${type}`;
-        setTimeout(() => (messageDiv.textContent = ''), 3000);
-      }
-
-      function attachListeners() {
-        document.getElementById('autoPost')?.addEventListener('change', updateToggleText);
-        document.getElementById('autoLike')?.addEventListener('change', updateToggleText);
-        document.getElementById('autoComment')?.addEventListener('change', updateToggleText);
-
-        document.querySelector('.save-button')?.addEventListener('click', (e) => {
-          e.preventDefault();
-          saveSettings();
-        });
-
-        document.querySelectorAll('.action-buttons button[data-action]').forEach((btn) => {
-          btn.addEventListener('click', () => manualAction(btn.getAttribute('data-action')));
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        attachListeners();
-        loadStatus();
-      });
-    })();
+    // Load on startup
+    loadStatus();
   </script>
 </body>
 </html>
