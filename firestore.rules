@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuth() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      // Allow anyone to read profiles (needed for Explore/Feed)
+      allow read: if true;
+      // Only owner can edit their profile
+      allow write: if isOwner(userId);
+
+      // User Subcollections (Notifications, Followers, Following)
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+        allow create: if isAuth(); // Allow others to trigger notifications
+        allow update, delete: if isOwner(userId);
+      }
+      
+      // Legacy/Secondary follower tracking used in Notifications page
+      match /followers/{followerId} {
+        allow read: if true;
+        allow write: if isAuth(); // Needed for 'followBack' logic
+      }
+      match /following/{followingId} {
+        allow read: if true;
+        allow write: if isOwner(userId);
+      }
+    }
+
+    // Posts
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isAuth();
+      // Only the post author can edit/delete their post
+      allow update, delete: if isAuth() && (
+        resource.data.uid == request.auth.uid || 
+        // Allow updating 'likes' array without being owner
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
+      );
+
+      // Comments Subcollection
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isAuth();
+        allow update, delete: if isOwner(resource.data.uid);
+      }
+    }
+
+    // Follows (Root Collection)
+    match /follows/{docId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && resource.data.follower == request.auth.uid;
+    }
+
+    // Profile Views (for Dashboard stats)
+    match /profileViews/{viewId} {
+      allow read: if true;
+      allow create: if isAuth();
+    }
+
+    // Private Chats
+    match /chats/{chatId} {
+      allow read, write: if isAuth() && chatId.contains(request.auth.uid);
+      
+      match /messages/{messageId} {
+        allow read, write: if isAuth() && chatId.contains(request.auth.uid);
+      }
+    }
+
+    // Catch-all (Useful for development, but specific rules above take precedence)
+    match /{document=**} {
+      allow read, write: if isAuth();
+    }
+  }
+}

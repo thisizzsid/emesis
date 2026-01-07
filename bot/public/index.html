@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMESIS Bot Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid #F5C26B;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #F5C26B;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(245, 194, 107, 0.5);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .status-card {
+      background: rgba(245, 194, 107, 0.1);
+      border: 2px solid #F5C26B;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .status-card:hover {
+      background: rgba(245, 194, 107, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .status-label {
+      font-size: 0.9em;
+      color: #ccc;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #F5C26B;
+    }
+
+    .toggle-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    input:checked + .slider {
+      background-color: #F5C26B;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .section {
+      background: rgba(245, 194, 107, 0.05);
+      border: 1px solid #F5C26B;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      color: #F5C26B;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      color: #aaa;
+      font-size: 0.9em;
+      text-transform: uppercase;
+    }
+
+    input[type="number"] {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #F5C26B;
+      color: #F5C26B;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    input[type="text"] {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #F5C26B;
+      color: #F5C26B;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    button {
+      background: linear-gradient(135deg, #F5C26B, #FFD56A);
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1em;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(245, 194, 107, 0.5);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .success {
+      color: #4ade80;
+      padding: 10px;
+      border-left: 4px solid #4ade80;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background: rgba(74, 222, 128, 0.1);
+    }
+
+    .error {
+      color: #f87171;
+      padding: 10px;
+      border-left: 4px solid #f87171;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .message {
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    .bot-name-value {
+      font-size: 0.9em;
+    }
+
+    .settings-margin {
+      margin-top: 20px;
+    }
+
+    .save-button {
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 EMESIS BOT DASHBOARD</h1>
+      <p>Control your bot's behavior in real-time</p>
+    </header>
+
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-label">Auto-Post</div>
+        <div class="status-value" id="autoPostStatus">-</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Auto-Like</div>
+        <div class="status-value" id="autoLikeStatus">-</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Auto-Comment</div>
+        <div class="status-value" id="autoCommentStatus">-</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Bot Name</div>
+        <div class="status-value bot-name-value" id="botNameStatus">-</div>
+      </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="section">
+      <h2>⚙️ Settings</h2>
+      <div class="controls">
+        <div class="control-group">
+          <label>Post Interval (minutes)</label>
+          <input type="number" id="postInterval" min="1" value="60" aria-label="Post interval in minutes" title="Post interval in minutes">
+        </div>
+        <div class="control-group">
+          <label>Like Interval (minutes)</label>
+          <input type="number" id="likeInterval" min="1" value="10" aria-label="Like interval in minutes" title="Like interval in minutes">
+        </div>
+        <div class="control-group">
+          <label>Comment Interval (minutes)</label>
+          <input type="number" id="commentInterval" min="1" value="15" aria-label="Comment interval in minutes" title="Comment interval in minutes">
+        </div>
+        <div class="control-group">
+          <label>Bot Name</label>
+          <input type="text" id="botName" value="EMESIS Bot" aria-label="Bot name" title="Bot name">
+        </div>
+      </div>
+
+      <div class="controls settings-margin">
+        <div class="control-group">
+          <label>Enable Auto-Post</label>
+          <div class="toggle-switch">
+            <label class="switch">
+              <input type="checkbox" id="autoPost" aria-label="Enable auto post">
+              <span class="slider"></span>
+            </label>
+            <span id="autoPostText">OFF</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Enable Auto-Like</label>
+          <div class="toggle-switch">
+            <label class="switch">
+              <input type="checkbox" id="autoLike" aria-label="Enable auto like">
+              <span class="slider"></span>
+            </label>
+            <span id="autoLikeText">OFF</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Enable Auto-Comment</label>
+          <div class="toggle-switch">
+            <label class="switch">
+              <input type="checkbox" id="autoComment" aria-label="Enable auto comment">
+              <span class="slider"></span>
+            </label>
+            <span id="autoCommentText">OFF</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="save-button" type="button">💾 Save Settings</button>
+    </div>
+
+    <div class="section">
+      <h2>🎮 Manual Actions</h2>
+      <p class="muted-subtext">Trigger bot actions manually</p>
+      <div class="action-buttons">
+        <button data-action="post" type="button">📝 Create Post</button>
+        <button data-action="like" type="button">❤️ Like Post</button>
+        <button data-action="comment" type="button">💬 Comment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ms = (min) => Math.max(1, Number(min) || 0) * 60000;
+      const getJSON = async (url, options) => {
+        const res = await fetch(url, options || {});
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        try {
+          return await res.json();
+        } catch (e) {
+          throw new Error('Invalid JSON response');
+        }
+      };
+
+      function updateToggleText() {
+        const autoPost = document.getElementById('autoPost');
+        const autoLike = document.getElementById('autoLike');
+        const autoComment = document.getElementById('autoComment');
+        document.getElementById('autoPostText').textContent = autoPost?.checked ? 'ON' : 'OFF';
+        document.getElementById('autoLikeText').textContent = autoLike?.checked ? 'ON' : 'OFF';
+        document.getElementById('autoCommentText').textContent = autoComment?.checked ? 'ON' : 'OFF';
+      }
+
+      async function loadStatus() {
+        try {
+          const status = await getJSON('/api/status');
+
+          document.getElementById('autoPostStatus').textContent = status.autoPost ? '✅ ON' : '❌ OFF';
+          document.getElementById('autoLikeStatus').textContent = status.autoLike ? '✅ ON' : '❌ OFF';
+          document.getElementById('autoCommentStatus').textContent = status.autoComment ? '✅ ON' : '❌ OFF';
+          document.getElementById('botNameStatus').textContent = status.botName;
+
+          document.getElementById('postInterval').value = Math.round(status.postInterval / 60000);
+          document.getElementById('likeInterval').value = Math.round(status.likeInterval / 60000);
+          document.getElementById('commentInterval').value = Math.round(status.commentInterval / 60000);
+          document.getElementById('botName').value = status.botName || '';
+
+          document.getElementById('autoPost').checked = !!status.autoPost;
+          document.getElementById('autoLike').checked = !!status.autoLike;
+          document.getElementById('autoComment').checked = !!status.autoComment;
+
+          updateToggleText();
+        } catch (error) {
+          showMessage('Error loading status: ' + error.message, 'error');
+        }
+      }
+
+      async function saveSettings() {
+        const btn = document.querySelector('.save-button');
+        btn?.setAttribute('disabled', 'true');
+        try {
+          const payload = {
+            autoPost: document.getElementById('autoPost').checked,
+            autoLike: document.getElementById('autoLike').checked,
+            autoComment: document.getElementById('autoComment').checked,
+            postInterval: ms(document.getElementById('postInterval').value),
+            likeInterval: ms(document.getElementById('likeInterval').value),
+            commentInterval: ms(document.getElementById('commentInterval').value),
+            botName: document.getElementById('botName').value.trim(),
+          };
+
+          const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(txt || res.statusText);
+          }
+          const result = await res.json().catch(() => ({ message: 'Settings saved' }));
+          showMessage(result.message || 'Settings saved', 'success');
+          setTimeout(loadStatus, 1000);
+        } catch (error) {
+          showMessage('Error saving settings: ' + error.message, 'error');
+        } finally {
+          btn?.removeAttribute('disabled');
+        }
+      }
+
+      async function manualAction(action) {
+        try {
+          const res = await fetch(`/api/action/${action}`, { method: 'POST' });
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(txt || res.statusText);
+          }
+          const result = await res.json().catch(() => ({ success: true }));
+          if (result.success) {
+            const actionText = {
+              post: '📝 Post created!',
+              like: '❤️ Liked a post!',
+              comment: '💬 Commented on a post!'
+            };
+            showMessage(actionText[action], 'success');
+          } else {
+            showMessage('Error: ' + (result.error || 'Unknown error'), 'error');
+          }
+        } catch (error) {
+          showMessage('Error: ' + error.message, 'error');
+        }
+      }
+
+      function showMessage(msg, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = msg;
+        messageDiv.className = `message ${type}`;
+        setTimeout(() => (messageDiv.textContent = ''), 3000);
+      }
+
+      function attachListeners() {
+        document.getElementById('autoPost')?.addEventListener('change', updateToggleText);
+        document.getElementById('autoLike')?.addEventListener('change', updateToggleText);
+        document.getElementById('autoComment')?.addEventListener('change', updateToggleText);
+
+        document.querySelector('.save-button')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          saveSettings();
+        });
+
+        document.querySelectorAll('.action-buttons button[data-action]').forEach((btn) => {
+          btn.addEventListener('click', () => manualAction(btn.getAttribute('data-action')));
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        attachListeners();
+        loadStatus();
+      });
+    })();
+  </script>
+</body>
+</html>
