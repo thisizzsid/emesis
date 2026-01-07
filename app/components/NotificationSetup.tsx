@@ -64,8 +64,7 @@ export function useNotifications() {
         if (permission === "granted") {
           const messaging = getMessaging();
           const token = await getToken(messaging, {
-            vapidKey:
-              "BPqL1h2N3v4R5t6U7w8X9y0Z1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0",
+            vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
           });
 
           if (token) {

@@ -317,12 +317,27 @@ export default function LoginPage() {
 
               {/* Google Login Button */}
               <button
+                type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="modern-btn w-full py-4 border-2 border-[#F5C26B]/40 text-[#F5C26B] font-semibold rounded-xl flex items-center justify-center gap-3 hover:border-[#F5C26B]/70 hover:bg-[#F5C26B]/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed group"
+                aria-label="Continue with Google"
+                className="relative w-full py-4 rounded-xl border-2 border-[#F5C26B]/40 text-[#F5C26B] font-semibold flex items-center justify-center gap-3 transition-all duration-500 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed group hover:border-[#F5C26B]/80 hover:bg-black/30 hover:shadow-lg hover:shadow-[#F5C26B]/20 active:scale-[0.98] overflow-hidden"
               >
-                <img src="/google.png" alt="Google Icon" className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-                <span className="tracking-wide">Continue with Google</span>
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[#F5C26B]/10 to-transparent"></span>
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="spinner"></div>
+                    <span className="tracking-wide">Connecting to Google…</span>
+                  </div>
+                ) : (
+                  <>
+                    <img src="/google.png" alt="Google Icon" className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-105" />
+                    <span className="tracking-wide">Continue with Google</span>
+                  </>
+                )}
+                {loading && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] animate-pulse"></span>
+                )}
               </button>
 
               {/* Bottom Links */}
@@ -442,12 +457,25 @@ export default function LoginPage() {
 
               {/* Google Login */}
               <button
+                type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full py-3 border border-[#F5C26B]/30 text-[#F5C26B] font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-[#F5C26B]/10 active:scale-[0.98] transition-all text-sm backdrop-blur-sm"
+                aria-label="Continue with Google"
+                className="relative w-full py-3 border border-[#F5C26B]/30 text-[#F5C26B] font-semibold rounded-xl flex items-center justify-center gap-2 transition-all text-sm backdrop-blur-sm hover:bg-black/30 hover:border-[#F5C26B]/70 hover:shadow-lg hover:shadow-[#F5C26B]/20 active:scale-[0.98] overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <img src="/google.png" alt="Google" className="w-5 h-5" />
-                <span>Google</span>
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[#F5C26B]/10 to-transparent"></span>
+                {loading ? (
+                  <>
+                    <div className="spinner"></div>
+                    <span className="tracking-wide">Connecting…</span>
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] animate-pulse"></span>
+                  </>
+                ) : (
+                  <>
+                    <img src="/google.png" alt="Google" className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-105" />
+                    <span className="tracking-wide">Continue with Google</span>
+                  </>
+                )}
               </button>
 
               {/* Links */}

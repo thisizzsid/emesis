@@ -16,17 +16,21 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Moon, Sun, LogOut, Users } from "lucide-react";
 
 export default function ChatRoom({ params }: { params: any }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [id, setId] = useState<string>("");
   const router = useRouter();
 
   const [messages, setMessages] = useState<any[]>([]);
   const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
   const [otherUser, setOtherUser] = useState<any>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showReactions, setShowReactions] = useState<string | null>(null);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const bottomRef = useRef<any>(null);
   const typingTimeoutRef = useRef<any>(null);
   const lastMessageIdRef = useRef<string | null>(null);
@@ -100,13 +104,18 @@ export default function ChatRoom({ params }: { params: any }) {
 
   const send = async () => {
     if (!user || !text.trim() || !id) return;
-    await addDoc(collection(db, `chats/${id}/messages`), {
-      uid: user.uid,
-      text,
-      createdAt: Timestamp.now(),
-      reactions: [],
-    });
-    setText("");
+    setSending(true);
+    try {
+      await addDoc(collection(db, `chats/${id}/messages`), {
+        uid: user.uid,
+        text,
+        createdAt: Timestamp.now(),
+        reactions: [],
+      });
+      setText("");
+    } finally {
+      setSending(false);
+    }
   };
 
   // Add reaction to message
@@ -193,7 +202,7 @@ export default function ChatRoom({ params }: { params: any }) {
     );
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white overflow-hidden">
+    <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
@@ -208,6 +217,14 @@ export default function ChatRoom({ params }: { params: any }) {
           <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((v) => !v)}
+          className="alert-btn relative group"
+          aria-label="Toggle participants sidebar"
+        >
+          <Users className="w-4.5 h-4.5" />
         </button>
         
         {/* User Avatar & Info */}
@@ -230,14 +247,64 @@ export default function ChatRoom({ params }: { params: any }) {
           </div>
         </div>
 
-        <button className="alert-btn relative group" aria-label="Chat info" type="button">
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+            className="alert-btn relative group"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+          </button>
+          <button
+            type="button"
+            onClick={logout}
+            className="alert-btn relative group"
+            aria-label="Logout"
+          >
+            <LogOut className="w-4.5 h-4.5" />
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-2 md:px-6 py-4 md:py-6 pb-24 space-y-4 md:space-y-6 relative z-10">
+      <div className="flex-1 min-h-0 overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-[280px_1fr]">
+        <aside className={`hidden md:block border-r border-[#F5C26B]/10 backdrop-blur-2xl transition-all duration-300 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"}`}>
+          <div className="h-full p-4 space-y-4">
+            <div className="flex items-center gap-2 text-xs text-zinc-500">
+              <span className="w-2 h-2 rounded-full bg-[#F5C26B]"></span>
+              Participants
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-[#F5C26B] to-[#FFD56A] text-black font-bold flex items-center justify-center shrink-0">
+                {user?.displayName?.[0]?.toUpperCase() || "Y"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-[#F5C26B] font-semibold truncate">
+                  {user?.displayName || "You"}
+                </div>
+                <div className="text-xs text-zinc-600 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                  Online
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-[#F5C26B] to-[#FFD56A] text-black font-bold flex items-center justify-center shrink-0">
+                {otherUser?.username?.[0]?.toUpperCase() || "U"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-[#F5C26B] font-semibold truncate">
+                  {otherUser?.username || "User"}
+                </div>
+                <div className="text-xs text-zinc-600 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                  Online
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+        <div className="min-h-0 overflow-y-auto px-2 md:px-6 py-4 md:py-6 pb-24 space-y-4 md:space-y-6">
         {messages.map((m, index) => {
           const mine = m.uid === user.uid;
           const showTime = index === 0 || 
@@ -345,6 +412,7 @@ export default function ChatRoom({ params }: { params: any }) {
         )}
         
         <div ref={bottomRef} />
+        </div>
       </div>
 
       <div className="glass border-t border-[#F5C26B]/20 backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-20 shrink-0">
@@ -366,6 +434,9 @@ export default function ChatRoom({ params }: { params: any }) {
               handleTyping();
             }}
           />
+          <div className="absolute right-3 bottom-1.5 md:bottom-2 text-[10px] md:text-xs text-zinc-600">
+            {text.length}/1000
+          </div>
         </div>
 
         <button className="alert-btn relative group shrink-0" aria-label="Attach file" type="button">
@@ -377,19 +448,40 @@ export default function ChatRoom({ params }: { params: any }) {
         <button
           type="button"
           onClick={send}
-          disabled={!text.trim()}
+          disabled={!text.trim() || sending}
           className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 text-sm md:text-base"
           aria-label="Send message"
         >
-          <span className="hidden md:inline">Send</span>
-          <span className="md:hidden">➤</span>
-          <svg className="w-4 md:w-5 h-4 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
+          {sending ? (
+            <>
+              <div className="spinner"></div>
+              <span>Sending…</span>
+            </>
+          ) : (
+            <>
+              <span className="hidden md:inline">Send</span>
+              <span className="md:hidden">➤</span>
+              <svg className="w-4 md:w-5 h-4 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </>
+          )}
         </button>
       </div>
 
       <style jsx>{`
+        :root {
+          --color-bg: #0A0A0A;
+          --color-primary: #F5C26B;
+          --color-primary-2: #FFD56A;
+          --text-primary: #F5C26B;
+          --text-secondary: #9CA3AF;
+        }
+        [data-theme="light"] {
+          --color-bg: #FAFAFA;
+          --text-primary: #1F2937;
+          --text-secondary: #4B5563;
+        }
         .animation-delay-2000 {
           animation-delay: 2s;
         }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { db } from "../../firebase";
 import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc } from "firebase/firestore";
 import Comments from "./Comments";
+import { Heart, MessageCircle, Share2, Pencil, Trash2 } from "lucide-react";
 
 interface PostCardProps {
   post: any;
@@ -291,20 +292,24 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 </button>
                 
                 {menuOpen && (
-                  <div className="absolute right-0 top-8 bg-black/90 border border-zinc-700 rounded-xl text-sm shadow-xl overflow-hidden w-32 backdrop-blur-xl">
+                  <div className="absolute right-0 top-8 bg-black/90 border border-[#F5C26B]/20 rounded-xl text-sm shadow-xl overflow-hidden w-36 backdrop-blur-xl">
                     <button 
-                        type="button"
-                        onClick={() => { setIsEditing(true); setMenuOpen(false); }} 
-                        className="w-full px-4 py-3 hover:bg-[#F5C26B]/10 text-left transition-colors flex items-center gap-2"
+                      type="button"
+                      aria-label="Edit post"
+                      onClick={() => { setIsEditing(true); setMenuOpen(false); }} 
+                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-[#F5C26B] hover:bg-[#F5C26B]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C26B]"
                     >
-                        <span>✏️</span> Edit
+                      <Pencil className="w-4 h-4" />
+                      <span>Edit</span>
                     </button>
                     <button 
-                        type="button"
-                        onClick={() => { removePost(); setMenuOpen(false); }} 
-                        className="w-full px-4 py-3 hover:bg-red-500/10 text-red-400 text-left transition-colors flex items-center gap-2"
+                      type="button"
+                      aria-label="Delete post"
+                      onClick={() => { removePost(); setMenuOpen(false); }} 
+                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                     >
-                        <span>🗑</span> Delete
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete</span>
                     </button>
                   </div>
                 )}
@@ -399,20 +404,24 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
               <button 
                 type="button"
                 onClick={like} 
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all hover:bg-[#F5C26B]/10 active:scale-95 ${
-                    post.likes?.includes(user?.uid) ? "text-red-400 bg-red-400/10" : "text-zinc-400"
+                title="Like"
+                className={`relative group flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-[#F5C26B] hover:bg-[#F5C26B]/10 active:scale-95 ${
+                  post.likes?.includes(user?.uid) ? "text-red-500 bg-red-500/10" : "text-zinc-400"
                 }`}
               >
-                {post.likes?.includes(user?.uid) ? "❤️" : "🤍"}
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[#F5C26B]/5 to-transparent"></span>
+                <Heart className={`w-5 h-5 transition-transform duration-300 ${post.likes?.includes(user?.uid) ? "scale-110" : "scale-100"}`} />
                 <span className="font-medium text-xs">{post.likes?.length || 0}</span>
               </button>
 
               <button 
                 type="button"
                 onClick={() => setShowComments(!showComments)} 
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#F5C26B]/10 transition-all hover:text-[#F5C26B] text-zinc-400 active:scale-95"
+                title="Comments"
+                className="relative group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#F5C26B]/10 transition-all hover:text-[#F5C26B] text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-[#F5C26B]"
               >
-                <span className="text-lg">💬</span>
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[#F5C26B]/5 to-transparent"></span>
+                <MessageCircle className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
                 <span className="font-medium text-xs">Comment</span>
               </button>
 
@@ -420,12 +429,14 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 <button
                   type="button"
                   onClick={() => setShareOpen((v) => !v)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#F5C26B]/10 transition-all text-zinc-400 hover:text-[#F5C26B] active:scale-95"
+                  title="Share"
+                  className="relative group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#F5C26B]/10 transition-all text-zinc-400 hover:text-[#F5C26B] active:scale-95 focus:outline-none focus-visible:ring-2 ring-[#F5C26B]"
                   aria-haspopup="menu"
                   aria-label="Share options"
                   ref={shareBtnRef}
                 >
-                  <span className="text-lg">🔗</span>
+                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[#F5C26B]/5 to-transparent"></span>
+                  <Share2 className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
                   <span className="font-medium text-xs">Share</span>
                 </button>
                 {shareOpen && (

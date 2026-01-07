@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import Link from "next/link";
+import { Hash, TrendingUp } from "lucide-react";
 
 export default function TrendingSidebar() {
   const [trendingTags, setTrendingTags] = useState<{ tag: string; count: number }[]>([]);
@@ -65,19 +66,21 @@ export default function TrendingSidebar() {
     <div className="hidden lg:block w-80 pl-6 sticky top-24 self-start">
       <div className="glass rounded-2xl p-6 border border-[#F5C26B]/20 shadow-xl shadow-[#F5C26B]/5">
         <h3 className="text-xl font-bold text-[#F5C26B] mb-4 flex items-center gap-2">
-          <span className="text-2xl">📈</span> Trending
+          <TrendingUp className="w-5 h-5" /> Trending
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {trendingTags.map(({ tag, count }) => (
             <Link
               key={tag}
               href={`/explore?tag=${tag.replace('#', '')}`}
-              className="flex items-center justify-between group cursor-pointer"
+              aria-label={`Open trending tag ${tag} with ${count} posts`}
+              className="group flex items-center justify-between rounded-xl px-3 py-2 transition-all hover:bg-[#F5C26B]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C26B]"
             >
-              <span className="text-zinc-400 group-hover:text-[#FFD56A] transition-colors font-medium">
+              <span className="flex items-center gap-2 text-zinc-400 group-hover:text-[#FFD56A] transition-colors font-medium">
+                <Hash className="w-4 h-4" />
                 {tag}
               </span>
-              <span className="text-xs bg-[#F5C26B]/10 text-[#F5C26B] px-2 py-1 rounded-full group-hover:bg-[#F5C26B] group-hover:text-black transition-all">
+              <span className="text-[10px] bg-[#F5C26B]/10 text-[#F5C26B] px-2 py-1 rounded-full group-hover:bg-[#F5C26B] group-hover:text-black transition-all">
                 {count} posts
               </span>
             </Link>

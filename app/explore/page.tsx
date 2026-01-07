@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { db } from "../../firebase";
@@ -21,6 +21,20 @@ import Link from "next/link";
 import PostCard from "../components/PostCard";
 
 export default function ExplorePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-24">
+          <div className="w-8 h-8 border-2 border-[#F5C26B] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }
+    >
+      <ExploreContent />
+    </Suspense>
+  );
+}
+
+function ExploreContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const initialTag = searchParams.get("tag");
@@ -212,7 +226,6 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-[#F5C26B] px-8 py-24">
-      {/* Heading */}
       <div className="text-center mb-10">
         <h1 className="text-5xl font-extrabold tracking-wider drop-shadow-lg">
           Explore
@@ -222,7 +235,6 @@ export default function ExplorePage() {
         </p>
       </div>
 
-      {/* TABS */}
       <div className="flex justify-center gap-6 mb-12">
         <button 
             type="button"
@@ -240,7 +252,6 @@ export default function ExplorePage() {
         </button>
       </div>
 
-      {/* SEARCH */}
       <div className="max-w-xl mx-auto flex gap-3 mb-12">
         <input
           className="flex-1 bg-black/40 border border-[#F4BC4B] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#F4BC4B]"
@@ -267,7 +278,6 @@ export default function ExplorePage() {
         )}
       </div>
 
-      {/* CONTENT */}
       {loading ? (
           <div className="flex items-center justify-center py-24">
             <div className="w-8 h-8 border-2 border-[#F5C26B] border-t-transparent rounded-full animate-spin"></div>
@@ -275,18 +285,17 @@ export default function ExplorePage() {
       ) : (
           <>
             {viewMode === "users" ? (
-                /* USERS GRID */
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {filteredUsers.length === 0 && (
                     <p className="text-center opacity-50 col-span-full">No users found.</p>
                     )}
 
                     {filteredUsers.map((u) => {
-                    const isFollowing = followingList.includes(u.id);
-                    const followsYou = followersList.includes(u.id);
-                    const isMutual = isFollowing && followsYou;
+                      const isFollowing = followingList.includes(u.id);
+                      const followsYou = followersList.includes(u.id);
+                      const isMutual = isFollowing && followsYou;
 
-                    return (
+                      return (
                         <div
                         key={u.id}
                         className="
@@ -296,13 +305,11 @@ export default function ExplorePage() {
                             flex flex-col h-full relative overflow-hidden group
                         "
                         >
-                        {/* Header */}
                         <div className="flex items-start justify-between mb-3 relative z-10">
                             <div className="flex-1 min-w-0 pr-2">
                                 <p className="text-lg font-bold tracking-wide text-[#F5C26B] truncate">
                                     {u.username ?? "Unknown User"}
                                 </p>
-                                {/* Badges */}
                                 <div className="flex flex-wrap gap-2 mt-1.5">
                                     {isMutual && (
                                         <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 text-[10px] font-medium px-2 py-0.5 rounded-full border border-green-500/20">
@@ -319,12 +326,10 @@ export default function ExplorePage() {
                             <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_2px_rgba(0,255,0,0.6)] shrink-0 mt-1.5 animate-pulse" />
                         </div>
 
-                        {/* Bio */}
                         <p className="text-xs text-zinc-400 line-clamp-2 mb-6 grow leading-relaxed">
                             {u.bio || "No bio written yet..."}
                         </p>
 
-                        {/* Action Buttons Grid */}
                         <div className="grid grid-cols-2 gap-3 mt-auto relative z-10">
                             {isFollowing ? (
                             <button
@@ -383,7 +388,6 @@ export default function ExplorePage() {
                     })}
                 </div>
             ) : (
-                /* POSTS LIST */
                 <div className="max-w-2xl mx-auto space-y-6">
                     {posts.length === 0 && (
                         <p className="text-center opacity-50">No posts found with this tag.</p>
