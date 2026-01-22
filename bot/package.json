@@ -1,0 +1,21 @@
+{
+  "name": "emesis-bot",
+  "version": "1.0.0",
+  "description": "Bot for keeping EMESIS website active with posts, likes, and comments",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dashboard": "node dashboard.js",
+    "control": "node control.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.22.1",
+    "firebase": "^10.8.0",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

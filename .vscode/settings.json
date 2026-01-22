@@ -1,0 +1,29 @@
+{
+  "files.exclude": {
+    ".next": true,
+    "node_modules": true,
+    ".git": true
+  },
+  "search.exclude": {
+    ".next": true,
+    "node_modules": true
+  },
+  "css.lint.universalSelector": "ignore",
+  "css.lint.compatibleVendorPrefixes": "warning",
+  "css.lint.validProperties": [
+    "--animation-delay",
+    "--progress-width"
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
+}
