@@ -157,6 +157,13 @@ export default function LoginPage() {
             <p className="text-zinc-400 text-sm">Enter your credentials to access your realm</p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center font-medium animate-fadeIn flex items-center justify-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              {error}
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">

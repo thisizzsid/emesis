@@ -48,6 +48,12 @@
   }
 }
 
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 [data-theme="light"] {
     --background: #000000;
     --foreground: #FAFAFA;

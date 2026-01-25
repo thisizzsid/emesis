@@ -77,7 +77,7 @@ export default function FeedPage() {
   const createPost = async () => {
     if (!user || !db || !text.trim()) return;
     const hashtags = extractHashtags(text);
-    await addDoc(collection(db as Firestore, "posts"), {
+    const docRef = await addDoc(collection(db as Firestore, "posts"), {
       text,
       uid: user.uid,
       username: anonymous ? "Anonymous" : user.displayName,
@@ -87,10 +87,25 @@ export default function FeedPage() {
       location,
       createdAt: Timestamp.now()
     });
+    
+    // Optimistic update
+    const newPost = {
+      id: docRef.id,
+      text,
+      uid: user.uid,
+      username: anonymous ? "Anonymous" : user.displayName,
+      anonymous,
+      likes: [],
+      hashtags,
+      location,
+      createdAt: Timestamp.now()
+    };
+    setPosts([newPost, ...posts]);
+    
     setText("");
     setAnonymous(false);
     showToast("Confession released into the void ✨");
-    load();
+    // load(); // Removed to prevent full reload
   };
 
   const like = async (p: any) => {
