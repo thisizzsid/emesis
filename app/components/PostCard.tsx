@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "../../firebase";
-import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc, Firestore } from "firebase/firestore";
 import Comments from "./Comments";
 import { Heart, MessageCircle, Share2, Pencil, Trash2 } from "lucide-react";
 
@@ -35,8 +35,8 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
   };
 
   const like = async () => {
-    if (!user) return;
-    const ref = doc(db, "posts", post.id);
+    if (!user || !db) return;
+    const ref = doc(db as Firestore, "posts", post.id);
     const hasLiked = Array.isArray(post.likes) && post.likes.includes(user.uid);
     
     // Optimistic update locally would be nice, but for now just call API
@@ -48,16 +48,17 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
 
   const removePost = async () => {
     if (!confirm("Are you sure you want to delete this post?")) return;
+    if (!db) return;
     setLoading(true);
-    await deleteDoc(doc(db, "posts", post.id));
+    await deleteDoc(doc(db as Firestore, "posts", post.id));
     setLoading(false);
     onRefresh();
   };
 
   const saveEdit = async () => {
-    if (!editText.trim() || !user) return;
+    if (!editText.trim() || !user || !db) return;
     setLoading(true);
-    const ref = doc(db, "posts", post.id);
+    const ref = doc(db as Firestore, "posts", post.id);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
         setLoading(false);

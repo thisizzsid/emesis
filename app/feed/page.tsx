@@ -15,7 +15,8 @@ import {
   deleteDoc,
   arrayUnion,
   arrayRemove,
-  getDoc
+  getDoc,
+  Firestore
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { MapPin, Send, Ghost, Hash } from "lucide-react";
@@ -39,7 +40,7 @@ export default function FeedPage() {
   };
 
   const loadFollows = async (arr: any[]) => {
-    if (!user) return;
+    if (!user || !db) return;
     let map: any = {};
     for (const post of arr) {
       if (post.uid === user.uid) {
@@ -47,7 +48,7 @@ export default function FeedPage() {
         continue;
       }
       const qF = query(
-        collection(db, "follows"),
+        collection(db as Firestore, "follows"),
         where("follower", "==", user.uid),
         where("followed", "==", post.uid)
       );
@@ -58,8 +59,9 @@ export default function FeedPage() {
   };
 
   const load = async () => {
+    if (!db) return;
     const snap = await getDocs(
-      query(collection(db, "posts"), orderBy("createdAt", "desc"))
+      query(collection(db as Firestore, "posts"), orderBy("createdAt", "desc"))
     );
     const arr: any[] = [];
     snap.forEach((d: any) => {
@@ -73,9 +75,9 @@ export default function FeedPage() {
   };
 
   const createPost = async () => {
-    if (!user || !text.trim()) return;
+    if (!user || !db || !text.trim()) return;
     const hashtags = extractHashtags(text);
-    await addDoc(collection(db, "posts"), {
+    await addDoc(collection(db as Firestore, "posts"), {
       text,
       uid: user.uid,
       username: anonymous ? "Anonymous" : user.displayName,
@@ -96,8 +98,8 @@ export default function FeedPage() {
   };
 
   const followUser = async (uid: string) => {
-    if (!user || uid === user.uid) return;
-    await addDoc(collection(db, "follows"), {
+    if (!user || !db || uid === user.uid) return;
+    await addDoc(collection(db as Firestore, "follows"), {
       follower: user.uid,
       followed: uid,
     });
@@ -105,15 +107,15 @@ export default function FeedPage() {
   };
 
   const unfollowUser = async (uid: string) => {
-    if (!user) return;
+    if (!user || !db) return;
     const qF = query(
-      collection(db, "follows"),
+      collection(db as Firestore, "follows"),
       where("follower", "==", user.uid),
       where("followed", "==", uid)
     );
     const sF = await getDocs(qF);
     if (!sF.empty) {
-      await deleteDoc(doc(db, "follows", sF.docs[0].id));
+      await deleteDoc(doc(db as Firestore, "follows", sF.docs[0].id));
     }
     setFollowMap({ ...followMap, [uid]: false });
   };

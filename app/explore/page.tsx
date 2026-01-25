@@ -15,7 +15,8 @@ import {
   addDoc,
   Timestamp,
   where,
-  limit
+  limit,
+  Firestore
 } from "firebase/firestore";
 import Link from "next/link";
 import PostCard from "../components/PostCard";
@@ -51,8 +52,8 @@ function ExploreContent() {
   const uid = user?.uid;
 
   const notifyFollow = async (toUid: string) => {
-    if (!uid || toUid === uid) return;
-    await addDoc(collection(db, `users/${toUid}/notifications`), {
+    if (!uid || toUid === uid || !db) return;
+    await addDoc(collection(db as Firestore, `users/${toUid}/notifications`), {
       type: "follow",
       fromUid: uid,
       fromName: user?.displayName ?? "Unknown",
@@ -62,12 +63,12 @@ function ExploreContent() {
   };
 
   const loadUsers = async () => {
-    if (!uid) return;
+    if (!uid || !db) return;
     setLoading(true);
 
     // USERS
     const arr: any[] = [];
-    const usersSnap = await getDocs(query(collection(db, "users"), orderBy("username")));
+    const usersSnap = await getDocs(query(collection(db as Firestore, "users"), orderBy("username")));
     usersSnap.forEach((d) => {
       if (d.id !== uid) {
         arr.push({ id: d.id, ...d.data() });
@@ -84,12 +85,12 @@ function ExploreContent() {
     }
 
     // FOLLOWING
-    const followingRef = collection(db, `users/${uid}/following`);
+    const followingRef = collection(db as Firestore, `users/${uid}/following`);
     const followingSnap = await getDocs(followingRef);
     setFollowingList(followingSnap.docs.map((d) => d.id));
 
     // FOLLOWERS
-    const followersRef = collection(db, `users/${uid}/followers`);
+    const followersRef = collection(db as Firestore, `users/${uid}/followers`);
     const followersSnap = await getDocs(followersRef);
     setFollowersList(followersSnap.docs.map((d) => d.id));
     
@@ -97,7 +98,7 @@ function ExploreContent() {
   };
 
   const loadPosts = async () => {
-      if (!uid) return;
+      if (!uid || !db) return;
       setLoading(true);
       
       try {
@@ -118,7 +119,7 @@ function ExploreContent() {
             // Or better: try both? No, simple query first.
             
             q = query(
-                collection(db, "posts"), 
+                collection(db as Firestore, "posts"), 
                 where("hashtags", "array-contains", searchTerm),
                 orderBy("createdAt", "desc"),
                 limit(50)
@@ -126,7 +127,7 @@ function ExploreContent() {
         } else {
             // Just latest posts
             q = query(
-                collection(db, "posts"), 
+                collection(db as Firestore, "posts"), 
                 orderBy("createdAt", "desc"),
                 limit(50)
             );
@@ -141,7 +142,7 @@ function ExploreContent() {
         setPosts(arr);
 
         // Also load following list to update UI state for PostCard
-        const followingRef = collection(db, `users/${uid}/following`);
+        const followingRef = collection(db as Firestore, `users/${uid}/following`);
         const followingSnap = await getDocs(followingRef);
         setFollowingList(followingSnap.docs.map((d) => d.id));
 
@@ -199,9 +200,9 @@ function ExploreContent() {
 
 
   const follow = async (targetUid: string) => {
-    if (!uid) return;
-    await setDoc(doc(db, `users/${uid}/following/${targetUid}`), { ts: Date.now() });
-    await setDoc(doc(db, `users/${targetUid}/followers/${uid}`), { ts: Date.now() });
+    if (!uid || !db) return;
+    await setDoc(doc(db as Firestore, `users/${uid}/following/${targetUid}`), { ts: Date.now() });
+    await setDoc(doc(db as Firestore, `users/${targetUid}/followers/${uid}`), { ts: Date.now() });
     await notifyFollow(targetUid);
     
     // Update local state immediately
@@ -209,9 +210,9 @@ function ExploreContent() {
   };
 
   const unfollow = async (targetUid: string) => {
-    if (!uid) return;
-    await deleteDoc(doc(db, `users/${uid}/following/${targetUid}`));
-    await deleteDoc(doc(db, `users/${targetUid}/followers/${uid}`));
+    if (!uid || !db) return;
+    await deleteDoc(doc(db as Firestore, `users/${uid}/following/${targetUid}`));
+    await deleteDoc(doc(db as Firestore, `users/${targetUid}/followers/${uid}`));
     
     // Update local state immediately
     setFollowingList(prev => prev.filter(id => id !== targetUid));

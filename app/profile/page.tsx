@@ -11,6 +11,7 @@ import {
   getDocs,
   addDoc,
   deleteDoc,
+  Firestore,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -38,9 +39,9 @@ export default function ProfilePage() {
   }, [user]);
 
   const load = async () => {
-    if (!user || !profileUid) return;
+    if (!user || !profileUid || !db) return;
 
-    const ref = doc(db, "users", profileUid);
+    const ref = doc(db as Firestore, "users", profileUid);
     const snap = await getDoc(ref);
     if (snap.exists()) {
       setData(snap.data());
@@ -48,7 +49,7 @@ export default function ProfilePage() {
     }
 
     const fQ = query(
-      collection(db, "follows"),
+      collection(db as Firestore, "follows"),
       where("follower", "==", user.uid),
       where("followed", "==", profileUid)
     );
@@ -63,14 +64,14 @@ export default function ProfilePage() {
     }
 
     const followersQ = query(
-      collection(db, "follows"),
+      collection(db as Firestore, "follows"),
       where("followed", "==", profileUid)
     );
     const followersSnap = await getDocs(followersQ);
     setFollowersCount(followersSnap.size);
 
     const followingQ = query(
-      collection(db, "follows"),
+      collection(db as Firestore, "follows"),
       where("follower", "==", profileUid)
     );
     const followingSnap = await getDocs(followingQ);
@@ -78,10 +79,10 @@ export default function ProfilePage() {
   };
 
   const follow = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     // Check if already following to prevent duplicate
     const fQ = query(
-      collection(db, "follows"),
+      collection(db as Firestore, "follows"),
       where("follower", "==", user.uid),
       where("followed", "==", profileUid)
     );
@@ -95,7 +96,7 @@ export default function ProfilePage() {
     }
     
     // Not following, add document
-    const docRef = await addDoc(collection(db, "follows"), {
+    const docRef = await addDoc(collection(db as Firestore, "follows"), {
       follower: user.uid,
       followed: profileUid,
     });
@@ -107,10 +108,10 @@ export default function ProfilePage() {
   };
 
   const unfollow = async () => {
-    if (!followDocId) return;
+    if (!followDocId || !db) return;
     
     // Delete first
-    await deleteDoc(doc(db, "follows", followDocId));
+    await deleteDoc(doc(db as Firestore, "follows", followDocId));
     
     // Then update UI
     setIsFollowing(false);

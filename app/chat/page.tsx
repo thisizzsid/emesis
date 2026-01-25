@@ -5,6 +5,7 @@ import { db } from "../../firebase";
 import {
   collection,
   getDocs,
+  Firestore,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -17,20 +18,20 @@ export default function ChatListPage() {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     setLoading(true);
 
     try {
       // who YOU follow
-      const f1Snap = await getDocs(collection(db, `users/${user.uid}/following`));
+      const f1Snap = await getDocs(collection(db as Firestore, `users/${user.uid}/following`));
       setYouFollow(f1Snap.docs.map((d) => d.id));
 
       // who follows YOU
-      const f2Snap = await getDocs(collection(db, `users/${user.uid}/followers`));
+      const f2Snap = await getDocs(collection(db as Firestore, `users/${user.uid}/followers`));
       setFollowsYou(f2Snap.docs.map((d) => d.id));
 
       // load user list
-      const allSnap = await getDocs(collection(db, "users"));
+      const allSnap = await getDocs(collection(db as Firestore, "users"));
       const arr: any[] = [];
       allSnap.forEach((d) => {
         if (d.id !== user.uid) arr.push({ id: d.id, ...d.data() });

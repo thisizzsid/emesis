@@ -1,7 +1,8 @@
 import { db } from "../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, Firestore } from "firebase/firestore";
 
 export const updateUserProfile = async (uid: string, data: any) => {
-  const ref = doc(db, "users", uid);
+  if (!db) return;
+  const ref = doc(db as Firestore, "users", uid);
   await updateDoc(ref, data);
 };

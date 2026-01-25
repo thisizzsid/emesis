@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { db } from "../../firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, Firestore, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -106,8 +106,8 @@ export default function SignupPage() {
 
     try {
       await signupWithEmail(email, pass);
-      if (user?.uid) {
-        const ref = doc(db, "users", user.uid);
+      if (user?.uid && db) {
+        const ref = doc(db as Firestore, "users", user.uid);
         await setDoc(ref, { username }, { merge: true });
       }
     } catch (err: any) {

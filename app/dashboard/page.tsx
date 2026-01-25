@@ -9,6 +9,7 @@ import {
   where,
   getDocs,
   collectionGroup,
+  Firestore,
 } from "firebase/firestore";
 
 const delayClassMap: Record<string, string> = {
@@ -70,12 +71,12 @@ export default function DashboardPage() {
   });
 
   const load = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     setLoading(true);
 
     try {
       // USER POSTS
-      const postsQ = query(collection(db, "posts"), where("uid", "==", user.uid));
+      const postsQ = query(collection(db as Firestore, "posts"), where("uid", "==", user.uid));
       const postsSnap = await getDocs(postsQ);
 
       let totalLikes = 0;
@@ -88,7 +89,7 @@ export default function DashboardPage() {
       let commentsCount = 0;
       try {
         const commentsQ = query(
-          collectionGroup(db, "comments"),
+          collectionGroup(db as Firestore, "comments"),
           where("uid", "==", user.uid)
         );
         const commentsSnap = await getDocs(commentsQ);
@@ -127,7 +128,7 @@ export default function DashboardPage() {
       let viewsCount = 0;
       try {
         const viewsQ = query(
-          collection(db, "profileViews"),
+          collection(db as Firestore, "profileViews"),
           where("uid", "==", user.uid)
         );
         const viewsSnap = await getDocs(viewsQ);

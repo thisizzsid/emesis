@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs, Firestore } from "firebase/firestore";
 import Link from "next/link";
 import { Hash, TrendingUp } from "lucide-react";
 
@@ -12,9 +12,10 @@ export default function TrendingSidebar() {
 
   useEffect(() => {
     const fetchTrending = async () => {
+      if (!db) return;
       try {
         // Fetch last 50 posts to calculate "trending"
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
+        const q = query(collection(db as Firestore, "posts"), orderBy("createdAt", "desc"), limit(50));
         const snap = await getDocs(q);
         
         const tagCounts: { [key: string]: number } = {};

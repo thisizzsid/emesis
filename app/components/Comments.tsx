@@ -15,6 +15,7 @@ import {
   where,
   arrayUnion,
   arrayRemove,
+  Firestore,
 } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -37,8 +38,9 @@ export default function Comments({ postId }: { postId: string }) {
   const remainingReplies = Math.max(0, 3 - usedReplies);
 
   const load = async () => {
+    if (!db) return;
     const q = query(
-      collection(db, `posts/${postId}/comments`),
+      collection(db as Firestore, `posts/${postId}/comments`),
       orderBy("createdAt", "asc")
     );
     const snap = await getDocs(q);
@@ -56,8 +58,8 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   const submit = async () => {
-    if (!user || !text.trim()) return;
-    await addDoc(collection(db, `posts/${postId}/comments`), {
+    if (!user || !text.trim() || !db) return;
+    await addDoc(collection(db as Firestore, `posts/${postId}/comments`), {
       uid: user.uid,
       username: user.displayName || "User",
       text,
@@ -77,8 +79,8 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   const saveEdit = async () => {
-    if (!editId || !editText.trim()) return;
-    await updateDoc(doc(db, `posts/${postId}/comments/${editId}`), {
+    if (!editId || !editText.trim() || !db) return;
+    await updateDoc(doc(db as Firestore, `posts/${postId}/comments/${editId}`), {
       text: editText,
       editedAt: Timestamp.now(),
     });
@@ -88,13 +90,14 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   const remove = async (id: string) => {
-    await deleteDoc(doc(db, `posts/${postId}/comments/${id}`));
+    if (!db) return;
+    await deleteDoc(doc(db as Firestore, `posts/${postId}/comments/${id}`));
     await load();
   };
 
   const submitReply = async (parentId: string) => {
-    if (!user || !(replyTexts[parentId] || "").trim() || remainingReplies <= 0) return;
-    await addDoc(collection(db, `posts/${postId}/comments`), {
+    if (!user || !(replyTexts[parentId] || "").trim() || remainingReplies <= 0 || !db) return;
+    await addDoc(collection(db as Firestore, `posts/${postId}/comments`), {
       uid: user.uid,
       username: user.displayName || "User",
       text: replyTexts[parentId],
@@ -109,15 +112,16 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   const notifyMentions = async (content: string) => {
+    if (!db) return;
     const matches = content.match(/@([A-Za-z0-9_]+)/g) || [];
     const unique = Array.from(new Set(matches.map((m) => m.slice(1))));
     for (const uname of unique) {
-      const q = query(collection(db, "users"), where("username", "==", uname));
+      const q = query(collection(db as Firestore, "users"), where("username", "==", uname));
       const snap = await getDocs(q);
       if (!snap.empty) {
         const target = snap.docs[0].data() as any;
         const toUid = target.uid || snap.docs[0].id;
-        await addDoc(collection(db, `users/${toUid}/notifications`), {
+        await addDoc(collection(db as Firestore, `users/${toUid}/notifications`), {
           type: "mention",
           fromUid: user?.uid,
           message: `You were mentioned in a comment`,
@@ -130,8 +134,8 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   const vote = async (comment: any, dir: 1 | -1) => {
-    if (!user) return;
-    const ref = doc(db, `posts/${postId}/comments/${comment.id}`);
+    if (!user || !db) return;
+    const ref = doc(db as Firestore, `posts/${postId}/comments/${comment.id}`);
     const isUp = dir === 1;
     const hasUp = (comment.upvotes || []).includes(user.uid);
     const hasDown = (comment.downvotes || []).includes(user.uid);
@@ -366,8 +370,9 @@ export default function Comments({ postId }: { postId: string }) {
                 <button
                   type="button"
                   onClick={async () => {
+                    if (!db) return;
                     const reason = prompt("Report reason") || "inappropriate";
-                    await addDoc(collection(db, `posts/${postId}/comments/${c.id}/reports`), {
+                    await addDoc(collection(db as Firestore, `posts/${postId}/comments/${c.id}/reports`), {
                       uid: user?.uid,
                       reason,
                       createdAt: Timestamp.now(),

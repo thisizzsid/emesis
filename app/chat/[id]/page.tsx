@@ -13,6 +13,7 @@ import {
   where,
   updateDoc,
   doc,
+  Firestore,
 } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -100,18 +101,18 @@ export default function ChatRoom({ params }: { params: any }) {
 
   // Load chat partner profile
   const loadPartner = async () => {
-    if (!partnerUid) return;
-    const q = query(collection(db, "users"), where("uid", "==", partnerUid));
+    if (!partnerUid || !db) return;
+    const q = query(collection(db as Firestore, "users"), where("uid", "==", partnerUid));
     const snap = await getDocs(q);
     if (!snap.empty) setOtherUser(snap.docs[0].data());
   };
 
   const send = async () => {
-    if (!user || !text.trim() || !id) return;
+    if (!user || !text.trim() || !id || !db) return;
     setSending(true);
     const messageText = text; // Capture text for AI
     try {
-      await addDoc(collection(db, `chats/${id}/messages`), {
+      await addDoc(collection(db as Firestore, `chats/${id}/messages`), {
         uid: user.uid,
         text,
         createdAt: Timestamp.now(),
@@ -130,7 +131,7 @@ export default function ChatRoom({ params }: { params: any }) {
           });
           const data = await res.json();
           if (data.output) {
-            await addDoc(collection(db, `chats/${id}/messages`), {
+            await addDoc(collection(db as Firestore, `chats/${id}/messages`), {
               uid: "ai",
               text: data.output,
               createdAt: Timestamp.now(),
@@ -151,8 +152,8 @@ export default function ChatRoom({ params }: { params: any }) {
 
   // Add reaction to message
   const addReaction = async (messageId: string, emoji: string) => {
-    if (!user || !id) return;
-    const messageRef = doc(db, `chats/${id}/messages`, messageId);
+    if (!user || !id || !db) return;
+    const messageRef = doc(db as Firestore, `chats/${id}/messages`, messageId);
     const message = messages.find(m => m.id === messageId);
     
     if (message) {
@@ -191,10 +192,10 @@ export default function ChatRoom({ params }: { params: any }) {
 
   // Listen for messages
   useEffect(() => {
-    if (!id || !user) return;
+    if (!id || !user || !db) return;
     
     const q = query(
-      collection(db, `chats/${id}/messages`),
+      collection(db as Firestore, `chats/${id}/messages`),
       orderBy("createdAt", "asc")
     );
     const unsub = onSnapshot(q, (snap) => {
