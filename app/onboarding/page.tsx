@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { db } from "../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, Firestore } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -15,8 +15,8 @@ export default function OnboardingPage() {
   const [location, setLocation] = useState("");
 
   const save = async () => {
-    if (!user) return;
-    const ref = doc(db, "users", user.uid);
+    if (!user || !db) return;
+    const ref = doc(db as Firestore, "users", user.uid);
     await updateDoc(ref, {
       username,
       gender,

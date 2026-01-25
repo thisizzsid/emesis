@@ -2,7 +2,7 @@
 
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../../firebase";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, Firestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -17,8 +17,8 @@ export default function EditProfile() {
   const [gender, setGender] = useState("");
 
   const load = async () => {
-    if (!user) return;
-    const ref = doc(db, "users", user.uid);
+    if (!user || !db) return;
+    const ref = doc(db as Firestore, "users", user.uid);
     const snap = await getDoc(ref);
     if (snap.exists()) {
       const data: any = snap.data();
@@ -31,13 +31,13 @@ export default function EditProfile() {
   };
 
   const save = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     if (!username.trim()) {
       alert("Username is required");
       return;
     }
 
-    const ref = doc(db, "users", user.uid);
+    const ref = doc(db as Firestore, "users", user.uid);
     await updateDoc(ref, { username, age, bio, location, gender });
     router.push("/profile");
   };

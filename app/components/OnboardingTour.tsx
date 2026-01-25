@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, Firestore } from "firebase/firestore";
 import { db } from "../../firebase";
 import { X, ChevronRight, Home, PenSquare, MessageCircle, Bot, CheckCircle } from "lucide-react";
 
@@ -21,13 +21,13 @@ export default function OnboardingTour() {
   }, [user]);
 
   const completeTour = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     
     // Hide immediately for responsiveness
     setIsVisible(false);
 
     try {
-      const ref = doc(db, "users", user.uid);
+      const ref = doc(db as Firestore, "users", user.uid);
       await updateDoc(ref, {
         tourCompleted: true
       });

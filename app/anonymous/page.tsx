@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { db } from "../../firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, Firestore } from "firebase/firestore";
 
 function AnonymousPageContent() {
   const { user } = useAuth();
@@ -31,8 +31,9 @@ function AnonymousPageContent() {
 
   const sendAnon = async () => {
     if (!msg.trim()) return;
+    if (!db) return;
 
-    await addDoc(collection(db, `anonymous/${targetUid}/inbox`), {
+    await addDoc(collection(db as Firestore, `anonymous/${targetUid}/inbox`), {
       text: msg,
       createdAt: Timestamp.now(),
       hidden: true,

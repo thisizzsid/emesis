@@ -8,6 +8,7 @@ import {
   getDocs,
   orderBy,
   query,
+  Firestore,
 } from "firebase/firestore";
 
 export default function InboxPage() {
@@ -16,10 +17,10 @@ export default function InboxPage() {
   const [loaded, setLoaded] = useState(false);
 
   const load = async () => {
-    if (!user) return;
+    if (!user || !db) return;
 
     const q = query(
-      collection(db, `anonymous/${user.uid}/inbox`),
+      collection(db as Firestore, `anonymous/${user.uid}/inbox`),
       orderBy("createdAt", "desc")
     );
 

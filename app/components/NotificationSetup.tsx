@@ -9,7 +9,7 @@ import {
   isSupported,
 } from "firebase/messaging";
 import { db } from "@/firebase";
-import { doc, updateDoc, arrayUnion, getDoc, setDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, getDoc, setDoc, Firestore } from "firebase/firestore";
 
 export function useNotifications() {
   const [notificationEnabled, setNotificationEnabled] = useState(false);
@@ -20,7 +20,7 @@ export function useNotifications() {
     const setupNotifications = async () => {
       try {
         const user = auth.currentUser;
-        if (!user) {
+        if (!user || !db) {
           setLoading(false);
           return;
         }
@@ -30,7 +30,7 @@ export function useNotifications() {
           console.log("📱 Android FCM token received:", token);
 
           await setDoc(
-            doc(db, "users", user.uid),
+            doc(db as Firestore, "users", user.uid),
             {
               fcmTokens: arrayUnion(token),
               notificationsEnabled: true,
@@ -48,7 +48,7 @@ export function useNotifications() {
           return;
         }
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userDoc = await getDoc(doc(db as Firestore, "users", user.uid));
         const userData = userDoc.data();
 
         if (userData?.notificationsEnabled === false) {
@@ -68,7 +68,7 @@ export function useNotifications() {
           });
 
           if (token) {
-            await updateDoc(doc(db, "users", user.uid), {
+            await updateDoc(doc(db as Firestore, "users", user.uid), {
               fcmTokens: arrayUnion(token),
               notificationsEnabled: true,
             });

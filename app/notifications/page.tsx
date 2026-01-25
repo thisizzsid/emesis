@@ -12,6 +12,7 @@ import {
   updateDoc,
   setDoc,
   deleteDoc,
+  Firestore,
 } from "firebase/firestore";
 import Link from "next/link";
 
@@ -20,9 +21,9 @@ export default function NotificationsPage() {
   const [items, setItems] = useState<any[]>([]);
 
   const load = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     const q = query(
-      collection(db, `users/${user.uid}/notifications`),
+      collection(db as Firestore, `users/${user.uid}/notifications`),
       orderBy("createdAt", "desc")
     );
     const snap = await getDocs(q);
@@ -30,17 +31,17 @@ export default function NotificationsPage() {
   };
 
   const markRead = async (id: string) => {
-    if (!user) return;
-    await updateDoc(doc(db, `users/${user.uid}/notifications/${id}`), {
+    if (!user || !db) return;
+    await updateDoc(doc(db as Firestore, `users/${user.uid}/notifications/${id}`), {
       read: true,
     });
     load();
   };
 
   const followBack = async (fromUid: string) => {
-    if (!user) return;
-    await setDoc(doc(db, `users/${user.uid}/following/${fromUid}`), { ts: Date.now() });
-    await setDoc(doc(db, `users/${fromUid}/followers/${user.uid}`), { ts: Date.now() });
+    if (!user || !db) return;
+    await setDoc(doc(db as Firestore, `users/${user.uid}/following/${fromUid}`), { ts: Date.now() });
+    await setDoc(doc(db as Firestore, `users/${fromUid}/followers/${user.uid}`), { ts: Date.now() });
     load();
   };
 

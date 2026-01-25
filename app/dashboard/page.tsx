@@ -102,7 +102,7 @@ export default function DashboardPage() {
       let followersCount = 0;
       try {
         const followersQ = query(
-          collection(db, "follows"),
+          collection(db as Firestore, "follows"),
           where("followed", "==", user.uid)
         );
         const followersSnap = await getDocs(followersQ);
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       let followingCount = 0;
       try {
         const followingQ = query(
-          collection(db, "follows"),
+          collection(db as Firestore, "follows"),
           where("follower", "==", user.uid)
         );
         const followingSnap = await getDocs(followingQ);
