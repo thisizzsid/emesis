@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
   signOut,
   signInWithPhoneNumber,
+  Auth,
 } from "firebase/auth";
 import { auth } from "../../firebase";
 import { db } from "../../firebase";
@@ -86,9 +87,9 @@ export const AuthContextProvider = ({ children }: any) => {
 
   /** Phone Login Setup **/
   const setupRecaptcha = () => {
-    if (!auth) return null;
+    if (typeof window === "undefined" || !auth) return null;
     if (!recaptcha) {
-      recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
+      recaptcha = new RecaptchaVerifier(auth as Auth, "recaptcha-container", {
         size: "invisible",
       });
     }
