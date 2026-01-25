@@ -118,10 +118,12 @@ export default function SignupPage() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError("");
     try {
       await googleLogin();
-    } catch (e) {
+    } catch (e: any) {
       setLoading(false);
+      setError(e.message || "Google signup failed");
     }
   };
 

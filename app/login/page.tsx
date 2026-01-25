@@ -15,6 +15,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -90,21 +91,31 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
         await loginWithEmail(email, password);
-    } catch (e) {
+    } catch (e: any) {
         console.error(e);
         setLoading(false);
+        if (e.code === 'auth/unauthorized-domain') {
+          setError("Domain not authorized. Add to Firebase Console.");
+        } else if (e.code === 'auth/too-many-requests') {
+          setError("Too many attempts. Please wait.");
+        } else {
+          setError(e.message || "Login failed");
+        }
     }
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError("");
     try {
         await googleLogin();
-    } catch (e) {
+    } catch (e: any) {
         console.error(e);
         setLoading(false);
+        setError(e.message || "Google login failed");
     }
   };
 
