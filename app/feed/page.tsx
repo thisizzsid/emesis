@@ -18,7 +18,7 @@ import {
   getDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { MapPin, Send, Ghost, Hash } from "lucide-react";
 import Link from "next/link";
 import TrendingSidebar from "../components/TrendingSidebar";
 import Toast from "../components/Toast";
@@ -170,57 +170,96 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] px-6 py-16">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-6 py-16">
       <div className="max-w-6xl mx-auto flex gap-8">
         {/* LEFT COLUMN - FEED */}
         <div className="flex-1 space-y-10">
           {/* WELCOME SECTION */}
           <div className="text-center mb-12 animate-fadeIn">
-            <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent drop-shadow-lg">
+            <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent drop-shadow-lg">
               Welcome back, {user?.displayName?.split(" ")[0]}!
             </h1>
 
             <p className="mt-6 text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed font-light tracking-tight">
               emesis is a quiet place to release Confessions thoughts you don’t usually say out loud —
-              <span className="text-[#F5C26B] font-medium"> no judgement, just honesty.</span>
+              <span className="text-[var(--gold-primary)] font-medium"> no judgement, just honesty.</span>
             </p>
           </div>
 
           {/* CREATE POST */}
-          <div className="glass rounded-3xl p-6 shadow-2xl border border-[#F5C26B]/20 animate-fadeIn">
-            <label htmlFor="post-textarea" className="sr-only">Post</label>
-            <textarea
-              id="post-textarea"
-              className="w-full bg-black/40 border-[1.5px] border-[#F5C26B]/20 rounded-2xl p-5 text-[#F4BC4B] min-h-35 focus:border-[#F5C26B] transition-all duration-300 placeholder:text-[#F5C26B]/30"
-              placeholder="Write your confession/thoughts/whisper..."
-              value={text}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
-            />
-            <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
-              <div className="flex items-center gap-4 flex-wrap">
-                <label className="text-xs flex items-center gap-2.5 font-medium cursor-pointer group">
-                  <input type="checkbox" checked={anonymous} onChange={() => setAnonymous(!anonymous)} className="w-4 h-4 cursor-pointer accent-[#F5C26B]" />
-                  <span className="group-hover:text-[#FFD56A] transition-colors">Anonymous Post</span>
-                </label>
-                <div className="flex items-center gap-2 text-xs text-[#F5C26B]/70">
-                  <Image src="/location.png" width={14} height={14} alt="location" />
-                  <span className="truncate max-w-37.5" title={location}>
-                    {detectingLocation ? "Detecting..." : location}
-                  </span>
-                </div>
-                {extractHashtags(text).length > 0 && (
-                  <div className="text-xs text-[#FFD56A] flex items-center gap-1.5">
-                    <span className="font-bold">#</span>
-                    <span>{extractHashtags(text).length} hashtag{extractHashtags(text).length !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
+          <div className="relative group">
+            {/* Subtle Monochrome Glow */}
+            <div className="absolute -inset-0.5 bg-[var(--gold-primary)] rounded-3xl blur-sm opacity-5 group-hover:opacity-10 transition duration-1000"></div>
+            
+            <div className="relative bg-[#0A0A0A] rounded-3xl border border-zinc-800 overflow-hidden">
+              
+              {/* Minimal Header */}
+              <div className="px-6 py-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
+                 <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Transmission</span>
+                 <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                 </div>
               </div>
-              <button
-                onClick={createPost}
-                className="modern-btn px-6 py-2.5 bg-linear-to-r from-[#F5C26B] to-[#F4BC4B] text-black rounded-xl font-bold hover:shadow-lg hover:shadow-[#F5C26B]/30 hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                Share
-              </button>
+
+              {/* Text Area */}
+              <div className="p-2">
+                <label htmlFor="post-textarea" className="sr-only">Post</label>
+                <textarea
+                  id="post-textarea"
+                  className="w-full bg-transparent text-lg text-zinc-200 placeholder:text-zinc-600 p-4 min-h-40 focus:outline-none resize-none font-medium leading-relaxed tracking-wide selection:bg-[var(--gold-primary)] selection:text-black"
+                  placeholder="What's on your mind?..."
+                  value={text}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
+                />
+              </div>
+
+              {/* Toolbar */}
+              <div className="px-4 py-3 bg-zinc-900/10 border-t border-zinc-800/50 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                
+                {/* Tools */}
+                <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-1">
+                  
+                  {/* Anonymous Toggle */}
+                  <button
+                    onClick={() => setAnonymous(!anonymous)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 border ${
+                      anonymous 
+                        ? "bg-zinc-800 text-[var(--gold-primary)] border-zinc-700" 
+                        : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-900"
+                    }`}
+                  >
+                    <Ghost className="w-3.5 h-3.5" />
+                    {anonymous ? "Anonymous" : "Public"}
+                  </button>
+
+                  {/* Location Badge */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-zinc-500 text-xs font-medium whitespace-nowrap hover:bg-zinc-900 transition-colors">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span className="truncate max-w-[120px]" title={location}>
+                      {detectingLocation ? "Locating..." : location}
+                    </span>
+                  </div>
+
+                  {/* Hashtag Counter */}
+                  {extractHashtags(text).length > 0 && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 text-zinc-400 text-xs font-medium">
+                      <Hash className="w-3 h-3" />
+                      <span>{extractHashtags(text).length}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  onClick={createPost}
+                  disabled={!text.trim()}
+                  className="group flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--gold-primary)] text-black font-bold tracking-tight transition-all duration-300 hover:bg-[var(--gold-light)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span>Post</span>
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -255,9 +294,9 @@ export default function FeedPage() {
 
       {/* === MODAL === */}
       {showUpcoming && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
-          <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-[#F4BC4B] shadow-2xl border border-[#F5C26B]/20 animate-fadeIn">
-            <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-[#F5C26B] to-[#FFD56A] bg-clip-text mb-6 text-center tracking-tight">
+        <div className="fixed inset-0 bg-[var(--dark-base)]/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
+          <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-[var(--gold-secondary)] shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.2)] animate-fadeIn">
+            <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] bg-clip-text mb-6 text-center tracking-tight">
               Upcoming Features
             </h2>
 
@@ -276,7 +315,7 @@ export default function FeedPage() {
 
             <button
               onClick={() => setShowUpcoming(false)}
-              className="modern-btn mt-8 w-full py-3 rounded-xl bg-linear-to-r from-[#F5C26B] to-[#F4BC4B] text-black font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-[#F5C26B]/30"
+              className="modern-btn mt-8 w-full py-3 rounded-xl bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-secondary)] text-black font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.3)]"
             >
               Close
             </button>

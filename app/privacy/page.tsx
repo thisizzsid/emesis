@@ -1,9 +1,9 @@
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-black text-[#F5C26B] p-10">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] p-10">
       <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>
 
-      <p className="text-lg text-[#F4BC4B] max-w-3xl leading-relaxed">
+      <p className="text-lg text-[var(--gold-light)] max-w-3xl leading-relaxed">
         EMESIS respects your privacy. Your identity, data, and confessions
         remain anonymous unless you choose otherwise. We never sell or share
         personal data with third parties.

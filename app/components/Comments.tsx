@@ -190,7 +190,7 @@ export default function Comments({ postId }: { postId: string }) {
           if (p.startsWith("`") && p.endsWith("`")) return <code key={i} className="bg-black/40 px-1 rounded">{p.slice(1, -1)}</code>;
           if (p.startsWith("**") && p.endsWith("**")) return <strong key={i}>{p.slice(2, -2)}</strong>;
           if ((p.startsWith("*") && p.endsWith("*")) || (p.startsWith("_") && p.endsWith("_"))) return <em key={i}>{p.slice(1, -1)}</em>;
-          if (p.startsWith("http")) return <Link key={i} href={p} className="underline text-[#F5C26B]" target="_blank">{p}</Link>;
+          if (p.startsWith("http")) return <Link key={i} href={p} className="underline text-[var(--gold-primary)]" target="_blank">{p}</Link>;
           return <span key={i}>{p}</span>;
         })}
       </>
@@ -202,14 +202,14 @@ export default function Comments({ postId }: { postId: string }) {
   }, []);
 
   return (
-    <div className="mt-4 border-t border-[#F5C26B]/10 pt-3 space-y-4">
+    <div className="mt-4 border-t border-[rgba(var(--gold-primary-rgb),0.1)] pt-3 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-zinc-500">
           <span>Sort</span>
           <select
             value={sortMode}
             onChange={(e) => setSortMode(e.target.value as any)}
-            className="bg-zinc-900 border border-[#F5C26B]/20 rounded px-2 py-1 text-xs"
+            className="bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded px-2 py-1 text-xs"
             aria-label="Comment sort"
           >
             <option value="top">Top</option>
@@ -219,12 +219,12 @@ export default function Comments({ postId }: { postId: string }) {
           </select>
         </div>
         <div className="text-xs text-zinc-600">
-          Reply credits: <span className="text-[#F5C26B] font-semibold">{remainingReplies}</span>/3
+          Reply credits: <span className="text-[var(--gold-primary)] font-semibold">{remainingReplies}</span>/3
         </div>
       </div>
       <div className="flex gap-2">
         <input
-          className="flex-1 bg-black/50 border border-[#F5C26B]/20 rounded-lg px-3 py-2 text-sm"
+          className="flex-1 bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg px-3 py-2 text-sm"
           placeholder="Add a comment (markdown supported)"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -233,7 +233,7 @@ export default function Comments({ postId }: { postId: string }) {
         <button
           onClick={submit}
           type="button"
-          className="bg-[#F5C26B] text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#F4BC4B] active:scale-95 transition-all"
+          className="bg-[var(--gold-primary)] text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-[var(--gold-secondary)] active:scale-95 transition-all"
           aria-label="Post comment"
         >
           Send
@@ -262,14 +262,14 @@ export default function Comments({ postId }: { postId: string }) {
             ((Date.now() - ((c.createdAt?.seconds || 0) * 1000)) < 10 * 60 * 1000);
           const isExpanded = expanded[c.id] ?? true;
           return (
-            <div key={c.id} className="rounded-2xl border border-[#F5C26B]/15 bg-black/40 p-3 md:p-4 space-y-2">
+            <div key={c.id} className="rounded-2xl border border-[rgba(var(--gold-primary-rgb),0.15)] bg-black/40 p-3 md:p-4 space-y-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#F5C26B]/30 to-[#FFD56A]/20 flex items-center justify-center text-black font-bold shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-[rgba(var(--gold-primary-rgb),0.3)] to-[rgba(var(--gold-light-rgb),0.2)] flex items-center justify-center text-black font-bold shrink-0">
                     {(c.username || "U")?.[0]?.toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs text-[#F5C26B] font-semibold truncate">{c.username || "User"}</div>
+                    <div className="text-xs text-[var(--gold-primary)] font-semibold truncate">{c.username || "User"}</div>
                     <div className="text-[10px] text-zinc-600">{timeAgo(c.createdAt)}</div>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export default function Comments({ postId }: { postId: string }) {
                   <button
                     type="button"
                     onClick={() => vote(c, 1)}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-[#F5C26B]/20 text-[#F5C26B] text-xs hover:bg-[#F5C26B]/10"
+                    className="px-2 py-1 rounded-lg bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-primary)] text-xs hover:bg-[rgba(var(--gold-primary-rgb),0.1)]"
                     aria-label="Upvote"
                   >
                     ▲
@@ -286,7 +286,7 @@ export default function Comments({ postId }: { postId: string }) {
                   <button
                     type="button"
                     onClick={() => vote(c, -1)}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-[#F5C26B]/20 text-[#F5C26B] text-xs hover:bg-[#F5C26B]/10"
+                    className="px-2 py-1 rounded-lg bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-primary)] text-xs hover:bg-[rgba(var(--gold-primary-rgb),0.1)]"
                     aria-label="Downvote"
                   >
                     ▼
@@ -296,7 +296,7 @@ export default function Comments({ postId }: { postId: string }) {
               {editId === c.id ? (
                 <div className="space-y-2">
                   <textarea
-                    className="w-full bg-black/50 border border-[#F5C26B]/20 rounded-lg px-3 py-2 text-sm"
+                    className="w-full bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg px-3 py-2 text-sm"
                     placeholder="Edit comment"
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
@@ -306,7 +306,7 @@ export default function Comments({ postId }: { postId: string }) {
                     <button
                       onClick={saveEdit}
                       type="button"
-                      className="bg-[#F5C26B] text-black px-3 py-1 rounded-lg font-bold"
+                      className="bg-[var(--gold-primary)] text-black px-3 py-1 rounded-lg font-bold"
                     >
                       Save
                     </button>
@@ -320,7 +320,7 @@ export default function Comments({ postId }: { postId: string }) {
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-[#F5C26B] leading-relaxed whitespace-pre-wrap">
+                <div className="text-sm text-[var(--gold-primary)] leading-relaxed whitespace-pre-wrap">
                   {renderMD(c.text || "")}
                 </div>
               )}
@@ -329,7 +329,7 @@ export default function Comments({ postId }: { postId: string }) {
                   <button
                     type="button"
                     onClick={() => setReplyTexts((r) => ({ ...r, [c.id]: r[c.id] ?? "" }))}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-[#F5C26B]/20 text-[#F5C26B] hover:bg-[#F5C26B]/10"
+                    className="px-2 py-1 rounded-lg bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.1)]"
                     aria-label="Reply"
                   >
                     Reply
@@ -338,7 +338,7 @@ export default function Comments({ postId }: { postId: string }) {
                 <button
                   type="button"
                   onClick={() => setExpanded((e) => ({ ...e, [c.id]: !isExpanded }))}
-                  className="px-2 py-1 rounded-lg bg-black/50 border border-[#F5C26B]/20 text-zinc-400 hover:bg-[#F5C26B]/10"
+                  className="px-2 py-1 rounded-lg bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] text-zinc-400 hover:bg-[rgba(var(--gold-primary-rgb),0.1)]"
                   aria-label="Toggle thread"
                 >
                   {isExpanded ? "Collapse" : "Expand"}
@@ -347,7 +347,7 @@ export default function Comments({ postId }: { postId: string }) {
                   <button
                     type="button"
                     onClick={() => beginEdit(c)}
-                    className="text-[#F5C26B]"
+                    className="text-[var(--gold-primary)]"
                     aria-label="Edit"
                   >
                     Edit
@@ -383,7 +383,7 @@ export default function Comments({ postId }: { postId: string }) {
               {replyTexts[c.id] !== undefined && remainingReplies > 0 && (
                 <div className="mt-2 flex gap-2">
                   <input
-                    className="flex-1 bg-black/50 border border-[#F5C26B]/20 rounded-lg px-3 py-2 text-sm"
+                    className="flex-1 bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg px-3 py-2 text-sm"
                     placeholder="Write a reply"
                     value={replyTexts[c.id]}
                     onChange={(e) =>
@@ -394,7 +394,7 @@ export default function Comments({ postId }: { postId: string }) {
                   <button
                     type="button"
                     onClick={() => submitReply(c.id)}
-                    className="bg-[#F5C26B] text-black px-3 py-2 rounded-lg text-xs font-bold hover:bg-[#F4BC4B]"
+                    className="bg-[var(--gold-primary)] text-black px-3 py-2 rounded-lg text-xs font-bold hover:bg-[var(--gold-secondary)]"
                     aria-label="Submit reply"
                   >
                     Send
@@ -402,13 +402,13 @@ export default function Comments({ postId }: { postId: string }) {
                 </div>
               )}
               {isExpanded && children.length > 0 && (
-                <div className="mt-2 pl-4 border-l-2 border-[#F5C26B]/10 space-y-2">
+                <div className="mt-2 pl-4 border-l-2 border-[rgba(var(--gold-primary-rgb),0.1)] space-y-2">
                   {children.slice(0, page * pageSize).map((child) => renderItem(child, depth + 1))}
                   {children.length > page * pageSize && (
                     <button
                       type="button"
                       onClick={() => setPage((p) => p + 1)}
-                      className="text-xs text-zinc-500 hover:text-[#F5C26B]"
+                      className="text-xs text-zinc-500 hover:text-[var(--gold-primary)]"
                       aria-label="Load more replies"
                     >
                       Load more
@@ -427,7 +427,7 @@ export default function Comments({ postId }: { postId: string }) {
                 <button
                   type="button"
                   onClick={() => setPage((p) => p + 1)}
-                  className="text-xs text-zinc-500 hover:text-[#F5C26B]"
+                  className="text-xs text-zinc-500 hover:text-[var(--gold-primary)]"
                   aria-label="Load more comments"
                 >
                   Load more comments

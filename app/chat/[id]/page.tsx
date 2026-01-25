@@ -90,7 +90,13 @@ export default function ChatRoom({ params }: { params: any }) {
   }, [params]);
 
   const partnerUid =
-    user && id ? id.replace(user.uid, "").replace("_", "") : null;
+    user && id
+      ? id.startsWith(user.uid + "_")
+        ? id.substring(user.uid.length + 1)
+        : id.endsWith("_" + user.uid)
+        ? id.substring(0, id.length - user.uid.length - 1)
+        : null
+      : null;
 
   // Load chat partner profile
   const loadPartner = async () => {
@@ -103,6 +109,7 @@ export default function ChatRoom({ params }: { params: any }) {
   const send = async () => {
     if (!user || !text.trim() || !id) return;
     setSending(true);
+    const messageText = text; // Capture text for AI
     try {
       await addDoc(collection(db, `chats/${id}/messages`), {
         uid: user.uid,
@@ -111,6 +118,32 @@ export default function ChatRoom({ params }: { params: any }) {
         reactions: [],
       });
       setText("");
+
+      // AI Response Logic
+      if (partnerUid === "ai") {
+        setIsTyping(true);
+        try {
+          const res = await fetch("/api/gemini", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: messageText, mode: "chat" }),
+          });
+          const data = await res.json();
+          if (data.output) {
+            await addDoc(collection(db, `chats/${id}/messages`), {
+              uid: "ai",
+              text: data.output,
+              createdAt: Timestamp.now(),
+              reactions: [],
+            });
+          }
+        } catch (err) {
+          console.error("AI Chat Error:", err);
+        } finally {
+          setIsTyping(false);
+        }
+      }
+
     } finally {
       setSending(false);
     }
@@ -192,7 +225,7 @@ export default function ChatRoom({ params }: { params: any }) {
 
   if (!user)
     return (
-      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] flex items-center justify-center">
+      <div className="h-screen bg-linear-to-br from-(--dark-base) via-(--dark-base) to-(--dark-base) text-(--gold-primary) flex items-center justify-center">
         <div className="glass rounded-3xl p-12 animate-bounceIn">
           <p className="text-2xl font-bold">Login Required</p>
         </div>
@@ -200,12 +233,12 @@ export default function ChatRoom({ params }: { params: any }) {
     );
 
   return (
-    <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white overflow-hidden">
+    <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-(--dark-base) via-(--dark-base) to-(--dark-base) text-white overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-20 right-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
-      <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
+      <div className="absolute top-20 right-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.1)] rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-20 left-20 w-96 h-96 bg-(--neon-blue)/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
 
-      <div className="glass border-b border-[#F5C26B]/20 backdrop-blur-3xl px-4 md:px-6 py-2 md:py-2.5 flex items-center gap-3 md:gap-5 shadow-2xl relative z-10 shrink-0">
+      <div className="glass border-b border-[rgba(var(--gold-primary-rgb),0.2)] backdrop-blur-3xl px-4 md:px-6 py-2 md:py-2.5 flex items-center gap-3 md:gap-5 shadow-2xl relative z-10 shrink-0">
         <button
           type="button"
           onClick={() => router.push("/chat")}
@@ -228,14 +261,14 @@ export default function ChatRoom({ params }: { params: any }) {
         {/* User Avatar & Info */}
         <div className="flex items-center gap-4 flex-1">
           <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-lg shadow-[#F5C26B]/50 font-bold text-black text-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-(--gold-primary) to-(--gold-light) flex items-center justify-center shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.5)] font-bold text-black text-lg">
               {otherUser?.username?.[0]?.toUpperCase() || "U"}
             </div>
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black animate-pulse"></div>
           </div>
           
           <div>
-            <p className="font-bold text-xl text-[#F5C26B]">
+            <p className="font-bold text-xl text-(--gold-primary)">
               {otherUser?.username || "User"}
             </p>
             <p className="text-xs text-zinc-600 flex items-center gap-2">
@@ -245,39 +278,22 @@ export default function ChatRoom({ params }: { params: any }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-            className="alert-btn relative group"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
-          </button>
-          <button
-            type="button"
-            onClick={logout}
-            className="alert-btn relative group"
-            aria-label="Logout"
-          >
-            <LogOut className="w-4.5 h-4.5" />
-          </button>
-        </div>
+
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-[280px_1fr]">
-        <aside className={`hidden md:block border-r border-[#F5C26B]/10 backdrop-blur-2xl transition-all duration-300 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"}`}>
+        <aside className={`hidden md:block border-r border-[rgba(var(--gold-primary-rgb),0.1)] backdrop-blur-2xl transition-all duration-300 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"}`}>
           <div className="h-full p-4 space-y-4">
             <div className="flex items-center gap-2 text-xs text-zinc-500">
-              <span className="w-2 h-2 rounded-full bg-[#F5C26B]"></span>
+              <span className="w-2 h-2 rounded-full bg-(--gold-primary)"></span>
               Participants
             </div>
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-[#F5C26B] to-[#FFD56A] text-black font-bold flex items-center justify-center shrink-0">
+              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black font-bold flex items-center justify-center shrink-0">
                 {user?.displayName?.[0]?.toUpperCase() || "Y"}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-[#F5C26B] font-semibold truncate">
+                <div className="text-sm text-(--gold-primary) font-semibold truncate">
                   {user?.displayName || "You"}
                 </div>
                 <div className="text-xs text-zinc-600 flex items-center gap-1">
@@ -287,11 +303,15 @@ export default function ChatRoom({ params }: { params: any }) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-[#F5C26B] to-[#FFD56A] text-black font-bold flex items-center justify-center shrink-0">
+              <div className={`relative w-12 h-12 rounded-full font-bold flex items-center justify-center shrink-0 ${
+                otherUser?.isBot
+                  ? "bg-linear-to-br from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/50"
+                  : "bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black"
+              }`}>
                 {otherUser?.username?.[0]?.toUpperCase() || "U"}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-[#F5C26B] font-semibold truncate">
+                <div className="text-sm text-(--gold-primary) font-semibold truncate">
                   {otherUser?.username || "User"}
                 </div>
                 <div className="text-xs text-zinc-600 flex items-center gap-1">
@@ -314,7 +334,7 @@ export default function ChatRoom({ params }: { params: any }) {
             <div key={m.id} className="animate-fadeIn">
               {showTime && (
                 <div className="flex justify-center mb-4">
-                  <span className="text-xs text-zinc-600 bg-black/40 px-4 py-2 rounded-full border border-[#F5C26B]/20">
+                  <span className="text-xs text-zinc-600 bg-(--dark-base)/40 px-4 py-2 rounded-full border border-[rgba(var(--gold-primary-rgb),0.2)]">
                     {m.createdAt?.seconds
                       ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -331,15 +351,15 @@ export default function ChatRoom({ params }: { params: any }) {
                     className={`
                       relative px-5 py-3.5 rounded-2xl shadow-xl transition-all duration-300
                       ${mine 
-                        ? "bg-linear-to-br from-[#F5C26B] to-[#FFD56A] text-black rounded-br-md hover:shadow-2xl hover:shadow-[#F5C26B]/50" 
-                        : "glass border border-[#F5C26B]/20 text-[#F5C26B] rounded-bl-md hover:border-[#F5C26B]/40"}
+                        ? "bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black rounded-br-md hover:shadow-2xl hover:shadow-[rgba(var(--gold-primary-rgb),0.5)]" 
+                        : "glass border border-[rgba(var(--gold-primary-rgb),0.2)] text-(--gold-primary) rounded-bl-md hover:border-[rgba(var(--gold-primary-rgb),0.4)]"}
                     `}
                   >
                     <div className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap">
                       {m.text}
                     </div>
 
-                    <div className={`text-[10px] mt-2 text-right ${mine ? "text-black/60" : "text-zinc-600"} font-semibold`}>
+                    <div className={`text-[10px] mt-2 text-right ${mine ? "text-(--dark-base)/60" : "text-zinc-600"} font-semibold`}>
                       {m.createdAt?.seconds
                         ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -355,10 +375,10 @@ export default function ChatRoom({ params }: { params: any }) {
                           return (
                             <div
                               key={emoji}
-                              className="bg-black/80 border border-[#F5C26B]/30 rounded-full px-2 py-0.5 text-xs flex items-center gap-1 shadow-lg"
+                              className="bg-(--dark-base)/80 border border-[rgba(var(--gold-primary-rgb),0.3)] rounded-full px-2 py-0.5 text-xs flex items-center gap-1 shadow-lg"
                             >
                               <span>{emoji}</span>
-                              <span className="text-[#F5C26B] font-bold">{count}</span>
+                              <span className="text-(--gold-primary) font-bold">{count}</span>
                             </div>
                           );
                         })}
@@ -370,14 +390,14 @@ export default function ChatRoom({ params }: { params: any }) {
                     <button
                       type="button"
                       onClick={() => setShowReactions(showReactions === m.id ? null : m.id)}
-                      className="text-xs text-zinc-600 hover:text-[#F5C26B] transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1"
+                      className="text-xs text-zinc-600 hover:text-(--gold-primary) transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1"
                     >
                       <span>😊</span>
                       <span>React</span>
                     </button>
 
                     {showReactions === m.id && (
-                      <div className="absolute left-0 mt-2 glass rounded-2xl p-3 shadow-2xl border border-[#F5C26B]/30 flex gap-2 animate-bounceIn z-50">
+                      <div className="absolute left-0 mt-2 glass rounded-2xl p-3 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.3)] flex gap-2 animate-bounceIn z-50">
                         {["❤️", "👍", "😂", "😮", "😢", "🔥", "✨", "🎉"].map((emoji) => (
                           <button
                             key={emoji}
@@ -399,7 +419,7 @@ export default function ChatRoom({ params }: { params: any }) {
         
         {isTyping && (
           <div className="flex justify-start animate-fadeIn">
-            <div className="glass rounded-2xl px-6 py-4 border border-[#F5C26B]/20">
+            <div className="glass rounded-2xl px-6 py-4 border border-[rgba(var(--gold-primary-rgb),0.2)]">
               <div className="typing-indicator">
                 <span></span>
                 <span></span>
@@ -413,23 +433,21 @@ export default function ChatRoom({ params }: { params: any }) {
         </div>
       </div>
 
-      <div className="glass border-t border-[#F5C26B]/20 backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-20 shrink-0">
+      <div className="glass border-t border-[rgba(var(--gold-primary-rgb),0.2)] backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-20 shrink-0">
         <button className="alert-btn relative group shrink-0" aria-label="Add emoji" type="button">
           <span className="text-lg md:text-xl group-hover:scale-125 transition-transform">😊</span>
         </button>
 
         <div className="flex-1 relative min-w-0">
           <input
-            className="w-full bg-black/60 px-3 md:px-6 py-2 md:py-3 rounded-2xl text-[#F5C26B] border-2 border-[#F5C26B]/30 focus:border-[#F5C26B] outline-none placeholder-zinc-600 font-medium transition-all duration-300 focus:shadow-lg focus:shadow-[#F5C26B]/20 text-sm md:text-base"
+            className="w-full bg-black/60 px-3 md:px-6 py-2 md:py-3 rounded-2xl text-(--gold-primary) border-2 border-[rgba(var(--gold-primary-rgb),0.3)] focus:border-(--gold-primary) outline-none placeholder-zinc-600 font-medium transition-all duration-300 focus:shadow-lg focus:shadow-[rgba(var(--gold-primary-rgb),0.2)] text-sm md:text-base"
             placeholder="Message..."
             value={text}
             onKeyDown={(e) => {
               if (e.key === "Enter") send();
-              handleTyping();
             }}
             onChange={(e) => {
               setText(e.target.value);
-              handleTyping();
             }}
           />
           <div className="absolute right-3 bottom-1.5 md:bottom-2 text-[10px] md:text-xs text-zinc-600">
@@ -447,7 +465,7 @@ export default function ChatRoom({ params }: { params: any }) {
           type="button"
           onClick={send}
           disabled={!text.trim() || sending}
-          className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[#F5C26B]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 text-sm md:text-base"
+          className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-(--gold-primary) to-(--gold-light) rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[rgba(var(--gold-primary-rgb),0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 text-sm md:text-base"
           aria-label="Send message"
         >
           {sending ? (
@@ -469,10 +487,10 @@ export default function ChatRoom({ params }: { params: any }) {
 
       <style jsx>{`
         :root {
-          --color-bg: #0A0A0A;
-          --color-primary: #F5C26B;
-          --color-primary-2: #FFD56A;
-          --text-primary: #F5C26B;
+          --color-bg: var(--dark-base);
+          --color-primary: var(--gold-primary);
+          --color-primary-2: var(--gold-light);
+          --text-primary: var(--text-main);
           --text-secondary: #9CA3AF;
         }
         [data-theme="light"] {

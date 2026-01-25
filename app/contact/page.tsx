@@ -29,24 +29,24 @@ export default function ContactPage() {
     <div
       className="
         min-h-screen w-full flex items-center justify-center 
-        bg-[#0D0D0D] text-[#F5C26B] px-6 py-16
+        bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-6 py-16
       "
     >
       {/* CARD */}
       <div
         className="
-          relative max-w-xl w-full bg-black/50 border border-[#F4BC4B]/30 
+          relative max-w-xl w-full bg-black/40 border border-[rgba(var(--gold-primary-rgb),0.2)] 
           backdrop-blur-xl rounded-2xl shadow-2xl px-10 py-12
         "
       >
         {/* Neon Border Animation */}
-        <div className="absolute -inset-0.5 bg-linear-to-r from-yellow-600 via-yellow-300 to-yellow-600 rounded-2xl blur opacity-20 animate-pulse" />
+        <div className="absolute -inset-0.5 bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] rounded-2xl blur opacity-20 animate-pulse" />
 
-        <h1 className="relative z-10 text-5xl font-black tracking-wider mb-4 text-center text-[#F5C26B]">
+        <h1 className="relative z-10 text-5xl font-black tracking-wider mb-4 text-center text-[var(--gold-primary)]">
           Contact Us
         </h1>
 
-        <p className="relative z-10 text-center text-[#F4BC4B]/90 text-sm tracking-wide mb-10">
+        <p className="relative z-10 text-center text-[var(--gold-light)]/90 text-sm tracking-wide mb-10">
           We respond within 24 hours — support, complaints, feedback, anything.
         </p>
 
@@ -56,9 +56,9 @@ export default function ContactPage() {
             type="email"
             placeholder="Your Email"
             className="
-              w-full mb-4 px-4 py-3 bg-zinc-900/70 border border-zinc-700 
-              rounded-lg text-[#F4BC4B] placeholder-zinc-500 tracking-wide
-              focus:outline-none focus:border-[#F5C26B]
+              w-full mb-4 px-4 py-3 bg-zinc-900/70 border border-[rgba(var(--gold-primary-rgb),0.2)] 
+              rounded-lg text-[var(--gold-light)] placeholder-zinc-500 tracking-wide
+              focus:outline-none focus:border-[var(--gold-primary)]
             "
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -67,9 +67,9 @@ export default function ContactPage() {
           <textarea
             placeholder="Write your message..."
             className="
-              w-full px-4 py-4 min-h-35 bg-zinc-900/70 border border-zinc-700 
-              rounded-lg text-[#F4BC4B] placeholder-zinc-500 tracking-wide
-              focus:outline-none focus:border-[#F5C26B]
+              w-full px-4 py-4 min-h-35 bg-zinc-900/70 border border-[rgba(var(--gold-primary-rgb),0.2)] 
+              rounded-lg text-[var(--gold-light)] placeholder-zinc-500 tracking-wide
+              focus:outline-none focus:border-[var(--gold-primary)]
             "
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
@@ -80,7 +80,7 @@ export default function ContactPage() {
             type="button"
             onClick={send}
             className="
-              shockwave-btn mt-6 w-full py-3 rounded-lg bg-[#F5C26B] 
+              shockwave-btn mt-6 w-full py-3 rounded-lg bg-[var(--gold-primary)] 
               text-black font-semibold tracking-wider transition
             "
           >

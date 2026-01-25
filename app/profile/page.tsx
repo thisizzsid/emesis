@@ -135,22 +135,22 @@ export default function ProfilePage() {
 
   if (!user)
     return (
-      <div className="flex items-center justify-center h-screen bg-black text-[#F4BC4B]">
+      <div className="flex items-center justify-center h-screen bg-black text-[var(--gold-primary)]">
         Login Required
       </div>
     );
 
   if (!data)
     return (
-      <div className="flex items-center justify-center h-screen bg-black text-[#F4BC4B]">
-        <div className="w-10 h-10 border-2 border-[#F5C26B] border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center h-screen bg-black text-[var(--gold-primary)]">
+        <div className="w-10 h-10 border-2 border-[var(--gold-primary)] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
 
   return (
-    <div className="min-h-full bg-[#0D0D0D] text-[#F4BC4B] py-10 px-4 md:px-6 flex flex-col items-center">
+    <div className="min-h-full bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] py-10 px-4 md:px-6 flex flex-col items-center">
 
-      <div className="max-w-3xl w-full bg-black/40 border border-[#2A2A2A] rounded-2xl p-6 md:p-10 shadow-xl backdrop-blur-md space-y-10">
+      <div className="max-w-3xl w-full bg-black/40 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-2xl p-6 md:p-10 shadow-xl backdrop-blur-md space-y-10">
 
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold tracking-wide">Profile</h1>
@@ -158,7 +158,7 @@ export default function ProfilePage() {
           {isOwner ? (
             <Link
               href="/profile/edit"
-              className="px-5 py-2 rounded-xl bg-[#F4BC4B] text-black font-bold hover:bg-[#F5C26B] transition"
+              className="px-5 py-2 rounded-xl bg-[var(--gold-primary)] text-black font-bold hover:bg-[var(--gold-light)] transition"
             >
               ✏️ Edit Profile
             </Link>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               ) : (
                 <button
                   onClick={follow}
-                  className="px-5 py-2 rounded-xl bg-[#F4BC4B] text-black font-bold hover:bg-[#F5C26B]"
+                  className="px-5 py-2 rounded-xl bg-[var(--gold-primary)] text-black font-bold hover:bg-[var(--gold-light)]"
                 >
                   Follow
                 </button>
@@ -184,7 +184,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full bg-[#1A1A1A] border border-[#F4BC4B] flex items-center justify-center text-3xl font-bold">
+          <div className="w-20 h-20 rounded-full bg-[#1A1A1A] border border-[var(--gold-primary)] flex items-center justify-center text-3xl font-bold">
             {data.username ? data.username.charAt(0).toUpperCase() : "?"}
           </div>
 
@@ -195,13 +195,13 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex gap-10 text-center mt-4">
-          <div className="flex flex-col bg-black/30 px-5 py-3 rounded-xl border border-[#2A2A2A] w-32">
-            <span className="text-2xl font-bold text-[#F4BC4B]">{followersCount}</span>
+          <div className="flex flex-col bg-[var(--dark-base)]/30 px-5 py-3 rounded-xl border border-[rgba(var(--gold-primary-rgb),0.2)] w-32">
+            <span className="text-2xl font-bold text-[var(--gold-primary)]">{followersCount}</span>
             <span className="opacity-70 text-sm">Followers</span>
           </div>
 
-          <div className="flex flex-col bg-black/30 px-5 py-3 rounded-xl border border-[#2A2A2A] w-32">
-            <span className="text-2xl font-bold text-[#F4BC4B]">{followingCount}</span>
+          <div className="flex flex-col bg-[var(--dark-base)]/30 px-5 py-3 rounded-xl border border-[rgba(var(--gold-primary-rgb),0.2)] w-32">
+            <span className="text-2xl font-bold text-[var(--gold-primary)]">{followingCount}</span>
             <span className="opacity-70 text-sm">Following</span>
           </div>
         </div>
@@ -210,22 +210,22 @@ export default function ProfilePage() {
 
           <div className="flex items-center gap-3">
             <Image src="/age.png" width={20} height={20} alt="age icon" />
-            Age: <span className="text-[#F5C26B]">{data.age || "N/A"}</span>
+            Age: <span className="text-[var(--gold-primary)]">{data.age || "N/A"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Image src="/gender.png" width={20} height={20} alt="gender icon" />
-            Gender: <span className="text-[#F5C26B]">{data.gender || "N/A"}</span>
+            Gender: <span className="text-[var(--gold-primary)]">{data.gender || "N/A"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Image src="/location.png" width={20} height={20} alt="location icon" />
-            Location: <span className="text-[#F5C26B]">{data.location || "N/A"}</span>
+            Location: <span className="text-[var(--gold-primary)]">{data.location || "N/A"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Image src="/bio.png" width={20} height={20} alt="bio icon" />
-            Bio: <span className="text-[#F5C26B]">{data.bio || "No bio added"}</span>
+            Bio: <span className="text-[var(--gold-primary)]">{data.bio || "No bio added"}</span>
           </div>
 
         </div>

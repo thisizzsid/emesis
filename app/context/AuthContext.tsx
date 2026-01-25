@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase";
 import { db } from "../../firebase";
-import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, Timestamp, Firestore } from "firebase/firestore";
 import { RecaptchaVerifier } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -24,8 +24,8 @@ export const AuthContextProvider = ({ children }: any) => {
 
   /** Ensure Firestore profile exists **/
   const ensureUserProfile = async (u: any) => {
-    if (!u?.uid) return;
-    const ref = doc(db, "users", u.uid);
+    if (!u?.uid || !db) return;
+    const ref = doc(db as Firestore, "users", u.uid);
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
@@ -57,6 +57,7 @@ export const AuthContextProvider = ({ children }: any) => {
 
   /** Google Auth **/
   const googleLogin = async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     const res = await signInWithPopup(auth, provider);
     await ensureUserProfile(res.user);
@@ -64,24 +65,28 @@ export const AuthContextProvider = ({ children }: any) => {
 
   /** Email Signup **/
   const signupWithEmail = async (email: string, password: string) => {
+    if (!auth) return;
     const res = await createUserWithEmailAndPassword(auth, email, password);
     await ensureUserProfile(res.user);
   };
 
   /** Email Login **/
   const loginWithEmail = async (email: string, password: string) => {
+    if (!auth) return;
     const res = await signInWithEmailAndPassword(auth, email, password);
     await ensureUserProfile(res.user);
   };
 
   /** Password Reset **/
   const resetPassword = async (email: string) => {
+    if (!auth) return;
     await sendPasswordResetEmail(auth, email);
     alert("Password reset email sent!");
   };
 
   /** Phone Login Setup **/
   const setupRecaptcha = () => {
+    if (!auth) return null;
     if (!recaptcha) {
       recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
@@ -92,7 +97,9 @@ export const AuthContextProvider = ({ children }: any) => {
 
   /** Send OTP **/
   const sendOTP = async (phone: string) => {
+    if (!auth) return;
     const verifier = setupRecaptcha();
+    if (!verifier) return;
     return signInWithPhoneNumber(auth, phone, verifier);
   };
 
@@ -104,10 +111,17 @@ export const AuthContextProvider = ({ children }: any) => {
   };
 
   /** Logout **/
-  const logout = async () => signOut(auth);
+  const logout = async () => {
+    if (!auth) return;
+    return signOut(auth);
+  };
 
   /** Track user **/
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsub = onAuthStateChanged(auth, async (current) => {
       if (!current) {
         setUser(null);
@@ -116,7 +130,8 @@ export const AuthContextProvider = ({ children }: any) => {
       }
 
       await ensureUserProfile(current);
-      const ref = doc(db, "users", current.uid);
+      if (!db) return;
+      const ref = doc(db as Firestore, "users", current.uid);
       const snap = await getDoc(ref);
       const profile = snap.data() || {};
 

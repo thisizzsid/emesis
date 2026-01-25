@@ -52,7 +52,7 @@ export default function ChatListPage() {
 
   if (!user) {
     return (
-      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] flex items-center justify-center">
+      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) flex items-center justify-center">
         <div className="glass rounded-3xl p-12 animate-bounceIn">
           <p className="text-2xl font-bold">Login Required</p>
         </div>
@@ -61,25 +61,25 @@ export default function ChatListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[#F5C26B] px-8 py-24 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) px-8 py-24 relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-40 left-20 w-96 h-96 bg-[#F5C26B]/10 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute top-40 left-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.1)] rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-40 right-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
 
       {/* Header Section */}
       <div className="text-center mb-16 animate-fadeIn relative z-10">
         <div className="inline-block mb-4">
-          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[#F5C26B] to-[#FFD56A] flex items-center justify-center shadow-2xl shadow-[#F5C26B]/50 animate-pulse-glow mx-auto">
+          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-(--gold-primary) to-(--gold-light) flex items-center justify-center shadow-2xl shadow-[rgba(var(--gold-primary-rgb),0.5)] animate-pulse-glow mx-auto">
             <span className="text-4xl">💬</span>
           </div>
         </div>
 
-        <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-size-[200%_auto] animate-textShine">
+        <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-size-[200%_auto] animate-textShine">
           Private Chats
         </h1>
 
         <p className="mt-4 text-lg text-zinc-500 font-light tracking-tight max-w-2xl mx-auto">
-          Secure end-to-end encrypted conversations. Chat unlocks after <strong className="text-[#F5C26B]">mutual follow</strong>.
+          Secure end-to-end encrypted conversations. Chat unlocks after <strong className="text-(--gold-primary)">mutual follow</strong>.
         </p>
 
         {/* Stats */}
@@ -92,7 +92,7 @@ export default function ChatListPage() {
           </div>
           <div className="w-1 h-1 rounded-full bg-zinc-700"></div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#F5C26B] animate-pulse"></div>
+            <div className="w-3 h-3 rounded-full bg-(--gold-primary) animate-pulse"></div>
             <span className="text-sm text-zinc-600 font-medium">
               {usersList.length} Total Users
             </span>
@@ -102,9 +102,45 @@ export default function ChatListPage() {
 
       {/* User List */}
       <div className="grid gap-6 max-w-5xl mx-auto relative z-10">
+        {!loading && user && (
+          /* Emesis AI Bot Card */
+          <div className="glass glass-hover rounded-2xl p-6 md:p-8 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.25)] group relative overflow-hidden animate-fadeIn">
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-purple-500"></div>
+            <div className="flex items-center justify-between gap-5 md:gap-6 relative z-10">
+              <div className="flex items-center gap-5 flex-1">
+                <div className="relative">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-xl font-black text-2xl text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    AI
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-4 md:w-5 h-4 md:h-5 rounded-full border-2 border-black bg-green-500 animate-pulse"></div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-xl md:text-2xl text-(--gold-primary) mb-1 group-hover:text-(--gold-light) transition-colors truncate">
+                    Emesis AI
+                  </p>
+                  <p className="text-xs md:text-sm text-zinc-600 flex items-center gap-2 mb-2">
+                    <span className="truncate">Always here for you</span>
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-blue-400 bg-(--dark-base)/40 px-3 py-2 rounded-lg border border-blue-500/30 w-fit">
+                     <span>24/7 Companion • Smart Reply</span>
+                  </div>
+                </div>
+              </div>
+              <div className="shrink-0">
+                <Link
+                  href={`/chat/ai_${user.uid}`}
+                  className="modern-btn px-8 py-4 bg-linear-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
+                >
+                  Chat AI
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 md:p-8 shadow-xl border border-[#F5C26B]/20 animate-pulse">
+            <div key={i} className="glass rounded-2xl p-6 md:p-8 shadow-xl border border-[rgba(var(--gold-primary-rgb),0.2)] animate-pulse">
               <div className="flex items-center gap-5 md:gap-6">
                 <div className="skeleton w-14 h-14 md:w-16 md:h-16 rounded-2xl"></div>
                 <div className="flex-1 space-y-2 md:space-y-3">
@@ -116,9 +152,9 @@ export default function ChatListPage() {
             </div>
           ))
         ) : usersList.length === 0 ? (
-          <div className="glass rounded-3xl p-16 text-center shadow-2xl border border-[#F5C26B]/30 animate-fadeIn">
+          <div className="glass rounded-3xl p-16 text-center shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.3)] animate-fadeIn">
             <div className="text-6xl mb-4">👥</div>
-            <p className="text-2xl font-bold text-[#F5C26B] mb-2">No Users Found</p>
+            <p className="text-2xl font-bold text-(--gold-primary) mb-2">No Users Found</p>
             <p className="text-zinc-600">Start following others to unlock chat features!</p>
           </div>
         ) : (
@@ -129,21 +165,21 @@ export default function ChatListPage() {
             return (
               <div
                 key={u.id}
-                className="glass glass-hover rounded-2xl p-6 md:p-8 shadow-2xl border border-[#F5C26B]/25 group relative overflow-hidden animate-fadeIn"
+                className="glass glass-hover rounded-2xl p-6 md:p-8 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.25)] group relative overflow-hidden animate-fadeIn"
               >
                 <div className={`absolute top-0 left-0 w-full h-1 ${can ? "bg-linear-to-r from-green-500 to-emerald-500" : "bg-linear-to-r from-red-500 to-orange-500"}`}></div>
 
                 <div className="flex items-center justify-between gap-5 md:gap-6 relative z-10">
                   <div className="flex items-center gap-5 flex-1">
                     <div className="relative">
-                      <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-linear-to-br ${can ? "from-green-500 to-emerald-500" : "from-[#F5C26B] to-[#FFD56A]"} flex items-center justify-center shadow-xl font-black text-2xl text-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                      <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-linear-to-br ${can ? "from-green-500 to-emerald-500" : "from-(--gold-primary) to-(--gold-light)"} flex items-center justify-center shadow-xl font-black text-2xl text-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                         {u.username?.[0]?.toUpperCase() || "U"}
                       </div>
                       <div className={`absolute -bottom-1 -right-1 w-4 md:w-5 h-4 md:h-5 rounded-full border-2 border-black ${can ? "bg-green-500 animate-pulse" : "bg-red-500"}`}></div>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-xl md:text-2xl text-[#F5C26B] mb-1 group-hover:text-[#FFD56A] transition-colors truncate">
+                      <p className="font-bold text-xl md:text-2xl text-(--gold-primary) mb-1 group-hover:text-(--gold-light) transition-colors truncate">
                         {u.username || "No Name"}
                       </p>
                       <p className="text-xs md:text-sm text-zinc-600 flex items-center gap-2 mb-2">
@@ -154,7 +190,7 @@ export default function ChatListPage() {
                       </p>
 
                       {!can && (
-                        <div className="flex items-center gap-2 text-xs text-zinc-700 bg-black/40 px-3 py-2 rounded-lg border border-red-500/30 w-fit">
+                        <div className="flex items-center gap-2 text-xs text-zinc-700 bg-(--dark-base)/40 px-3 py-2 rounded-lg border border-red-500/30 w-fit">
                           <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                           </svg>
@@ -163,7 +199,7 @@ export default function ChatListPage() {
                       )}
 
                       {can && (
-                        <div className="flex items-center gap-2 text-xs text-green-400 bg-black/40 px-3 py-2 rounded-lg border border-green-500/30 w-fit">
+                        <div className="flex items-center gap-2 text-xs text-green-400 bg-(--dark-base)/40 px-3 py-2 rounded-lg border border-green-500/30 w-fit">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
@@ -205,15 +241,15 @@ export default function ChatListPage() {
       </div>
 
       {/* Help Section */}
-      <div className="max-w-5xl mx-auto mt-16 glass rounded-3xl p-8 shadow-2xl border border-[#F5C26B]/30 relative z-10 animate-fadeIn">
+      <div className="max-w-5xl mx-auto mt-16 glass rounded-3xl p-8 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.3)] relative z-10 animate-fadeIn">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#F5C26B]/20 to-[#F5C26B]/5 flex items-center justify-center border border-[#F5C26B]/30">
-            <svg className="w-6 h-6 text-[#F5C26B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[rgba(var(--gold-primary-rgb),0.2)] to-[rgba(var(--gold-primary-rgb),0.05)] flex items-center justify-center border border-[rgba(var(--gold-primary-rgb),0.3)]">
+            <svg className="w-6 h-6 text-(--gold-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-[#F5C26B] mb-2">How to unlock chats?</h3>
+            <h3 className="text-xl font-bold text-(--gold-primary) mb-2">How to unlock chats?</h3>
             <p className="text-sm text-zinc-600 leading-relaxed">
               To start chatting with someone, you both need to follow each other. Visit their profile and click "Follow". 
               Once they follow you back, the chat will be unlocked with end-to-end encryption for your privacy.

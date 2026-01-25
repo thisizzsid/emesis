@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EMESIS Bot Dashboard</title>
   <style>
+    :root {
+      --gold-primary: #F5C26B;
+      --gold-light: #FFD56A;
+      --gold-primary-rgb: 245, 194, 107;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -28,14 +34,14 @@
       text-align: center;
       margin-bottom: 40px;
       padding-bottom: 30px;
-      border-bottom: 2px solid #F5C26B;
+      border-bottom: 2px solid var(--gold-primary);
     }
 
     h1 {
       font-size: 2.5em;
-      color: #F5C26B;
+      color: var(--gold-primary);
       margin-bottom: 10px;
-      text-shadow: 0 0 20px rgba(245, 194, 107, 0.5);
+      text-shadow: 0 0 20px rgba(var(--gold-primary-rgb), 0.5);
     }
 
     .status-grid {
@@ -46,8 +52,8 @@
     }
 
     .status-card {
-      background: rgba(245, 194, 107, 0.1);
-      border: 2px solid #F5C26B;
+      background: rgba(var(--gold-primary-rgb), 0.1);
+      border: 2px solid var(--gold-primary);
       border-radius: 12px;
       padding: 20px;
       text-align: center;
@@ -55,7 +61,7 @@
     }
 
     .status-card:hover {
-      background: rgba(245, 194, 107, 0.2);
+      background: rgba(var(--gold-primary-rgb), 0.2);
       transform: translateY(-5px);
     }
 
@@ -69,7 +75,7 @@
     .status-value {
       font-size: 1.5em;
       font-weight: bold;
-      color: #F5C26B;
+      color: var(--gold-primary);
     }
 
     .toggle-switch {
@@ -105,7 +111,7 @@
     }
 
     input:checked + .slider {
-      background-color: #F5C26B;
+      background-color: var(--gold-primary);
     }
 
     .slider:before {
@@ -125,15 +131,15 @@
     }
 
     .section {
-      background: rgba(245, 194, 107, 0.05);
-      border: 1px solid #F5C26B;
+      background: rgba(var(--gold-primary-rgb), 0.05);
+      border: 1px solid var(--gold-primary);
       border-radius: 12px;
       padding: 30px;
       margin-bottom: 30px;
     }
 
     .section h2 {
-      color: #F5C26B;
+      color: var(--gold-primary);
       margin-bottom: 20px;
       font-size: 1.5em;
     }
@@ -158,8 +164,8 @@
 
     input[type="number"] {
       background: rgba(0, 0, 0, 0.5);
-      border: 1px solid #F5C26B;
-      color: #F5C26B;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
       padding: 10px;
       border-radius: 6px;
       font-size: 1em;
@@ -167,15 +173,15 @@
 
     input[type="text"] {
       background: rgba(0, 0, 0, 0.5);
-      border: 1px solid #F5C26B;
-      color: #F5C26B;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
       padding: 10px;
       border-radius: 6px;
       font-size: 1em;
     }
 
     button {
-      background: linear-gradient(135deg, #F5C26B, #FFD56A);
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
       color: black;
       border: none;
       padding: 12px 24px;
@@ -188,7 +194,7 @@
 
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(245, 194, 107, 0.5);
+      box-shadow: 0 0 20px rgba(var(--gold-primary-rgb), 0.5);
     }
 
     button:active {

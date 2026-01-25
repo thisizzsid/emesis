@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { Bell } from "lucide-react";
+import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
@@ -66,7 +66,11 @@ export default function Navbar() {
     };
   }, [sidebarOpen]);
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/feed" && pathname === "/") return true;
+    if (path !== "/" && pathname.startsWith(path)) return true;
+    return pathname === path;
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -99,7 +103,7 @@ export default function Navbar() {
     setShowThemeNotice(true);
     setProgressWidth(0);
     const start = performance.now();
-    const duration = 800;
+    const duration = 2000;
     const step = (t: number) => {
       const elapsed = t - start;
       const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
@@ -128,16 +132,16 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 w-full h-16 glass border-b border-[#F5C26B]/20 z-50 flex items-center px-4 md:px-6">
+      <header className="fixed top-0 w-full h-16 glass border-b border-[rgba(var(--gold-primary-rgb),0.2)] z-50 flex items-center px-4 md:px-6">
         {/* Left: Menu Button (Mobile Only) */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[#F5C26B]/10 transition-colors"
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors"
           aria-label="Toggle sidebar"
           type="button"
         >
           <svg
-            className="w-6 h-6 text-[#F5C26B]"
+            className="w-6 h-6 text-[var(--gold-primary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -159,45 +163,73 @@ export default function Navbar() {
           type="button"
         >
           <div className="relative w-9 h-10 md:w-11 md:h-14 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-            <div className="absolute inset-0 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500"></div>
             <Image
               src="/logoemesis.png"
               alt="Emesis Logo"
               fill
-              className="object-contain drop-shadow-[0_0_15px_rgba(245,194,107,0.8)] relative z-10"
+              className="object-contain drop-shadow-[0_0_15px_rgba(var(--gold-primary-rgb),0.8)] relative z-10"
               sizes="40px"
             />
           </div>
-          <span className="hidden sm:inline bg-linear-to-r from-[#F5C26B] via-[#FFD56A] to-[#F5C26B] bg-clip-text text-transparent font-black tracking-tighter">
+          <span className="hidden sm:inline bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent font-black tracking-tighter">
             EMESIS
           </span>
-          <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-[#F5C26B] to-[#FFD56A] group-hover:w-full transition-all duration-500"></div>
+          <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] group-hover:w-full transition-all duration-500"></div>
         </button>
 
         {/* Right: Logout Button (Center-aligned on desktop, right-aligned on mobile) */}
         <div className="flex-1 flex items-center justify-end md:justify-center">
           <button
             onClick={toggleTheme}
-            className="alert-btn relative mr-3"
+            className={`relative mr-3 p-2 rounded-xl transition-all duration-300 active:scale-95 group overflow-hidden ${
+              theme === "light"
+                ? "bg-zinc-900 text-white hover:bg-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+                : "bg-[rgba(var(--gold-primary-rgb),0.1)] text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.2)] hover:shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.4)] border border-[rgba(var(--gold-primary-rgb),0.3)]"
+            }`}
             aria-live="polite"
             type="button"
           >
-            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              {theme === "light" ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m7-9h2M3 12H1m15.364-6.364l1.414 1.414M6.222 17.778l-1.414 1.414m12.556 0l1.414-1.414M6.222 6.222 4.808 4.808M12 8a4 4 0 100 8 4 4 0 000-8z" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
-              )}
-            </svg>
-            {theme === "light" ? "Light" : "Dark"}
+            <div className="flex items-center gap-2 relative z-10">
+              <svg
+                className={`w-5 h-5 md:w-6 md:h-6 transition-transform duration-500 ${
+                  theme === "dark" ? "group-hover:rotate-90" : "group-hover:-rotate-12"
+                }`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                {theme === "light" ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                ) : (
+                  <>
+                    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" />
+                    <path
+                      d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </>
+                )}
+              </svg>
+              <span className="hidden md:inline font-bold tracking-tight">
+                {theme === "light" ? "Pitch Black" : "Light Mode"}
+              </span>
+            </div>
           </button>
           <button
             onClick={handleLogout}
-            className="logout-btn alert-btn relative"
+            className="logout-btn relative p-2 rounded-xl transition-all duration-200 active:scale-95 text-[#ff0033] hover:bg-[#ff0033]/10 hover:shadow-[0_0_20px_rgba(255,0,51,0.6)] group"
             type="button"
           >
             <svg
-              className="w-4.5 h-4.5"
+              className="w-5 h-5 md:w-6 md:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -209,7 +241,7 @@ export default function Navbar() {
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
               />
             </svg>
-            Logout
+            <span className="hidden md:inline ml-2">Logout</span>
           </button>
         </div>
 
@@ -227,32 +259,68 @@ export default function Navbar() {
           </div>
         </div>
         {showThemeNotice && (
-          <div className="theme-notice glass rounded-xl px-4 py-3 text-sm font-semibold">
-            <div className="mb-2">{theme === "dark" ? "Turning on light mode..." : "Turning on dark mode..."}</div>
-            <div className="progress-bar">
-              <div className="progress-bar-fill" />
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
+            {/* Ambient Background Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[rgba(var(--gold-primary-rgb),0.15)] via-transparent to-transparent opacity-50 animate-pulse"></div>
+            
+            <div className="relative z-10 flex flex-col items-center">
+                {/* Large Icon Animation */}
+                <div className="mb-12 relative">
+                    <div className="absolute inset-0 bg-[var(--gold-primary)] blur-[60px] opacity-20 animate-pulse"></div>
+                    <div className="text-8xl md:text-9xl animate-bounceIn drop-shadow-[0_0_30px_rgba(var(--gold-primary-rgb),0.5)]">
+                        {theme === "dark" ? "☀️" : "🌑"}
+                    </div>
+                </div>
+                
+                {/* Text Content */}
+                <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-[var(--gold-primary)] via-white to-[var(--gold-primary)] mb-6 tracking-tighter text-center animate-slideInUp">
+                    {theme === "dark" ? "ILLUMINATING" : "GOING DARK"}
+                </h2>
+                
+                <p className="text-zinc-500 text-lg md:text-xl font-mono tracking-widest uppercase mb-12 animate-slideInUp" style={{ animationDelay: '0.1s' }}>
+                    System Reconfiguration in Progress
+                </p>
+
+                {/* Modern Progress Bar */}
+                <div className="w-full max-w-md h-1 bg-zinc-900 rounded-full overflow-hidden relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    <div 
+                        className="h-full bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] transition-all duration-75 ease-linear shadow-[0_0_15px_var(--gold-primary)] relative" 
+                        style={{ width: `${progressWidth}%` }} 
+                    >
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 bg-white/50 blur-sm"></div>
+                    </div>
+                </div>
+                
+                {/* Percentage */}
+                <div className="mt-4 font-mono text-[var(--gold-primary)] text-sm opacity-80">
+                    {progressWidth}% COMPLETE
+                </div>
             </div>
           </div>
         )}
       </header>
 
-      {/* SIDEBAR - Mobile Only */}
+      {/* SIDEBAR - Responsive (Mobile Slide-out, Desktop Fixed) */}
       <aside
-        className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] glass border-r border-[#F5C26B]/20 transition-all duration-300 z-50 flex flex-col overflow-y-auto ${
+        className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-black/40 backdrop-blur-xl border-r border-[rgba(var(--gold-primary-rgb),0.15)] transition-transform duration-300 z-40 flex flex-col overflow-y-auto ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
+        } md:translate-x-0`}
         onMouseEnter={handleSidebarInteraction}
         onMouseLeave={() => {
-          sidebarTimeoutRef.current = setTimeout(() => {
-            setSidebarOpen(false);
-          }, 3000);
+          // Only auto-close on mobile
+          if (window.innerWidth < 768) {
+            sidebarTimeoutRef.current = setTimeout(() => {
+              setSidebarOpen(false);
+            }, 3000);
+          }
         }}
       >
         {/* Navigation Items */}
-        <div className="flex-1 p-4 space-y-2">
+        <div className="flex-1 px-3 py-6 space-y-2">
           <SidebarNavButton
             href="/feed"
             label="Feed"
+            icon={Home}
             isActive={isActive("/feed")}
             onClick={handleNavClick}
           />
@@ -260,6 +328,7 @@ export default function Navbar() {
           <SidebarNavButton
             href="/explore"
             label="Explore"
+            icon={Compass}
             isActive={isActive("/explore")}
             onClick={handleNavClick}
           />
@@ -267,6 +336,7 @@ export default function Navbar() {
           <SidebarNavButton
             href="/dashboard"
             label="Dashboard"
+            icon={LayoutDashboard}
             isActive={isActive("/dashboard")}
             onClick={handleNavClick}
           />
@@ -274,6 +344,7 @@ export default function Navbar() {
           <SidebarNavButton
             href="/profile"
             label="Profile"
+            icon={User}
             isActive={isActive("/profile")}
             onClick={handleNavClick}
           />
@@ -282,39 +353,46 @@ export default function Navbar() {
             <SidebarNavButton
               href="/chat"
               label="Chat"
+              icon={MessageCircle}
               isActive={isActive("/chat")}
               onClick={handleNavClick}
             />
             {unreadMessages > 0 && (
-              <span className="notification-badge animate-bounceIn absolute -top-2 -right-2">
-                {unreadMessages > 99 ? "99+" : unreadMessages}
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
+                {unreadMessages > 9 ? "9+" : unreadMessages}
               </span>
             )}
           </div>
         </div>
 
-        {/* Notifications Section in Sidebar */}
-        <div className="border-t border-[#F5C26B]/20 p-4">
-          <h3 className="text-xs font-bold text-[#F5C26B] mb-3 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#f50707] animate-pulse"></span>
-            Notifications
-          </h3>
+        {/* Notifications Section in Sidebar (Mobile Only mainly, but nice to have) */}
+        <div className="border-t border-[rgba(var(--gold-primary-rgb),0.15)] p-4 bg-gradient-to-t from-[rgba(var(--gold-primary-rgb),0.05)] to-transparent">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xs font-bold text-[var(--gold-primary)] uppercase tracking-wider flex items-center gap-2">
+              <span className={`w-1.5 h-1.5 rounded-full ${notificationCount > 0 ? "bg-red-500 animate-pulse" : "bg-zinc-700"}`}></span>
+              Notifications
+            </h3>
+            {notificationCount > 0 && (
+              <span className="text-[10px] bg-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-primary)] px-2 py-0.5 rounded-full">
+                {notificationCount} New
+              </span>
+            )}
+          </div>
           {notificationCount === 0 ? (
-            <p className="text-xs text-zinc-600">No new notifications</p>
+            <p className="text-xs text-zinc-500 font-light italic">All caught up!</p>
           ) : (
-            <div className="text-xs text-[#F5C26B] font-semibold">
-              {notificationCount} new{" "}
-              {notificationCount === 1 ? "notification" : "notifications"}
-            </div>
+            <p className="text-xs text-zinc-400">
+              You have <span className="text-white font-bold">{notificationCount}</span> unread notifications.
+            </p>
           )}
         </div>
       </aside>
 
 
-      {/* Sidebar Backdrop */}
+      {/* Sidebar Backdrop - Mobile Only */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
@@ -322,15 +400,17 @@ export default function Navbar() {
   );
 }
 
-// Sidebar NavButton Component
+// Modern Sidebar NavButton Component
 function SidebarNavButton({
   href,
   label,
+  icon: Icon,
   isActive,
   onClick,
 }: {
   href: string;
   label: string;
+  icon: any;
   isActive: boolean;
   onClick: () => void;
 }) {
@@ -338,55 +418,35 @@ function SidebarNavButton({
     <Link
       href={href}
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+      className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 overflow-hidden ${
         isActive
-          ? "bg-linear-to-r from-[#F5C26B]/20 to-[#FFD56A]/10 border border-[#F5C26B]/40 text-[#FFD56A]"
-          : "hover:bg-[#F5C26B]/10 text-[#F5C26B]"
+          ? "text-[var(--gold-primary)] shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.15)]"
+          : "text-zinc-400 hover:text-[var(--gold-light)]"
       }`}
     >
-      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        {label === "Feed" && (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        )}
-        {label === "Explore" && (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        )}
-        {label === "Dashboard" && (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-          />
-        )}
-        {label === "Profile" && (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          />
-        )}
-        {label === "Chat" && (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-          />
-        )}
-      </svg>
-      <span className="font-semibold">{label}</span>
+      {/* Active Background Gradient */}
+      {isActive && (
+        <div className="absolute inset-0 bg-linear-to-r from-[rgba(var(--gold-primary-rgb),0.15)] to-transparent opacity-100 transition-opacity duration-300"></div>
+      )}
+      
+      {/* Hover Background */}
+      <div className={`absolute inset-0 bg-[rgba(var(--gold-primary-rgb),0.05)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isActive ? 'hidden' : ''}`}></div>
+
+      {/* Active Indicator Bar */}
+      {isActive && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[var(--gold-primary)] rounded-r-full shadow-[0_0_10px_var(--gold-primary)]"></div>
+      )}
+
+      {/* Icon */}
+      <Icon className={`w-5 h-5 shrink-0 transition-all duration-500 ${isActive ? 'drop-shadow-[0_0_8px_rgba(var(--gold-primary-rgb),0.6)] scale-110' : 'group-hover:scale-110 group-hover:drop-shadow-[0_0_5px_rgba(var(--gold-primary-rgb),0.4)]'}`} />
+
+      {/* Label */}
+      <span className={`font-medium tracking-wide transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
+        {label}
+      </span>
+      
+      {/* Subtle Glow on Hover */}
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[rgba(var(--gold-primary-rgb),0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </Link>
   );
 }

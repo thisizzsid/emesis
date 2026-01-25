@@ -25,7 +25,7 @@ export default function ExplorePage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-24">
-          <div className="w-8 h-8 border-2 border-[#F5C26B] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       }
     >
@@ -219,13 +219,13 @@ function ExploreContent() {
 
   if (!uid)
     return (
-      <div className="h-screen bg-[#0D0D0D] text-[#F5C26B] flex items-center justify-center">
+      <div className="h-screen bg-dark-base text-foreground flex items-center justify-center">
         Login Required
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-[#F5C26B] px-8 py-24">
+    <div className="min-h-screen bg-linear-to-br from-dark-base via-black to-dark-base text-[var(--foreground)] px-8 py-24">
       <div className="text-center mb-10">
         <h1 className="text-5xl font-extrabold tracking-wider drop-shadow-lg">
           Explore
@@ -239,14 +239,14 @@ function ExploreContent() {
         <button 
             type="button"
             onClick={() => setViewMode("users")}
-            className={`px-6 py-2 rounded-full font-bold transition-all ${viewMode === "users" ? "bg-[#F5C26B] text-black shadow-lg shadow-[#F5C26B]/20" : "bg-zinc-900 text-zinc-500 hover:text-[#F5C26B]"}`}
+            className={`px-6 py-2 rounded-full font-bold transition-all ${viewMode === "users" ? "bg-[var(--gold-primary)] text-black shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.2)]" : "bg-zinc-900 text-zinc-500 hover:text-[var(--gold-primary)]"}`}
         >
             Users
         </button>
         <button 
             type="button"
             onClick={() => setViewMode("posts")}
-            className={`px-6 py-2 rounded-full font-bold transition-all ${viewMode === "posts" ? "bg-[#F5C26B] text-black shadow-lg shadow-[#F5C26B]/20" : "bg-zinc-900 text-zinc-500 hover:text-[#F5C26B]"}`}
+            className={`px-6 py-2 rounded-full font-bold transition-all ${viewMode === "posts" ? "bg-[var(--gold-primary)] text-black shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.2)]" : "bg-zinc-900 text-zinc-500 hover:text-[var(--gold-primary)]"}`}
         >
             Posts / Tags
         </button>
@@ -254,7 +254,7 @@ function ExploreContent() {
 
       <div className="max-w-xl mx-auto flex gap-3 mb-12">
         <input
-          className="flex-1 bg-black/40 border border-[#F4BC4B] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#F4BC4B]"
+          className="flex-1 bg-black/40 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--gold-light)] text-[var(--gold-primary)] placeholder-zinc-500"
           placeholder={viewMode === "users" ? "Search username..." : "Search hashtags (e.g. #love)..."}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -263,7 +263,7 @@ function ExploreContent() {
         <button
           type="button"
           onClick={runSearch}
-          className="bg-[#F5C26B] text-black px-5 rounded-xl font-semibold hover:bg-[#F4BC4B] transition"
+          className="bg-[var(--gold-primary)] text-black px-5 rounded-xl font-semibold hover:bg-[var(--gold-light)] transition"
         >
           Search
         </button>
@@ -280,7 +280,7 @@ function ExploreContent() {
 
       {loading ? (
           <div className="flex items-center justify-center py-24">
-            <div className="w-8 h-8 border-2 border-[#F5C26B] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-2 border-[var(--gold-primary)] border-t-transparent rounded-full animate-spin"></div>
           </div>
       ) : (
           <>
@@ -299,15 +299,15 @@ function ExploreContent() {
                         <div
                         key={u.id}
                         className="
-                            bg-black/50 border border-[#F4BC4B] p-5 rounded-2xl shadow-lg
-                            hover:shadow-yellow-400/20 hover:scale-[1.02]
+                            bg-black/50 border border-[rgba(var(--gold-primary-rgb),0.2)] p-5 rounded-2xl shadow-lg
+                            hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-[1.02]
                             transition-all duration-300 backdrop-blur-xl
                             flex flex-col h-full relative overflow-hidden group
                         "
                         >
                         <div className="flex items-start justify-between mb-3 relative z-10">
                             <div className="flex-1 min-w-0 pr-2">
-                                <p className="text-lg font-bold tracking-wide text-[#F5C26B] truncate">
+                                <p className="text-lg font-bold tracking-wide text-[var(--gold-primary)] truncate">
                                     {u.username ?? "Unknown User"}
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-1.5">
@@ -317,7 +317,7 @@ function ExploreContent() {
                                         </span>
                                     )}
                                     {!isMutual && followsYou && (
-                                        <span className="inline-flex items-center gap-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-medium px-2 py-0.5 rounded-full border border-yellow-500/20">
+                                        <span className="inline-flex items-center gap-1 bg-[rgba(var(--gold-primary-rgb),0.1)] text-[var(--gold-primary)] text-[10px] font-medium px-2 py-0.5 rounded-full border border-[rgba(var(--gold-primary-rgb),0.2)]">
                                             Follows You
                                         </span>
                                     )}
@@ -343,7 +343,7 @@ function ExploreContent() {
                             <button
                                 type="button"
                                 onClick={() => follow(u.id)}
-                                className="w-full h-12 flex items-center justify-center bg-[#F5C26B] text-black rounded-xl text-xs font-bold hover:bg-[#F4BC4B] hover:shadow-lg hover:shadow-[#F5C26B]/20 transition-all active:scale-95"
+                                className="w-full h-12 flex items-center justify-center bg-[var(--gold-primary)] text-black rounded-xl text-xs font-bold hover:bg-[var(--gold-light)] hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] transition-all active:scale-95"
                             >
                                 Follow Back
                             </button>
@@ -351,7 +351,7 @@ function ExploreContent() {
                             <button
                                 type="button"
                                 onClick={() => follow(u.id)}
-                                className="w-full h-12 flex items-center justify-center bg-[#F5C26B] text-black rounded-xl text-xs font-bold hover:bg-[#F4BC4B] hover:shadow-lg hover:shadow-[#F5C26B]/20 transition-all active:scale-95"
+                                className="w-full h-12 flex items-center justify-center bg-[var(--gold-primary)] text-black rounded-xl text-xs font-bold hover:bg-[var(--gold-light)] hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] transition-all active:scale-95"
                             >
                                 Follow
                             </button>
@@ -370,7 +370,7 @@ function ExploreContent() {
                             ) : (
                             <Link
                                 href={`/anonymous?uid=${u.id}`}
-                                className="w-full h-12 flex items-center justify-center bg-zinc-800 text-[#F5C26B] rounded-xl text-xs font-bold border border-zinc-700 hover:border-[#F5C26B] transition-all active:scale-95"
+                                className="w-full h-12 flex items-center justify-center bg-zinc-800 text-[var(--gold-primary)] rounded-xl text-xs font-bold border border-zinc-700 hover:border-[var(--gold-primary)] transition-all active:scale-95"
                             >
                                 Anon Msg
                             </Link>
@@ -379,7 +379,7 @@ function ExploreContent() {
 
                         <Link
                             href={`/profile?uid=${u.id}`}
-                            className="block text-center mt-3 text-[10px] text-zinc-600 uppercase tracking-widest hover:text-[#F5C26B] transition-colors py-2"
+                            className="block text-center mt-3 text-[10px] text-zinc-600 uppercase tracking-widest hover:text-[var(--gold-primary)] transition-colors py-2"
                         >
                             View Profile
                         </Link>

@@ -48,22 +48,22 @@ export default function EditProfile() {
 
   if (!user)
     return (
-      <div className="min-h-screen bg-[#0D0D0D] text-[#F5C26B] flex items-center justify-center text-xl">
+      <div className="min-h-screen bg-dark-base text-foreground flex items-center justify-center text-xl">
         Login required
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-[#F5C26B] py-20 px-6 flex justify-center">
-      <div className="w-full max-w-lg bg-black/50 border border-[#F4BC4B] rounded-2xl p-8 shadow-xl space-y-6">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] py-20 px-6 flex justify-center">
+      <div className="w-full max-w-lg bg-black/40 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-2xl p-8 shadow-xl space-y-6">
         
-        <h2 className="text-4xl font-extrabold text-center text-[#F5C26B] mb-6 tracking-wide">
+        <h2 className="text-4xl font-extrabold text-center text-[var(--gold-primary)] mb-6 tracking-wide">
           Edit Profile
         </h2>
 
         {/* Username */}
         <input
-          className="w-full bg-zinc-900 border border-[#F4BC4B] rounded-xl px-4 py-3 text-lg outline-none focus:border-[#F5C26B]"
+          className="w-full bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 text-lg outline-none focus:border-[var(--gold-primary)]"
           placeholder="Enter Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -71,7 +71,7 @@ export default function EditProfile() {
 
         {/* Age */}
         <input
-          className="w-full bg-zinc-900 border border-[#F4BC4B] rounded-xl px-4 py-3 text-lg outline-none focus:border-[#F5C26B]"
+          className="w-full bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 text-lg outline-none focus:border-[var(--gold-primary)]"
           placeholder="Age"
           value={age}
           onChange={(e) => setAge(e.target.value)}
@@ -79,7 +79,7 @@ export default function EditProfile() {
 
         {/* Location */}
         <input
-          className="w-full bg-zinc-900 border border-[#F4BC4B] rounded-xl px-4 py-3 text-lg outline-none focus:border-[#F5C26B]"
+          className="w-full bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 text-lg outline-none focus:border-[var(--gold-primary)]"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
@@ -92,7 +92,7 @@ export default function EditProfile() {
         <select
           id="gender-select"
           aria-label="Gender"
-          className="w-full bg-zinc-900 border border-[#F4BC4B] rounded-xl px-4 py-3 text-lg outline-none focus:border-[#F5C26B]"
+          className="w-full bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 text-lg outline-none focus:border-[var(--gold-primary)]"
           value={gender}
           onChange={(e) => setGender(e.target.value)}
         >
@@ -104,7 +104,7 @@ export default function EditProfile() {
 
         {/* Bio */}
         <textarea
-          className="w-full bg-zinc-900 border border-[#F4BC4B] rounded-xl px-4 py-3 min-h-25 text-lg outline-none focus:border-[#F5C26B]"
+          className="w-full bg-zinc-900 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl px-4 py-3 min-h-25 text-lg outline-none focus:border-[var(--gold-primary)]"
           placeholder="Write your Bio..."
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -113,7 +113,7 @@ export default function EditProfile() {
         {/* Save Button */}
         <button
           onClick={save}
-          className="w-full mt-3 bg-[#F5C26B] hover:bg-[#F4BC4B] text-black font-bold py-3 rounded-xl text-lg tracking-wide transition"
+          className="w-full mt-3 bg-[var(--gold-primary)] hover:bg-[var(--gold-light)] text-black font-bold py-3 rounded-xl text-lg tracking-wide transition"
         >
           Save Changes
         </button>
@@ -121,7 +121,7 @@ export default function EditProfile() {
         {/* Cancel */}
         <button
           onClick={() => router.push("/profile")}
-          className="w-full border border-[#F5C26B] text-[#F5C26B] py-3 rounded-xl text-lg hover:bg-[#F5C26B]/10 transition"
+          className="w-full border border-[var(--gold-primary)] text-[var(--gold-primary)] py-3 rounded-xl text-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition"
         >
           Cancel
         </button>
