@@ -132,17 +132,18 @@ webapp/
 
 ### **Color Palette**
 ```css
-Gold Primary:   #F5C26B
-Gold Secondary: #F4BC4B
-Gold Light:     #FFD56A
-Gold Glow:      #F5C26B99
-Dark Base:      #0A0A0A
-Dark Card:      #121212
-Dark Elevated:  #1A1A1A
-Neon Blue:      #00F0FF
-Neon Purple:    #B24BF3
-Neon Pink:      #FF006E
-Neon Green:     #39FF14
+/* CSS Variables defined in globals.css */
+--gold-primary:   #F5C26B
+--gold-secondary: #F4BC4B
+--gold-light:     #FFD56A
+--gold-glow:      rgba(245, 194, 107, 0.6)
+--dark-base:      #0A0A0A
+--dark-card:      #121212
+--dark-elevated:  #1A1A1A
+--neon-blue:      #00F0FF
+--neon-purple:    #B24BF3
+--neon-pink:      #FF006E
+--neon-green:     #39FF14
 ```
 
 ### **Typography**
@@ -403,3 +404,4 @@ For support, email support@emesis.app or join our Discord community.
 ---
 
 **Made with 💛 for a better, judgment-free world**
+# emesis
