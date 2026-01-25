@@ -1,12 +1,14 @@
 // /app/utils/recaptcha.ts
-import { RecaptchaVerifier } from "firebase/auth";
+import { RecaptchaVerifier, Auth } from "firebase/auth";
 import { auth } from "../../firebase";
 
 let recaptcha: RecaptchaVerifier | null = null;
 
 export const setupRecaptcha = () => {
+  if (typeof window === "undefined" || !auth) return null;
+
   if (!recaptcha) {
-    recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
+    recaptcha = new RecaptchaVerifier(auth as Auth, "recaptcha-container", {
       size: "invisible",
     });
   }
