@@ -155,6 +155,11 @@ export default function LoginPage() {
             </h1>
             <p className="text-(--gold-primary)/80 text-lg font-medium mb-1">Welcome Back</p>
             <p className="text-zinc-400 text-sm">Enter your credentials to access your realm</p>
+            
+            <div className="flex items-center justify-center gap-2 mt-4 text-(--neon-green) text-xs font-medium tracking-wide bg-(--neon-green)/10 py-1.5 px-3 rounded-full w-fit mx-auto border border-(--neon-green)/20 shadow-[0_0_10px_-3px_var(--neon-green)]">
+              <ShieldCheck className="w-4 h-4" />
+              <span>End-to-end encrypted</span>
+            </div>
           </div>
 
           {error && (

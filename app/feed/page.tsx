@@ -33,7 +33,16 @@ export default function FeedPage() {
   const [followMap, setFollowMap] = useState<{ [key: string]: boolean }>({});
   const [location, setLocation] = useState<string>("Unknown");
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [deviceType, setDeviceType] = useState<string>("Web");
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    if (/iPhone/i.test(ua)) setDeviceType("iPhone");
+    else if (/iPad/i.test(ua)) setDeviceType("iPad");
+    else if (/Android/i.test(ua)) setDeviceType("Android");
+    else setDeviceType("Web");
+  }, []);
 
   const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
     setToast({ message, type });
@@ -60,18 +69,46 @@ export default function FeedPage() {
 
   const load = async () => {
     if (!db) return;
-    const snap = await getDocs(
-      query(collection(db as Firestore, "posts"), orderBy("createdAt", "desc"))
-    );
-    const arr: any[] = [];
-    snap.forEach((d: any) => {
-      const data: any = d.data();
-      if (!Array.isArray(data.likes)) data.likes = [];
-      if (!data.uid) data.uid = "unknown"; // fixer
-      arr.push({ id: d.id, ...data });
-    });
-    setPosts(arr);
-    loadFollows(arr);
+    // 24 Hours Logic: Filter posts older than 24h
+    const oneDayAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+    
+    try {
+      // Note: If you see an index error in console, click the link to create it.
+      // Query: Get posts where createdAt > 24h ago, ordered by createdAt desc.
+      const q = query(
+        collection(db as Firestore, "posts"),
+        where("createdAt", ">", oneDayAgo),
+        orderBy("createdAt", "desc")
+      );
+      
+      const snap = await getDocs(q);
+      const arr: any[] = [];
+      snap.forEach((d: any) => {
+        const data: any = d.data();
+        if (!Array.isArray(data.likes)) data.likes = [];
+        if (!data.uid) data.uid = "unknown";
+        arr.push({ id: d.id, ...data });
+      });
+      setPosts(arr);
+      loadFollows(arr);
+    } catch (error) {
+      console.error("Error loading posts (check console for index link):", error);
+      // Fallback: Client-side filtering if index is missing
+      const fallbackSnap = await getDocs(
+        query(collection(db as Firestore, "posts"), orderBy("createdAt", "desc"))
+      );
+      const arr: any[] = [];
+      fallbackSnap.forEach((d: any) => {
+        const data: any = d.data();
+        if (data.createdAt?.toMillis() > oneDayAgo.toMillis()) {
+             if (!Array.isArray(data.likes)) data.likes = [];
+             if (!data.uid) data.uid = "unknown";
+             arr.push({ id: d.id, ...data });
+        }
+      });
+      setPosts(arr);
+      loadFollows(arr);
+    }
   };
 
   const createPost = async () => {
@@ -154,9 +191,17 @@ export default function FeedPage() {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const data = await response.json();
-            const city = data.address?.city || data.address?.town || data.address?.village || "Unknown City";
-            const country = data.address?.country || "";
-            setLocation(`${city}, ${country}`);
+            const address = data.address || {};
+            const place = address.amenity || address.shop || address.building || address.tourism || address.leisure || address.road || "";
+            const city = address.city || address.town || address.village || address.suburb || address.county || "Unknown City";
+            
+            let loc = city;
+            if (place) {
+                loc = `${place}, ${city}`;
+            } else if (address.country) {
+                loc = `${city}, ${address.country}`;
+            }
+            setLocation(loc);
           } catch (error) {
             setLocation("Location unavailable");
           }
@@ -212,7 +257,10 @@ export default function FeedPage() {
               
               {/* Minimal Header */}
               <div className="px-6 py-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
-                 <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Transmission</span>
+                 <div className="flex flex-col">
+                   <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Transmission</span>
+                   <span className="text-[10px] text-zinc-600 mt-0.5">Disappears in 24h</span>
+                 </div>
                  <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
                     <div className="w-2 h-2 rounded-full bg-zinc-800"></div>

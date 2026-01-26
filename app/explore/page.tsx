@@ -98,46 +98,45 @@ function ExploreContent() {
   };
 
   const loadPosts = async () => {
-      if (!uid || !db) return;
-      setLoading(true);
-      
-      try {
-        let q;
-        if (search) {
-            // Search by hashtag
-            // Ensure search term has # prefix for query if user didn't type it
-            // Actually, we store raw hashtags (e.g. "#Funny"). 
-            // If user types "Funny", we search for "#Funny".
-            // If user types "#Funny", we search for "#Funny".
-            let searchTerm = search.trim();
-            if (!searchTerm.startsWith("#")) searchTerm = "#" + searchTerm;
-            
-            // Note: array-contains is case-sensitive. 
-            // We might need a better solution for case-insensitive search later, 
-            // but for now strict matching on tag is fine or we'd need a normalized field.
-            // TrendingSidebar uses lowercase normalization for counting, but let's try strict first.
-            // Or better: try both? No, simple query first.
-            
-            q = query(
-                collection(db as Firestore, "posts"), 
-                where("hashtags", "array-contains", searchTerm),
+    if (!uid || !db) return;
+    setLoading(true);
+    const oneDayAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+
+    try {
+        // Fetch all posts (24h filter)
+        // Note: Ideally use a composite index for where(createdAt > oneDayAgo) + orderBy(createdAt)
+        // For robustness without index, we'll fetch recent and filter client-side if needed, 
+        // or try the query first.
+        
+        let q = query(
+            collection(db as Firestore, "posts"),
+            where("createdAt", ">", oneDayAgo),
+            orderBy("createdAt", "desc"),
+            limit(50)
+        );
+
+        // Try executing the query
+        let snap;
+        try {
+            snap = await getDocs(q);
+        } catch (err) {
+            // Fallback if index missing
+            console.warn("Index missing for explore, falling back to client-side filter");
+            const qFallback = query(
+                collection(db as Firestore, "posts"),
                 orderBy("createdAt", "desc"),
-                limit(50)
+                limit(100)
             );
-        } else {
-            // Just latest posts
-            q = query(
-                collection(db as Firestore, "posts"), 
-                orderBy("createdAt", "desc"),
-                limit(50)
-            );
+            snap = await getDocs(qFallback);
         }
 
-        const snap = await getDocs(q);
         const arr: any[] = [];
         snap.forEach((d) => {
             const data = d.data();
-            arr.push({ id: d.id, ...data });
+            // Client-side double check if fallback was used
+            if (data.createdAt?.toMillis() > oneDayAgo.toMillis()) {
+                arr.push({ id: d.id, ...data });
+            }
         });
         setPosts(arr);
 

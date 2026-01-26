@@ -6,7 +6,7 @@ import Link from "next/link";
 import { db } from "../../firebase";
 import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc, Firestore } from "firebase/firestore";
 import Comments from "./Comments";
-import { Heart, MessageCircle, Share2, Pencil, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Pencil, Trash2, Smartphone, Monitor, MapPin } from "lucide-react";
 
 interface PostCardProps {
   post: any;
@@ -376,8 +376,18 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
               <div className="flex items-center gap-3 text-[10px] text-zinc-600">
                 {post.location && (
                   <div className="flex items-center gap-1" title={post.location}>
-                    <Image src="/location.png" width={10} height={10} alt="location" className="opacity-50" />
+                    <MapPin className="w-3 h-3 opacity-50" />
                     <span className="truncate max-w-25">{post.location}</span>
+                  </div>
+                )}
+                {post.device && (
+                  <div className="flex items-center gap-1" title={`Posted from ${post.device}`}>
+                    {post.device === "iPhone" || post.device === "Android" ? (
+                      <Smartphone className="w-3 h-3 opacity-50" />
+                    ) : (
+                      <Monitor className="w-3 h-3 opacity-50" />
+                    )}
+                    <span>{post.device}</span>
                   </div>
                 )}
                 {post.createdAt && (

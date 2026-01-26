@@ -249,269 +249,237 @@ export default function ChatRoom({ params }: { params: any }) {
     );
 
   return (
-    <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-linear-to-br from-(--dark-base) via-(--dark-base) to-(--dark-base) text-white overflow-hidden">
+    <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-black text-white overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-20 right-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.1)] rounded-full blur-3xl animate-float"></div>
-      <div className="absolute bottom-20 left-20 w-96 h-96 bg-(--neon-blue)/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
+      <div className="absolute top-20 right-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.05)] rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 left-20 w-96 h-96 bg-zinc-900/50 rounded-full blur-3xl"></div>
 
-      <div className="glass border-b border-[rgba(var(--gold-primary-rgb),0.2)] backdrop-blur-3xl px-4 md:px-6 py-2 md:py-2.5 flex items-center gap-3 md:gap-5 shadow-2xl relative z-10 shrink-0">
+      {/* Header */}
+      <div className="glass border-b border-zinc-800/50 backdrop-blur-xl px-4 py-3 flex items-center gap-4 z-20 shrink-0 shadow-lg shadow-black/20">
         <button
           type="button"
           onClick={() => router.push("/chat")}
-          className="alert-btn relative group"
-          aria-label="Back to chats"
+          className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors"
+          aria-label="Back"
         >
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <button
-          type="button"
-          onClick={() => setSidebarOpen((v) => !v)}
-          className="alert-btn relative group"
-          aria-label="Toggle participants sidebar"
-        >
-          <Users className="w-4.5 h-4.5" />
-        </button>
-        
-        {/* User Avatar & Info */}
-        <div className="flex items-center gap-4 flex-1">
-          <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-linear-to-br from-(--gold-primary) to-(--gold-light) flex items-center justify-center shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.5)] font-bold text-black text-lg">
-              {otherUser?.username?.[0]?.toUpperCase() || "U"}
+
+        {/* User Info */}
+        <div className="flex items-center gap-3 flex-1 overflow-hidden">
+          <div className="relative shrink-0">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-zinc-700 to-zinc-800 flex items-center justify-center border border-zinc-700 shadow-inner">
+              <span className="text-zinc-300 font-bold text-lg">
+                {otherUser?.username?.[0]?.toUpperCase() || "?"}
+              </span>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black animate-pulse"></div>
+            {/* Online Indicator */}
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
           </div>
           
-          <div>
-            <p className="font-bold text-xl text-(--gold-primary)">
-              {otherUser?.username || "User"}
-            </p>
-            <p className="text-xs text-zinc-600 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              Online • {messages.length} messages
+          <div className="flex flex-col min-w-0">
+            <h2 className="font-bold text-zinc-100 truncate text-base leading-tight">
+              {otherUser?.username || "Loading..."}
+            </h2>
+            <p className="text-[10px] text-green-500 font-medium tracking-wide uppercase flex items-center gap-1">
+              <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
+              Active Now
             </p>
           </div>
         </div>
 
-
+        {/* Actions */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors"
+          aria-label="Chat details"
+          title="Chat details"
+        >
+          <Users className="w-5 h-5" />
+        </button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-[280px_1fr]">
-        
+      <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex">
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col relative min-w-0">
+          
+          {/* Messages List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth overscroll-contain">
+            {messages.length === 0 && (
+              <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4 opacity-50">
+                <div className="w-16 h-16 rounded-2xl bg-zinc-900 flex items-center justify-center rotate-3">
+                   <Users className="w-8 h-8 opacity-50" />
+                </div>
+                <p className="text-sm font-medium">No messages yet. Start the conversation!</p>
+              </div>
+            )}
+            
+            {messages.map((m, i) => {
+              const isMe = m.uid === user.uid;
+              const isFirst = i === 0 || messages[i - 1].uid !== m.uid;
+              const isLast = i === messages.length - 1 || messages[i + 1].uid !== m.uid;
+              
+              return (
+                <div
+                  key={m.id}
+                  className={`flex w-full ${isMe ? "justify-end" : "justify-start"} group`}
+                >
+                  <div className={`flex max-w-[85%] md:max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"} gap-2`}>
+                    
+                    {/* Avatar (only for them, and only on last message of group) */}
+                    {!isMe && (
+                      <div className={`w-8 h-8 shrink-0 flex flex-col justify-end ${!isLast ? "invisible" : ""}`}>
+                         <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-400 border border-zinc-700">
+                            {otherUser?.username?.[0]?.toUpperCase()}
+                         </div>
+                      </div>
+                    )}
+
+                    <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                      {/* Name (only first message of group, not me) */}
+                      {!isMe && isFirst && (
+                         <span className="text-[10px] text-zinc-500 ml-1 mb-1">{otherUser?.username}</span>
+                      )}
+
+                      {/* Bubble */}
+                      <div
+                        className={`relative px-4 py-2.5 shadow-sm text-sm md:text-base break-words leading-relaxed
+                          ${isMe 
+                            ? "bg-linear-to-br from-[var(--gold-primary)] to-[#F0C050] text-black rounded-2xl rounded-tr-sm" 
+                            : "bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-sm border border-zinc-700/50"
+                          }
+                          ${isLast ? "mb-1" : "mb-0.5"}
+                        `}
+                      >
+                        {m.text}
+                        
+                        {/* Reactions */}
+                        {m.reactions?.length > 0 && (
+                          <div className={`absolute -bottom-3 ${isMe ? "-left-2" : "-right-2"} flex -space-x-1`}>
+                            {m.reactions.map((r: any, idx: number) => (
+                              <span key={idx} className="bg-zinc-900 border border-zinc-700 rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-xs">
+                                {r.emoji}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Timestamp & Status */}
+                      {isLast && (
+                        <div className={`flex items-center gap-1 mt-1 text-[10px] text-zinc-600 ${isMe ? "mr-1" : "ml-1"}`}>
+                          <span>
+                            {m.createdAt?.toMillis
+                              ? new Date(m.createdAt.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                              : "Just now"}
+                          </span>
+                          {isMe && <span className="text-[var(--gold-primary)]">✓</span>}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+               <div className="flex justify-start w-full pl-10">
+                 <div className="bg-zinc-800 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1 items-center border border-zinc-700/50 w-16">
+                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce"></div>
+                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce animation-delay-100"></div>
+                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce animation-delay-200"></div>
+                 </div>
+               </div>
+            )}
+            
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="p-3 md:p-4 bg-black/80 backdrop-blur-md border-t border-zinc-800/50 shrink-0 z-20">
+             <form 
+               onSubmit={(e) => { e.preventDefault(); send(); }}
+               className="flex items-end gap-2 max-w-4xl mx-auto"
+             >
+                <div className="flex-1 relative group">
+                  <div className="absolute -inset-0.5 bg-linear-to-r from-zinc-800 to-zinc-700 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                  <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => { setText(e.target.value); handleTyping(); }}
+                    placeholder="Message..."
+                    className="relative w-full bg-zinc-900/90 text-zinc-100 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)]/50 placeholder:text-zinc-600 transition-all border border-zinc-800"
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={!text.trim() || sending}
+                  className="h-[52px] w-[52px] flex items-center justify-center rounded-2xl bg-[var(--gold-primary)] text-black hover:bg-[var(--gold-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.2)] shrink-0"
+                >
+                   {sending ? (
+                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                     </svg>
+                   ) : (
+                     <svg className="w-5 h-5 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                     </svg>
+                   )}
+                </button>
+             </form>
+          </div>
+        </div>
+
         {/* Mobile Sidebar Overlay */}
         {sidebarOpen && (
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-black/95 backdrop-blur-xl border-r border-[rgba(var(--gold-primary-rgb),0.1)] transition-transform duration-300 md:relative md:block md:w-auto md:bg-transparent md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:hidden"}`}>
-          <div className="h-full p-4 space-y-4 pt-20 md:pt-4">
-            <div className="flex items-center justify-between md:hidden mb-4">
-              <span className="text-lg font-bold text-(--gold-primary)">Participants</span>
-              <button onClick={() => setSidebarOpen(false)} className="p-2 text-zinc-400" aria-label="Close sidebar">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-zinc-500">
-              <span className="w-2 h-2 rounded-full bg-(--gold-primary)"></span>
-              Participants
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black font-bold flex items-center justify-center shrink-0">
-                {user?.displayName?.[0]?.toUpperCase() || "Y"}
+        {/* Sidebar */}
+        <div className={`
+            fixed inset-y-0 right-0 z-40 w-72 bg-black/95 backdrop-blur-xl border-l border-zinc-800/50 transition-transform duration-300
+            md:relative md:translate-x-0 md:bg-black/50 md:z-0
+            ${sidebarOpen ? "translate-x-0" : "translate-x-full md:hidden"}
+        `}>
+           <div className="h-full flex flex-col p-4 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6 md:hidden">
+                <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Chat Details</h3>
+                <button onClick={() => setSidebarOpen(false)} className="p-1 text-zinc-400" aria-label="Close sidebar">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm text-(--gold-primary) font-semibold truncate">
-                  {user?.displayName || "You"}
-                </div>
-                <div className="text-xs text-zinc-600 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                  Online
-                </div>
+
+              <div className="hidden md:block mb-4">
+                 <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Chat Details</h3>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className={`relative w-12 h-12 rounded-full font-bold flex items-center justify-center shrink-0 ${
-                otherUser?.isBot
-                  ? "bg-linear-to-br from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/50"
-                  : "bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black"
-              }`}>
-                {otherUser?.username?.[0]?.toUpperCase() || "U"}
+
+              <div className="flex flex-col items-center p-6 border border-zinc-800 rounded-2xl bg-zinc-900/30 mb-6">
+                 <div className="w-20 h-20 rounded-full bg-linear-to-br from-zinc-700 to-zinc-800 flex items-center justify-center mb-3 shadow-xl">
+                    <span className="text-3xl font-bold text-zinc-400">{otherUser?.username?.[0]?.toUpperCase()}</span>
+                 </div>
+                 <h4 className="font-bold text-lg text-white">{otherUser?.username}</h4>
+                 <p className="text-xs text-zinc-500">Joined recently</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm text-(--gold-primary) font-semibold truncate">
-                  {otherUser?.username || "User"}
-                </div>
-                <div className="text-xs text-zinc-600 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                  Online
-                </div>
+              
+              <div className="space-y-2 mt-auto md:mt-0">
+                 <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800/50 text-zinc-400 hover:text-red-400 transition-colors text-sm font-medium">
+                    <LogOut className="w-4 h-4" />
+                    <span>Block User</span>
+                 </button>
               </div>
-            </div>
-          </div>
-        </aside>
-        <div className="min-h-0 overflow-y-auto px-2 md:px-6 py-4 md:py-6 pb-24 space-y-4 md:space-y-6">
-        {messages.map((m, index) => {
-          const mine = m.uid === user.uid;
-          const showTime = index === 0 || 
-            (messages[index - 1]?.createdAt?.seconds && 
-             m.createdAt?.seconds && 
-             m.createdAt.seconds - messages[index - 1].createdAt.seconds > 300);
-
-          return (
-            <div key={m.id} className="animate-fadeIn">
-              {showTime && (
-                <div className="flex justify-center mb-4">
-                  <span className="text-xs text-zinc-600 bg-(--dark-base)/40 px-4 py-2 rounded-full border border-[rgba(var(--gold-primary-rgb),0.2)]">
-                    {m.createdAt?.seconds
-                      ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </span>
-                </div>
-              )}
-
-              <div className={`flex w-full ${mine ? "justify-end" : "justify-start"}`}>
-                <div className="max-w-[80%] sm:max-w-[70%] group">
-                  <div
-                    className={`
-                      relative px-5 py-3.5 rounded-2xl shadow-xl transition-all duration-300
-                      ${mine 
-                        ? "bg-linear-to-br from-(--gold-primary) to-(--gold-light) text-black rounded-br-md hover:shadow-2xl hover:shadow-[rgba(var(--gold-primary-rgb),0.5)]" 
-                        : "glass border border-[rgba(var(--gold-primary-rgb),0.2)] text-(--gold-primary) rounded-bl-md hover:border-[rgba(var(--gold-primary-rgb),0.4)]"}
-                    `}
-                  >
-                    <div className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap">
-                      {m.text}
-                    </div>
-
-                    <div className={`text-[10px] mt-2 text-right ${mine ? "text-(--dark-base)/60" : "text-zinc-600"} font-semibold`}>
-                      {m.createdAt?.seconds
-                        ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </div>
-
-                    {m.reactions && m.reactions.length > 0 && (
-                      <div className="absolute -bottom-3 right-4 flex gap-1">
-                        {Array.from(new Set(m.reactions.map((r: any) => r.emoji))).map((emoji: any) => {
-                          const count = m.reactions.filter((r: any) => r.emoji === emoji).length;
-                          return (
-                            <div
-                              key={emoji}
-                              className="bg-(--dark-base)/80 border border-[rgba(var(--gold-primary-rgb),0.3)] rounded-full px-2 py-0.5 text-xs flex items-center gap-1 shadow-lg"
-                            >
-                              <span>{emoji}</span>
-                              <span className="text-(--gold-primary) font-bold">{count}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="relative mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowReactions(showReactions === m.id ? null : m.id)}
-                      className="text-xs text-zinc-600 hover:text-(--gold-primary) transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1"
-                    >
-                      <span>😊</span>
-                      <span>React</span>
-                    </button>
-
-                    {showReactions === m.id && (
-                      <div className="absolute left-0 mt-2 glass rounded-2xl p-3 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.3)] flex gap-2 animate-bounceIn z-50">
-                        {["❤️", "👍", "😂", "😮", "😢", "🔥", "✨", "🎉"].map((emoji) => (
-                          <button
-                            key={emoji}
-                            type="button"
-                            onClick={() => addReaction(m.id, emoji)}
-                            className="text-2xl hover:scale-125 transition-transform duration-200 hover:rotate-12"
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        
-        {isTyping && (
-          <div className="flex justify-start animate-fadeIn">
-            <div className="glass rounded-2xl px-6 py-4 border border-[rgba(var(--gold-primary-rgb),0.2)]">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <div ref={bottomRef} />
+           </div>
         </div>
       </div>
 
-      <div className="glass border-t border-[rgba(var(--gold-primary-rgb),0.2)] backdrop-blur-3xl px-2 md:px-6 py-2 md:py-2.5 flex gap-2 md:gap-4 shadow-2xl relative z-20 shrink-0">
-        <button className="alert-btn relative group shrink-0" aria-label="Add emoji" type="button">
-          <span className="text-lg md:text-xl group-hover:scale-125 transition-transform">😊</span>
-        </button>
-
-        <div className="flex-1 relative min-w-0">
-          <input
-            className="w-full bg-black/60 px-3 md:px-6 py-2 md:py-3 rounded-2xl text-(--gold-primary) border-2 border-[rgba(var(--gold-primary-rgb),0.3)] focus:border-(--gold-primary) outline-none placeholder-zinc-600 font-medium transition-all duration-300 focus:shadow-lg focus:shadow-[rgba(var(--gold-primary-rgb),0.2)] text-sm md:text-base"
-            placeholder="Message..."
-            value={text}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") send();
-            }}
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
-          />
-          <div className="absolute right-3 bottom-1.5 md:bottom-2 text-[10px] md:text-xs text-zinc-600">
-            {text.length}/1000
-          </div>
-        </div>
-
-        <button className="alert-btn relative group shrink-0" aria-label="Attach file" type="button">
-          <svg className="w-4 md:w-4.5 h-4 md:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          onClick={send}
-          disabled={!text.trim() || sending}
-          className="alert-btn bg-(--gold-primary) text-black hover:bg-(--gold-light) disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-          aria-label="Send message"
-        >
-          {sending ? (
-            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          )}
-        </button>
-      </div>
-
+      {/* TOAST NOTIFICATION */}
       {toast && (
         <Toast
           message={toast.message}
@@ -519,24 +487,7 @@ export default function ChatRoom({ params }: { params: any }) {
           onClose={() => setToast(null)}
         />
       )}
-
-      <style jsx>{`
-        :root {
-          --color-bg: var(--dark-base);
-          --color-primary: var(--gold-primary);
-          --color-primary-2: var(--gold-light);
-          --text-primary: var(--text-main);
-          --text-secondary: #9CA3AF;
-        }
-        [data-theme="light"] {
-          --color-bg: #FAFAFA;
-          --text-primary: #1F2937;
-          --text-secondary: #4B5563;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-      `}</style>
     </div>
   );
 }
+
