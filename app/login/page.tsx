@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoadingOverlay from "../components/LoadingOverlay";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Chrome } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Chrome, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const { googleLogin, loginWithEmail, resetPassword, user } = useAuth();
@@ -120,7 +120,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full relative flex items-center justify-center overflow-hidden bg-(--background) selection:bg-(--gold-primary) selection:text-black">
+    <div className="min-h-dvh w-full relative flex items-center justify-center bg-(--background) selection:bg-(--gold-primary) selection:text-black py-10">
       <LoadingOverlay isLoading={loading} />
       
       {/* Background Elements */}
@@ -129,8 +129,8 @@ export default function LoginPage() {
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(var(--gold-primary-rgb),0.05),transparent_70%)] pointer-events-none" />
       
       {/* Main Card */}
-      <div className={`relative z-10 w-full max-w-md p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="glass-card rounded-3xl border border-(--glass-border) shadow-[0_0_50px_-10px_rgba(var(--gold-primary-rgb),0.1)] p-8 md:p-10 backdrop-blur-2xl bg-(--glass-bg) relative overflow-hidden group">
+      <div className={`relative z-10 w-full max-w-md p-4 md:p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="glass-card rounded-3xl border border-(--glass-border) shadow-[0_0_50px_-10px_rgba(var(--gold-primary-rgb),0.1)] p-6 md:p-10 backdrop-blur-2xl bg-(--glass-bg) relative overflow-hidden group">
           
           {/* Top highlight line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-(--gold-primary) to-transparent opacity-50" />
@@ -241,12 +241,17 @@ export default function LoginPage() {
 
           {/* Footer */}
           <div className="mt-8 text-center">
-            <p className="text-zinc-400 text-sm">
+            <p className="text-zinc-400 text-sm mb-6">
               Don't have an account?{' '}
               <Link href="/signup" className="text-(--gold-primary) font-bold hover:text-(--gold-light) hover:underline decoration-(--gold-primary)/50 underline-offset-4 transition-all">
                 Sign up
               </Link>
             </p>
+
+            <div className="flex items-center justify-center gap-2 text-green-500 font-medium text-xs opacity-90">
+              <ShieldCheck className="w-4 h-4" />
+              <span className="tracking-wide uppercase">End-to-end Encrypted</span>
+            </div>
           </div>
           
         </div>

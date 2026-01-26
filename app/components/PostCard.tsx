@@ -88,7 +88,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
           <Link
           key={i}
           href={`/explore?tag=${part.replace('#', '')}`}
-          className="text-[var(--gold-light)] font-bold hover:text-[var(--gold-primary)] hover:underline cursor-pointer transition-colors z-10 relative"
+          className="text-(--gold-light) font-bold hover:text-(--gold-primary) hover:underline cursor-pointer transition-colors z-10 relative"
           onClick={(e) => e.stopPropagation()}
         >
           {part}
@@ -158,13 +158,14 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
   };
 
   const generateShareCard = async (platform: "instagramStory" | "whatsapp" | "generic") => {
-    const ratio = typeof window !== "undefined" ? Math.max(2, Math.floor(window.devicePixelRatio || 2)) : 2;
+    // Standardize output resolution to avoid memory issues on mobile
+    // We don't need devicePixelRatio here because we are generating a static image file with fixed dimensions
     const size = platform === "instagramStory" ? { w: 1080, h: 1920 } : platform === "whatsapp" ? { w: 1024, h: 1024 } : { w: 1200, h: 1800 };
     const canvas = document.createElement("canvas");
-    canvas.width = size.w * ratio;
-    canvas.height = size.h * ratio;
+    canvas.width = size.w;
+    canvas.height = size.h;
     const ctx = canvas.getContext("2d")!;
-    ctx.scale(ratio, ratio);
+    // No scaling needed since we work with direct pixel values corresponding to the target resolution
 
     // Get theme colors
     const style = getComputedStyle(document.documentElement);
@@ -311,7 +312,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                       type="button"
                       aria-label="Edit post"
                       onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
-                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold-primary)]"
+                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--gold-primary)"
                     >
                       <Pencil className="w-4 h-4" />
                       <span>Edit</span>
@@ -337,7 +338,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
               id={`edit-textarea-${post.id}`}
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-black/50 p-4 border border-[rgba(var(--gold-primary-rgb),0.3)] rounded-xl text-[var(--gold-secondary)] focus:outline-none focus:border-[var(--gold-primary)] transition-all min-h-25"
+              className="w-full bg-black/50 p-4 border border-[rgba(var(--gold-primary-rgb),0.3)] rounded-xl text-(--gold-secondary) focus:outline-none focus:border-(--gold-primary) transition-all min-h-25"
               placeholder="Edit your confession/thoughts/whisper..."
             />
             <div className="mt-4 flex gap-3 justify-end">
@@ -352,7 +353,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 type="button"
                 onClick={saveEdit} 
                 disabled={loading}
-                className="px-6 py-2 bg-[var(--gold-primary)] text-black rounded-xl font-bold hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] transition-all text-sm disabled:opacity-50"
+                className="px-6 py-2 bg-(--gold-primary) text-black rounded-xl font-bold hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] transition-all text-sm disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </button>
@@ -367,7 +368,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                         👻 Anonymous
                     </span>
                 ) : (
-                    <Link href={`/profile?uid=${post.uid}`} className="hover:text-[var(--gold-primary)] transition-colors">
+                    <Link href={`/profile?uid=${post.uid}`} className="hover:text-(--gold-primary) transition-colors">
                         @{post.username}
                     </Link>
                 )}
@@ -390,7 +391,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
               </div>
             </div>
 
-            <p className="mt-4 text-[var(--gold-secondary)] leading-relaxed font-normal whitespace-pre-wrap text-[15px]">
+            <p className="mt-4 text-(--gold-secondary) leading-relaxed font-normal whitespace-pre-wrap text-[15px]">
                 {renderTextWithHashtags(post.text)}
             </p>
 
@@ -400,7 +401,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                   <button 
                     type="button"
                     onClick={() => onUnfollow(post.uid)} 
-                    className="px-4 py-1.5 bg-[rgba(var(--gold-primary-rgb),0.1)] text-[var(--gold-primary)] border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg font-medium text-xs hover:bg-[rgba(var(--gold-primary-rgb),0.2)] transition-all"
+                    className="px-4 py-3 bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg font-medium text-sm hover:bg-[rgba(var(--gold-primary-rgb),0.2)] transition-all min-h-11"
                   >
                     Following
                   </button>
@@ -408,7 +409,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                   <button 
                     type="button"
                     onClick={() => onFollow(post.uid)} 
-                    className="px-4 py-1.5 bg-[var(--gold-primary)] text-black rounded-lg font-bold text-xs hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-105 active:scale-95 transition-all"
+                    className="px-4 py-3 bg-(--gold-primary) text-black rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-105 active:scale-95 transition-all min-h-11"
                   >
                     Follow
                   </button>
@@ -419,24 +420,24 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 type="button"
                 onClick={like} 
                 title="Like"
-                className={`relative group flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.1)] active:scale-95 ${
+                className={`relative group flex items-center gap-2 px-4 py-3 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] active:scale-95 min-h-11 ${
                   post.likes?.includes(user?.uid) ? "text-red-500 bg-red-500/10" : "text-zinc-400"
                 }`}
               >
                 <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
                 <Heart className={`w-5 h-5 transition-transform duration-300 ${post.likes?.includes(user?.uid) ? "scale-110" : "scale-100"}`} />
-                <span className="font-medium text-xs">{post.likes?.length || 0}</span>
+                <span className="font-medium text-sm">{post.likes?.length || 0}</span>
               </button>
 
               <button 
                 type="button"
                 onClick={() => setShowComments(!showComments)} 
                 title="Comments"
-                className="relative group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all hover:text-[var(--gold-primary)] text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-[var(--gold-primary)]"
+                className="relative group flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all hover:text-(--gold-primary) text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
               >
                 <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
                 <MessageCircle className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
-                <span className="font-medium text-xs">Comment</span>
+                <span className="font-medium text-sm">Comment</span>
               </button>
 
               <div className="relative">
@@ -444,14 +445,14 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                   type="button"
                   onClick={() => setShareOpen((v) => !v)}
                   title="Share"
-                  className="relative group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all text-zinc-400 hover:text-[var(--gold-primary)] active:scale-95 focus:outline-none focus-visible:ring-2 ring-[var(--gold-primary)]"
+                  className="relative group flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all text-zinc-400 hover:text-(--gold-primary) active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
                   aria-haspopup="menu"
                   aria-label="Share options"
                   ref={shareBtnRef}
                 >
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
                   <Share2 className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
-                  <span className="font-medium text-xs">Share</span>
+                  <span className="font-medium text-sm">Share</span>
                 </button>
                 {shareOpen && (
                   <div

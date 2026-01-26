@@ -128,15 +128,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full relative flex items-center justify-center overflow-hidden bg-[var(--background)] selection:bg-[var(--gold-primary)] selection:text-black">
+    <div className="min-h-dvh w-full relative flex items-center justify-center bg-[var(--background)] selection:bg-[var(--gold-primary)] selection:text-black py-10">
       <LoadingOverlay isLoading={loading} />
       
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-black/80 z-0" />
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(var(--gold-primary-rgb),0.05),transparent_70%)] pointer-events-none" />
 
-      <div className={`relative z-10 w-full max-w-lg p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="glass-card rounded-3xl border border-[var(--glass-border)] shadow-[0_0_50px_-10px_rgba(var(--gold-primary-rgb),0.1)] p-8 md:p-10 backdrop-blur-2xl bg-[var(--glass-bg)] relative overflow-hidden group">
+      <div className={`relative z-10 w-full max-w-lg p-4 md:p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="glass-card rounded-3xl border border-[var(--glass-border)] shadow-[0_0_50px_-10px_rgba(var(--gold-primary-rgb),0.1)] p-6 md:p-10 backdrop-blur-2xl bg-[var(--glass-bg)] relative overflow-hidden group">
           
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--gold-primary)] to-transparent opacity-50" />
           

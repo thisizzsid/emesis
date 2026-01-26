@@ -87,7 +87,7 @@ export default function Navbar() {
 
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [showThemeNotice, setShowThemeNotice] = useState(false);
-  const [progressWidth, setProgressWidth] = useState(0);
+  const [targetTheme, setTargetTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     try {
@@ -100,34 +100,24 @@ export default function Navbar() {
 
   const toggleTheme = () => {
     const next = theme === "light" ? "dark" : "light";
+    setTargetTheme(next);
     setShowThemeNotice(true);
-    setProgressWidth(0);
-    const start = performance.now();
-    const duration = 2000;
-    const step = (t: number) => {
-      const elapsed = t - start;
-      const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
-      setProgressWidth(pct);
-      if (elapsed < duration) {
-        requestAnimationFrame(step);
-      }
-    };
-    requestAnimationFrame(step);
+    // Removed progress bar logic for a cleaner, faster transition
+    
     setTimeout(() => {
       setTheme(next);
       try {
         localStorage.setItem("theme", next);
       } catch {}
       document.documentElement.setAttribute("data-theme", next);
+    }, 800); // Switch halfway through
+
+    setTimeout(() => {
       setShowThemeNotice(false);
-    }, duration);
+    }, 1600);
   };
 
-  useEffect(() => {
-    try {
-      document.documentElement.style.setProperty("--progress-width", `${progressWidth}%`);
-    } catch {}
-  }, [progressWidth]);
+
   if (!user) return null;
 
   return (
@@ -136,7 +126,7 @@ export default function Navbar() {
         {/* Left: Menu Button (Mobile Only) */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors"
+          className="md:hidden flex items-center justify-center w-12 h-12 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors"
           aria-label="Toggle sidebar"
           type="button"
         >
@@ -163,7 +153,7 @@ export default function Navbar() {
           type="button"
         >
           <div className="relative w-9 h-10 md:w-11 md:h-14 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-            <div className="absolute inset-0 bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-(--gold-primary) to-(--gold-light) opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500"></div>
             <Image
               src="/logoemesis.png"
               alt="Emesis Logo"
@@ -172,20 +162,20 @@ export default function Navbar() {
               sizes="40px"
             />
           </div>
-          <span className="hidden sm:inline bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent font-black tracking-tighter">
+          <span className="hidden sm:inline bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent font-black tracking-tighter">
             EMESIS
           </span>
-          <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] group-hover:w-full transition-all duration-500"></div>
+          <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-(--gold-primary) to-(--gold-light) group-hover:w-full transition-all duration-500"></div>
         </button>
 
         {/* Right: Logout Button (Center-aligned on desktop, right-aligned on mobile) */}
         <div className="flex-1 flex items-center justify-end md:justify-center">
           <button
             onClick={toggleTheme}
-            className={`relative mr-3 p-2 rounded-xl transition-all duration-300 active:scale-95 group overflow-hidden ${
+            className={`relative mr-3 min-w-11 min-h-11 flex items-center justify-center p-2 rounded-xl transition-all duration-300 active:scale-95 group overflow-hidden ${
               theme === "light"
                 ? "bg-zinc-900 text-white hover:bg-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)]"
-                : "bg-[rgba(var(--gold-primary-rgb),0.1)] text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.2)] hover:shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.4)] border border-[rgba(var(--gold-primary-rgb),0.3)]"
+                : "bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.2)] hover:shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.4)] border border-[rgba(var(--gold-primary-rgb),0.3)]"
             }`}
             aria-live="polite"
             type="button"
@@ -225,7 +215,7 @@ export default function Navbar() {
           </button>
           <button
             onClick={handleLogout}
-            className="logout-btn relative p-2 rounded-xl transition-all duration-200 active:scale-95 text-[#ff0033] hover:bg-[#ff0033]/10 hover:shadow-[0_0_20px_rgba(255,0,51,0.6)] group"
+            className="logout-btn relative min-w-11 min-h-11 flex items-center justify-center p-2 rounded-xl transition-all duration-200 active:scale-95 text-[#ff0033] hover:bg-[#ff0033]/10 hover:shadow-[0_0_20px_rgba(255,0,51,0.6)] group"
             type="button"
           >
             <svg
@@ -259,42 +249,33 @@ export default function Navbar() {
           </div>
         </div>
         {showThemeNotice && (
-          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
+          <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
             {/* Ambient Background Glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[rgba(var(--gold-primary-rgb),0.15)] via-transparent to-transparent opacity-50 animate-pulse"></div>
             
             <div className="relative z-10 flex flex-col items-center">
-                {/* Large Icon Animation */}
-                <div className="mb-12 relative">
-                    <div className="absolute inset-0 bg-[var(--gold-primary)] blur-[60px] opacity-20 animate-pulse"></div>
-                    <div className="text-8xl md:text-9xl animate-bounceIn drop-shadow-[0_0_30px_rgba(var(--gold-primary-rgb),0.5)]">
-                        {theme === "dark" ? "☀️" : "🌑"}
+                {/* Sun / Moon Icon Container */}
+                <div className="mb-12 relative z-10 transition-all duration-1000 transform">
+                    <div className="absolute inset-0 bg-(--gold-primary) blur-[60px] opacity-20 animate-pulse"></div>
+                    <div className="flex items-center justify-center">
+                        {targetTheme === "light" ? (
+                          <div className="animate-spin-slow text-(--gold-primary) drop-shadow-[0_0_50px_rgba(245,194,107,0.8)]">
+                            <Sun className="w-24 h-24 md:w-32 md:h-32" strokeWidth={1} />
+                          </div>
+                        ) : (
+                          <div className="animate-pulse text-zinc-300 drop-shadow-[0_0_50px_rgba(255,255,255,0.5)]">
+                            <Moon className="w-24 h-24 md:w-32 md:h-32" strokeWidth={1} />
+                          </div>
+                        )}
                     </div>
                 </div>
                 
-                {/* Text Content */}
-                <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-[var(--gold-primary)] via-white to-[var(--gold-primary)] mb-6 tracking-tighter text-center animate-slideInUp">
-                    {theme === "dark" ? "ILLUMINATING" : "GOING DARK"}
+                {/* Minimalist Text */}
+                <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-(--gold-primary) via-white to-(--gold-primary) tracking-[0.3em] text-center uppercase animate-pulse mt-8">
+                    {targetTheme === "light" ? "Light Mode" : "Dark Mode"}
                 </h2>
                 
-                <p className="text-zinc-500 text-lg md:text-xl font-mono tracking-widest uppercase mb-12 animate-slideInUp" style={{ animationDelay: '0.1s' }}>
-                    System Reconfiguration in Progress
-                </p>
-
-                {/* Modern Progress Bar */}
-                <div className="w-full max-w-md h-1 bg-zinc-900 rounded-full overflow-hidden relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                    <div 
-                        className="h-full bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] transition-all duration-75 ease-linear shadow-[0_0_15px_var(--gold-primary)] relative" 
-                        style={{ width: `${progressWidth}%` }} 
-                    >
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 bg-white/50 blur-sm"></div>
-                    </div>
-                </div>
-                
-                {/* Percentage */}
-                <div className="mt-4 font-mono text-[var(--gold-primary)] text-sm opacity-80">
-                    {progressWidth}% COMPLETE
-                </div>
+                <div className="mt-4 h-[1px] w-24 bg-linear-to-r from-transparent via-(--gold-primary) to-transparent opacity-50"></div>
             </div>
           </div>
         )}
@@ -306,6 +287,7 @@ export default function Navbar() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
         onMouseEnter={handleSidebarInteraction}
+        onTouchStart={handleSidebarInteraction}
         onMouseLeave={() => {
           // Only auto-close on mobile
           if (window.innerWidth < 768) {
@@ -368,12 +350,12 @@ export default function Navbar() {
         {/* Notifications Section in Sidebar (Mobile Only mainly, but nice to have) */}
         <div className="border-t border-[rgba(var(--gold-primary-rgb),0.15)] p-4 bg-gradient-to-t from-[rgba(var(--gold-primary-rgb),0.05)] to-transparent">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold text-[var(--gold-primary)] uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-xs font-bold text-(--gold-primary) uppercase tracking-wider flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${notificationCount > 0 ? "bg-red-500 animate-pulse" : "bg-zinc-700"}`}></span>
               Notifications
             </h3>
             {notificationCount > 0 && (
-              <span className="text-[10px] bg-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-primary)] px-2 py-0.5 rounded-full">
+              <span className="text-[10px] bg-[rgba(var(--gold-primary-rgb),0.2)] text-(--gold-primary) px-2 py-0.5 rounded-full">
                 {notificationCount} New
               </span>
             )}
@@ -420,8 +402,8 @@ function SidebarNavButton({
       onClick={onClick}
       className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 overflow-hidden ${
         isActive
-          ? "text-[var(--gold-primary)] shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.15)]"
-          : "text-zinc-400 hover:text-[var(--gold-light)]"
+          ? "text-(--gold-primary) shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.15)]"
+          : "text-zinc-400 hover:text-(--gold-light)"
       }`}
     >
       {/* Active Background Gradient */}
@@ -434,7 +416,7 @@ function SidebarNavButton({
 
       {/* Active Indicator Bar */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[var(--gold-primary)] rounded-r-full shadow-[0_0_10px_var(--gold-primary)]"></div>
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-(--gold-primary) rounded-r-full shadow-[0_0_10px_var(--gold-primary)]"></div>
       )}
 
       {/* Icon */}

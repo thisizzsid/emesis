@@ -187,26 +187,26 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-6 py-16">
-      <div className="max-w-6xl mx-auto flex gap-8">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-4 md:px-6 pt-20 pb-10">
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
         {/* LEFT COLUMN - FEED */}
-        <div className="flex-1 space-y-10">
-          {/* WELCOME SECTION */}
-          <div className="text-center mb-12 animate-fadeIn">
-            <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent drop-shadow-lg">
-              Welcome back, {user?.displayName?.split(" ")[0]}!
-            </h1>
+        <div className="flex-1 space-y-10 min-w-0">
+        {/* WELCOME SECTION */}
+        <div className="text-center mb-12 animate-fadeIn">
+          <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent drop-shadow-lg">
+            Welcome back, {user?.displayName?.split(" ")[0]}!
+          </h1>
 
-            <p className="mt-6 text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed font-light tracking-tight">
-              emesis is a quiet place to release Confessions thoughts you don’t usually say out loud —
-              <span className="text-[var(--gold-primary)] font-medium"> no judgement, just honesty.</span>
-            </p>
-          </div>
+          <p className="mt-6 text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed font-light tracking-tight">
+            emesis is a quiet place to release Confessions thoughts you don’t usually say out loud —
+            <span className="text-(--gold-primary) font-medium"> no judgement, just honesty.</span>
+          </p>
+        </div>
 
-          {/* CREATE POST */}
-          <div className="relative group">
-            {/* Subtle Monochrome Glow */}
-            <div className="absolute -inset-0.5 bg-[var(--gold-primary)] rounded-3xl blur-sm opacity-5 group-hover:opacity-10 transition duration-1000"></div>
+        {/* CREATE POST */}
+        <div className="relative group">
+          {/* Subtle Monochrome Glow */}
+          <div className="absolute -inset-0.5 bg-(--gold-primary) rounded-3xl blur-sm opacity-5 group-hover:opacity-10 transition duration-1000"></div>
             
             <div className="relative bg-[#0A0A0A] rounded-3xl border border-zinc-800 overflow-hidden">
               
@@ -224,7 +224,7 @@ export default function FeedPage() {
                 <label htmlFor="post-textarea" className="sr-only">Post</label>
                 <textarea
                   id="post-textarea"
-                  className="w-full bg-transparent text-lg text-zinc-200 placeholder:text-zinc-600 p-4 min-h-40 focus:outline-none resize-none font-medium leading-relaxed tracking-wide selection:bg-[var(--gold-primary)] selection:text-black"
+                  className="w-full bg-transparent text-lg text-zinc-200 placeholder:text-zinc-600 p-4 min-h-40 focus:outline-none resize-none font-medium leading-relaxed tracking-wide selection:bg-(--gold-primary) selection:text-black"
                   placeholder="What's on your mind?..."
                   value={text}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
@@ -242,7 +242,7 @@ export default function FeedPage() {
                     onClick={() => setAnonymous(!anonymous)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 border ${
                       anonymous 
-                        ? "bg-zinc-800 text-[var(--gold-primary)] border-zinc-700" 
+                        ? "bg-zinc-800 text-(--gold-primary) border-zinc-700" 
                         : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-900"
                     }`}
                   >
@@ -253,7 +253,7 @@ export default function FeedPage() {
                   {/* Location Badge */}
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-zinc-500 text-xs font-medium whitespace-nowrap hover:bg-zinc-900 transition-colors">
                     <MapPin className="w-3.5 h-3.5" />
-                    <span className="truncate max-w-[120px]" title={location}>
+                    <span className="truncate max-w-30" title={location}>
                       {detectingLocation ? "Locating..." : location}
                     </span>
                   </div>
@@ -271,7 +271,7 @@ export default function FeedPage() {
                 <button
                   onClick={createPost}
                   disabled={!text.trim()}
-                  className="group flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--gold-primary)] text-black font-bold tracking-tight transition-all duration-300 hover:bg-[var(--gold-light)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-(--gold-primary) text-black font-bold tracking-tight transition-all duration-300 hover:bg-(--gold-light) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span>Post</span>
                   <Send className="w-3.5 h-3.5" />
@@ -297,7 +297,9 @@ export default function FeedPage() {
         </div>
 
         {/* RIGHT COLUMN - TRENDING SIDEBAR */}
-        <TrendingSidebar />
+        <div className="hidden lg:block w-80 shrink-0">
+            <TrendingSidebar />
+        </div>
       </div>
 
       {/* TOAST NOTIFICATION */}

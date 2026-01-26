@@ -9,6 +9,18 @@
   box-sizing: border-box;
 }
 
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation; /* Improve touch delay */
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Remove bottom space */
+}
+
 /* === ULTRA MODERN FUTURISTIC BRAND COLORS === */
 :root {
   --gold-primary: #F5C26B;
@@ -135,7 +147,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .alert-btn {
-  @apply p-2 rounded-xl transition-all duration-200 hover:bg-white/5 active:scale-95 text-zinc-400 hover:text-[var(--gold-primary)];
+  @apply p-2 rounded-xl transition-all duration-200 hover:bg-white/5 active:scale-95 text-zinc-400 hover:text-[var(--gold-primary)] min-w-[44px] min-h-[44px] flex items-center justify-center;
 }
 
 .typing-indicator span {
@@ -221,4 +233,13 @@ h1 {
 
 .animate-textShine {
   animation: textShine 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

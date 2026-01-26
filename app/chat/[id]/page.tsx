@@ -18,6 +18,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Moon, Sun, LogOut, Users } from "lucide-react";
+import Toast from "../../components/Toast";
 
 export default function ChatRoom({ params }: { params: any }) {
   const { user, logout } = useAuth();
@@ -32,6 +33,7 @@ export default function ChatRoom({ params }: { params: any }) {
   const [showReactions, setShowReactions] = useState<string | null>(null);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   const bottomRef = useRef<any>(null);
   const typingTimeoutRef = useRef<any>(null);
   const lastMessageIdRef = useRef<string | null>(null);
@@ -140,11 +142,15 @@ export default function ChatRoom({ params }: { params: any }) {
           }
         } catch (err) {
           console.error("AI Chat Error:", err);
+          setToast({ message: "AI failed to respond. Please try again.", type: "error" });
         } finally {
           setIsTyping(false);
         }
       }
 
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setToast({ message: "Failed to send message. Please check your connection.", type: "error" });
     } finally {
       setSending(false);
     }
@@ -212,7 +218,16 @@ export default function ChatRoom({ params }: { params: any }) {
       if (latest.id !== prevId && latest.uid !== user.uid && !document.hidden) {
         playPing();
       }
-    });
+    }, (error) => {
+       console.error("Chat snapshot error:", error);
+       if (error.code === 'permission-denied') {
+          setToast({ message: "Access denied. Check your permissions.", type: "error" });
+       } else if (error.code === 'failed-precondition') {
+          setToast({ message: "System configuration error. Check console.", type: "error" });
+       } else {
+          setToast({ message: "Connection lost. Reconnecting...", type: "error" });
+       }
+     });
     return () => unsub();
   }, [id, user]);
 
@@ -283,8 +298,23 @@ export default function ChatRoom({ params }: { params: any }) {
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-[280px_1fr]">
-        <aside className={`hidden md:block border-r border-[rgba(var(--gold-primary-rgb),0.1)] backdrop-blur-2xl transition-all duration-300 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"}`}>
-          <div className="h-full p-4 space-y-4">
+        
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-black/95 backdrop-blur-xl border-r border-[rgba(var(--gold-primary-rgb),0.1)] transition-transform duration-300 md:relative md:block md:w-auto md:bg-transparent md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:hidden"}`}>
+          <div className="h-full p-4 space-y-4 pt-20 md:pt-4">
+            <div className="flex items-center justify-between md:hidden mb-4">
+              <span className="text-lg font-bold text-(--gold-primary)">Participants</span>
+              <button onClick={() => setSidebarOpen(false)} className="p-2 text-zinc-400" aria-label="Close sidebar">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
             <div className="flex items-center gap-2 text-xs text-zinc-500">
               <span className="w-2 h-2 rounded-full bg-(--gold-primary)"></span>
               Participants
@@ -466,25 +496,29 @@ export default function ChatRoom({ params }: { params: any }) {
           type="button"
           onClick={send}
           disabled={!text.trim() || sending}
-          className="modern-btn px-4 md:px-8 py-2 md:py-3 bg-linear-to-r from-(--gold-primary) to-(--gold-light) rounded-2xl font-bold text-black hover:shadow-2xl hover:shadow-[rgba(var(--gold-primary-rgb),0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 text-sm md:text-base"
+          className="alert-btn bg-(--gold-primary) text-black hover:bg-(--gold-light) disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           aria-label="Send message"
         >
           {sending ? (
-            <>
-              <div className="spinner"></div>
-              <span>Sending…</span>
-            </>
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
           ) : (
-            <>
-              <span className="hidden md:inline">Send</span>
-              <span className="md:hidden">➤</span>
-              <svg className="w-4 md:w-5 h-4 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            </>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
           )}
         </button>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <style jsx>{`
         :root {
