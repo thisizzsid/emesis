@@ -147,7 +147,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .alert-btn {
-  @apply p-2 rounded-xl transition-all duration-200 hover:bg-white/5 active:scale-95 text-zinc-400 hover:text-[var(--gold-primary)] min-w-[44px] min-h-[44px] flex items-center justify-center;
+  @apply p-2 rounded-xl transition-all duration-200 hover:bg-white/5 active:scale-95 text-zinc-400 hover:text-(--gold-primary) min-w-11 min-h-11 flex items-center justify-center;
 }
 
 .typing-indicator span {

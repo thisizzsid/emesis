@@ -153,26 +153,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full relative flex items-center justify-center bg-[var(--background)] selection:bg-[var(--gold-primary)] selection:text-black py-10">
+    <div className="min-h-dvh w-full relative flex items-center justify-center bg-(--background) selection:bg-(--gold-primary) selection:text-black py-10">
       <LoadingOverlay isLoading={loading} />
       
       {/* Background Elements */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-black/80 z-0" />
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(var(--gold-primary-rgb),0.05),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-black/80 via-black/50 to-black/80 z-0" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,color-mix(in_srgb,var(--gold-primary),transparent_95%),transparent_70%)] pointer-events-none" />
       
       {/* Main Card */}
       <div className={`relative z-10 w-full max-w-md p-4 md:p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="glass-card rounded-3xl border border-[var(--glass-border)] shadow-[0_0_50px_-10px_rgba(var(--gold-primary-rgb),0.1)] p-6 md:p-10 backdrop-blur-2xl bg-[var(--glass-bg)] relative overflow-hidden group">
+        <div className="glass-card rounded-3xl border border-(--glass-border) shadow-[0_0_50px_-10px_color-mix(in_srgb,var(--gold-primary),transparent_90%)] p-6 md:p-10 backdrop-blur-2xl bg-(--glass-bg) relative overflow-hidden group">
           
           {/* Top highlight line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--gold-primary)] to-transparent opacity-50" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-(--gold-primary) to-transparent opacity-50" />
           
           {/* Header */}
           <div className="text-center mb-8">
             <div className="relative inline-flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-500">
-              <div className="absolute inset-0 bg-[var(--gold-primary)] blur-xl opacity-20 rounded-full"></div>
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--dark-card)] to-black border border-[var(--glass-border)] flex items-center justify-center shadow-xl relative z-10">
+              <div className="absolute inset-0 bg-(--gold-primary) blur-xl opacity-20 rounded-full"></div>
+              <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-(--dark-card) to-black border border-(--glass-border) flex items-center justify-center shadow-xl relative z-10">
                 <Image 
                   src="/logoemesis.png" 
                   alt="Emesis Logo" 
@@ -183,21 +183,32 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent tracking-wider font-[Orbitron] mb-2 bg-size-200 animate-textShine">
+            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent tracking-wider font-[Orbitron] mb-2 bg-size-200 animate-textShine">
               EMESIS
             </h1>
-            <p className="text-[var(--gold-primary)]/80 text-lg font-medium mb-1">
+            <p className="text-(--gold-primary)/80 text-lg font-medium mb-1">
                 {mode === 'login' ? 'Welcome Back' : 'Join the Realm'}
             </p>
             <p className="text-zinc-400 text-sm">
                 {mode === 'login' ? 'Enter your credentials to access' : 'Create your account today'}
             </p>
+            
+            <div className="mt-4 flex flex-col items-center justify-center gap-1.5 animate-fadeIn delay-100">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">Made with love in collaboration with</span>
+              <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 hover:border-(--gold-primary)/30 transition-colors group/trae cursor-default">
+                 {/* TRAE Logo Placeholder - Stylized T/AI Icon */}
+                 <svg className="w-4 h-4 text-(--gold-primary) group-hover/trae:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                 </svg>
+                 <span className="font-bold tracking-widest text-xs text-zinc-300 group-hover/trae:text-white transition-colors">TRAE</span>
+              </div>
+            </div>
           </div>
 
           {/* Mode Toggle */}
           <div className="flex p-1 bg-white/5 rounded-xl mb-8 relative border border-white/5">
             <div 
-                className={`absolute inset-y-1 w-[calc(50%-4px)] bg-[var(--gold-primary)] rounded-lg transition-all duration-300 shadow-lg ${
+                className={`absolute inset-y-1 w-[calc(50%-4px)] bg-(--gold-primary) rounded-lg transition-all duration-300 shadow-lg ${
                     mode === 'login' ? 'left-1' : 'left-[calc(50%+4px)]'
                 }`} 
             />
@@ -232,44 +243,44 @@ export default function LoginPage() {
             {/* Username Field - Only for Signup */}
             {mode === 'signup' && (
                 <div className="relative group animate-fadeIn">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[var(--gold-primary)] transition-colors duration-300" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
                     <input
                         type="text"
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--dark-card)]/50 border border-[var(--glass-border)] text-[var(--gold-primary)] placeholder:text-zinc-600 focus:border-[var(--gold-primary)]/50 focus:ring-1 focus:ring-[var(--gold-primary)]/50 focus:bg-[var(--dark-card)] outline-none transition-all duration-300"
+                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
                         required={mode === 'signup'}
                     />
                 </div>
             )}
 
             <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[var(--gold-primary)] transition-colors duration-300" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
                 <input
                   type="email"
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--dark-card)]/50 border border-[var(--glass-border)] text-[var(--gold-primary)] placeholder:text-zinc-600 focus:border-[var(--gold-primary)]/50 focus:ring-1 focus:ring-[var(--gold-primary)]/50 focus:bg-[var(--dark-card)] outline-none transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
                   required
                 />
             </div>
             
             <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[var(--gold-primary)] transition-colors duration-300" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder={mode === 'signup' ? "Create a password" : "Password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 rounded-xl bg-[var(--dark-card)]/50 border border-[var(--glass-border)] text-[var(--gold-primary)] placeholder:text-zinc-600 focus:border-[var(--gold-primary)]/50 focus:ring-1 focus:ring-[var(--gold-primary)]/50 focus:bg-[var(--dark-card)] outline-none transition-all duration-300"
+                  className="w-full pl-12 pr-12 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
                   required
                 />
                 <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-[var(--gold-primary)] transition-colors p-1"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-(--gold-primary) transition-colors p-1"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -279,13 +290,13 @@ export default function LoginPage() {
             {/* Confirm Password - Only for Signup */}
             {mode === 'signup' && (
                 <div className="relative group animate-fadeIn">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[var(--gold-primary)] transition-colors duration-300" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
                     <input
                         type={showPassword ? "text" : "password"}
                         placeholder="Confirm password"
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--dark-card)]/50 border border-[var(--glass-border)] text-[var(--gold-primary)] placeholder:text-zinc-600 focus:border-[var(--gold-primary)]/50 focus:ring-1 focus:ring-[var(--gold-primary)]/50 focus:bg-[var(--dark-card)] outline-none transition-all duration-300"
+                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
                         required={mode === 'signup'}
                     />
                 </div>
@@ -296,7 +307,7 @@ export default function LoginPage() {
                     <button 
                         type="button"
                         onClick={handleReset}
-                        className="text-xs font-medium text-zinc-400 hover:text-[var(--gold-primary)] transition-colors hover:underline decoration-[var(--gold-primary)]/30 underline-offset-4"
+                        className="text-xs font-medium text-zinc-400 hover:text-(--gold-primary) transition-colors hover:underline decoration-(--gold-primary)/30 underline-offset-4"
                     >
                         Forgot password?
                     </button>
@@ -306,7 +317,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-[var(--gold-primary)] to-[var(--gold-light)] text-black font-bold text-base hover:shadow-[0_0_30px_rgba(var(--gold-primary-rgb),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn relative overflow-hidden mt-4"
+              className="w-full py-4 rounded-xl bg-linear-to-r from-(--gold-primary) to-(--gold-light) text-black font-bold text-base hover:shadow-[0_0_30px_color-mix(in_srgb,var(--gold-primary),transparent_70%)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn relative overflow-hidden mt-4"
             >
               <span className="relative z-10">
                 {loading ? (mode === 'login' ? "Signing in..." : "Creating Account...") : (mode === 'login' ? "Sign In" : "Sign Up")}
@@ -317,8 +328,8 @@ export default function LoginPage() {
           </form>
 
           <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--glass-border)]"></div></div>
-              <div className="relative flex justify-center text-xs uppercase tracking-widest"><span className="px-4 bg-[var(--glass-bg)] text-zinc-500 font-medium">Or continue with</span></div>
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-(--glass-border)"></div></div>
+              <div className="relative flex justify-center text-xs uppercase tracking-widest"><span className="px-4 bg-(--glass-bg) text-zinc-500 font-medium">Or continue with</span></div>
           </div>
 
           <button
@@ -340,7 +351,7 @@ export default function LoginPage() {
               {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
               <button 
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                className="text-[var(--gold-primary)] font-bold hover:text-[var(--gold-light)] hover:underline decoration-[var(--gold-primary)]/50 underline-offset-4 transition-all"
+                className="text-(--gold-primary) font-bold hover:text-(--gold-light) hover:underline decoration-(--gold-primary)/50 underline-offset-4 transition-all"
               >
                 {mode === 'login' ? "Sign up" : "Log in"}
               </button>
@@ -348,7 +359,7 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-center gap-2 text-green-500 font-medium text-xs opacity-90">
               <ShieldCheck className="w-4 h-4" />
-              <span className="tracking-wide uppercase">End-to-end Encrypted</span>
+              <span className="tracking-wide uppercase">End-to-End Encrypted</span>
             </div>
           </div>
           

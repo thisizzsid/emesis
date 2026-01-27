@@ -73,7 +73,7 @@ export default function OnboardingTour() {
       title: "You're All Set!",
       description: "Enjoy your journey on Emesis. Remember to be kind and supportive.",
       icon: <CheckCircle className="w-12 h-12 text-white" />,
-      color: "from-[var(--gold-primary)] to-[var(--gold-light)]"
+      color: "from-(--gold-primary) to-(--gold-light)"
     }
   ];
 
@@ -81,12 +81,12 @@ export default function OnboardingTour() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md bg-[#121212] border border-[var(--gold-primary)]/30 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
+      <div className="w-full max-w-md bg-[#121212] border border-(--gold-primary)/30 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
         
         {/* Progress Bar */}
         <div className="h-1 bg-zinc-800 w-full">
           <div 
-            className="h-full bg-[var(--gold-primary)] transition-all duration-500 ease-out"
+            className="h-full bg-(--gold-primary) transition-all duration-500 ease-out"
             style={{ width: `${((step + 1) / steps.length) * 100}%` }}
           />
         </div>
@@ -117,7 +117,7 @@ export default function OnboardingTour() {
             {currentStepData.title}
           </h3>
           
-          <p className="text-zinc-400 leading-relaxed mb-8 min-h-[80px] animate-slideInUp" style={{ animationDelay: '0.1s' }}>
+          <p className="text-zinc-400 leading-relaxed mb-8 min-h-[80px] animate-slideInUp delay-100">
             {currentStepData.description}
           </p>
 
@@ -133,7 +133,7 @@ export default function OnboardingTour() {
                 </button>
                 <button 
                   onClick={() => setStep(s => s + 1)}
-                  className="flex-1 bg-[var(--gold-primary)] text-black font-bold py-3 rounded-xl hover:bg-[var(--gold-light)] transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="flex-1 bg-(--gold-primary) text-black font-bold py-3 rounded-xl hover:bg-(--gold-light) transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                   Next <ChevronRight className="w-4 h-4" />
                 </button>
@@ -141,7 +141,7 @@ export default function OnboardingTour() {
             ) : (
               <button 
                 onClick={completeTour}
-                className="w-full bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] text-black font-bold py-3 rounded-xl shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.3)] transition-all active:scale-95"
+                className="w-full bg-linear-to-r from-(--gold-primary) to-(--gold-light) text-black font-bold py-3 rounded-xl shadow-lg hover:shadow-(--gold-primary)/30 transition-all active:scale-95"
               >
                 Get Started
               </button>
@@ -156,7 +156,7 @@ export default function OnboardingTour() {
               key={i}
               className={`
                 w-2 h-2 rounded-full transition-all duration-300
-                ${i === step ? "w-6 bg-[var(--gold-primary)]" : "bg-zinc-700"}
+                ${i === step ? "w-6 bg-(--gold-primary)" : "bg-zinc-700"}
               `}
             />
           ))}

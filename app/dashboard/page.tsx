@@ -185,7 +185,7 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] flex items-center justify-center">
+      <div className="h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) flex items-center justify-center">
         <div className="glass rounded-3xl p-12 animate-bounceIn">
           <p className="text-2xl font-bold">Login Required</p>
         </div>
@@ -194,20 +194,20 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-secondary)] px-8 py-24 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-secondary) px-8 py-24 relative overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute top-40 left-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.1)] rounded-full blur-3xl animate-float"></div>
+      <div className="absolute top-40 left-20 w-96 h-96 bg-(--gold-primary)/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-40 right-20 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-3xl animate-float animation-delay-2000"></div>
       
       {/* Header Section */}
       <div className="text-center mb-20 animate-fadeIn relative z-10">
         <div className="inline-block mb-4">
-          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[var(--gold-primary)] to-[var(--gold-light)] flex items-center justify-center shadow-2xl shadow-[rgba(var(--gold-primary-rgb),0.5)] animate-pulse-glow mx-auto">
+          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-(--gold-primary) to-(--gold-light) flex items-center justify-center shadow-2xl shadow-(--gold-primary)/50 animate-pulse-glow mx-auto">
             <span className="text-4xl">📊</span>
           </div>
         </div>
         
-        <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-size-[200%_auto] animate-textShine">
+        <h1 className="text-7xl font-black tracking-tighter bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent drop-shadow-lg mb-4 font-[Orbitron] bg-size-[200%_auto] animate-textShine">
           Your Dashboard
         </h1>
         
@@ -227,7 +227,7 @@ export default function DashboardPage() {
         {loading ? (
           // Loading Skeletons
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="glass rounded-3xl p-8 shadow-xl border border-[rgba(var(--gold-primary-rgb),0.2)] animate-pulse">
+            <div key={i} className="glass rounded-3xl p-8 shadow-xl border border-(--gold-primary)/20 animate-pulse">
               <div className="skeleton h-6 w-32 mb-4 rounded"></div>
               <div className="skeleton h-16 w-24 mb-3 rounded"></div>
               <div className="skeleton h-4 w-40 rounded"></div>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
               count={animatedStats.posts}
               subtitle="Your shared thoughts"
               icon="📝"
-              color="from-[var(--gold-primary)] to-[var(--gold-light)]"
+              color="from-(--gold-primary) to-(--gold-light)"
               delay="0s"
             />
 
@@ -285,7 +285,7 @@ export default function DashboardPage() {
               count={animatedStats.views}
               subtitle="Curious eyes on you"
               icon="👁️"
-              color="from-[var(--gold-light)] to-[var(--gold-primary)]"
+              color="from-(--gold-light) to-(--gold-primary)"
               delay="0.5s"
             />
           </>
@@ -294,8 +294,8 @@ export default function DashboardPage() {
 
       {/* Engagement Insights */}
       <div className="max-w-7xl mx-auto mt-16 relative z-10">
-        <div className="glass rounded-3xl p-10 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.3)] hover:border-[rgba(var(--gold-primary-rgb),0.5)] transition-all duration-500 group">
-          <h2 className="text-3xl font-bold text-[var(--gold-primary)] mb-6 flex items-center gap-3">
+        <div className="glass rounded-3xl p-10 shadow-2xl border border-(--gold-primary)/30 hover:border-(--gold-primary)/50 transition-all duration-500 group">
+          <h2 className="text-3xl font-bold text-(--gold-primary) mb-6 flex items-center gap-3">
             <span className="text-3xl">🎯</span>
             Engagement Score
           </h2>
@@ -304,7 +304,7 @@ export default function DashboardPage() {
             <EngagementMetric
               label="Activity Level"
               value={Math.min(100, (stats.posts + stats.comments) * 5)}
-              color="from-[var(--gold-primary)] to-[var(--gold-light)]"
+              color="from-(--gold-primary) to-(--gold-light)"
             />
             <EngagementMetric
               label="Social Impact"
@@ -322,9 +322,9 @@ export default function DashboardPage() {
 
       {/* Footer Info */}
       <div className="text-center mt-16 text-zinc-600 text-sm tracking-wide relative z-10 flex items-center justify-center gap-3">
-        <div className="w-2 h-2 rounded-full bg-[var(--gold-primary)] animate-pulse"></div>
+        <div className="w-2 h-2 rounded-full bg-(--gold-primary) animate-pulse"></div>
         <span>Updated in real-time • Last refresh: Just now</span>
-        <div className="w-2 h-2 rounded-full bg-[var(--gold-primary)] animate-pulse"></div>
+        <div className="w-2 h-2 rounded-full bg-(--gold-primary) animate-pulse"></div>
       </div>
 
       <style jsx>{`
@@ -355,18 +355,18 @@ function StatCard({
   return (
     /* eslint-disable-next-line react/no-danger */
     <div
-      className={`glass glass-hover rounded-3xl p-8 shadow-2xl border-2 border-[rgba(var(--gold-primary-rgb),0.25)] group cursor-default relative overflow-hidden hover-card ${delayClassMap[delay] ?? ""}`}
+      className={`glass glass-hover rounded-3xl p-8 shadow-2xl border-2 border-(--gold-primary)/25 group cursor-default relative overflow-hidden hover-card ${delayClassMap[delay] ?? ""}`}
     >
       {/* Gradient Background */}
       <div className={`absolute inset-0 bg-linear-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
       
       {/* Icon Badge */}
-      <div className="absolute top-6 right-6 w-14 h-14 rounded-xl bg-linear-to-br from-black/40 to-black/20 flex items-center justify-center border border-[rgba(var(--gold-primary-rgb),0.2)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+      <div className="absolute top-6 right-6 w-14 h-14 rounded-xl bg-linear-to-br from-black/40 to-black/20 flex items-center justify-center border border-(--gold-primary)/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
         <span className="text-2xl">{icon}</span>
       </div>
 
       <div className="relative z-10">
-        <h2 className="text-base font-semibold text-[var(--gold-primary)] mb-4 tracking-tight group-hover:text-[var(--gold-light)] transition-colors duration-300">
+        <h2 className="text-base font-semibold text-(--gold-primary) mb-4 tracking-tight group-hover:text-(--gold-light) transition-colors duration-300">
           {title}
         </h2>
         
@@ -375,7 +375,7 @@ function StatCard({
         </p>
         
         <p className="text-sm text-zinc-600 font-medium flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--gold-primary)]"></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-(--gold-primary)"></span>
           {subtitle}
         </p>
 
@@ -404,7 +404,7 @@ function EngagementMetric({
   return (
     <div className="relative">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-semibold text-[var(--gold-primary)]">{label}</span>
+        <span className="text-sm font-semibold text-(--gold-primary)">{label}</span>
         <span className={`text-2xl font-black bg-linear-to-r ${color} bg-clip-text text-transparent`}>
           {value}%
         </span>

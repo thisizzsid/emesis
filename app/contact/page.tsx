@@ -1,117 +1,130 @@
 "use client";
+
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Reveal, TiltCard, ShimmerButton, GlowBackground } from "../components/PageEffects";
 
 export default function ContactPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const [status, setStatus] = useState("");
 
   const send = async () => {
-    setStatus("Sending...");
+    setStatus(">>> Pinging server...");
 
-    const req = await fetch("/api/contact", {
-      method: "POST",
-      body: JSON.stringify({ email, message: msg }),
-    });
+    try {
+      const req = await fetch("/api/contact", {
+        method: "POST",
+        body: JSON.stringify({ email, message: msg }),
+      });
 
-    const res = await req.json();
+      const res = await req.json();
 
-    if (res.success) {
-      setStatus("Message sent! We will reply soon.");
-      setEmail("");
-      setMsg("");
-    } else {
-      setStatus("Failed — try again later.");
+      if (res.success) {
+        setStatus(">>> Packet sent successfully. Awaiting ACK.");
+        setEmail("");
+        setMsg("");
+      } else {
+        setStatus(">>> Error: Connection reset by peer.");
+      }
+    } catch (e) {
+      setStatus(">>> Fatal Error: Network unreachable.");
     }
   };
 
   return (
-    <div
-      className="
-        min-h-screen w-full flex items-center justify-center 
-        bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-6 py-16
-      "
-    >
-      {/* CARD */}
-      <div
-        className="
-          relative max-w-xl w-full bg-black/40 border border-[rgba(var(--gold-primary-rgb),0.2)] 
-          backdrop-blur-xl rounded-2xl shadow-2xl px-10 py-12
-        "
-      >
-        {/* Neon Border Animation */}
-        <div className="absolute -inset-0.5 bg-linear-to-r from-[var(--gold-primary)] via-[var(--gold-light)] to-[var(--gold-primary)] rounded-2xl blur opacity-20 animate-pulse" />
+    <div className="relative min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white flex flex-col">
+      <GlowBackground />
+      
+      {/* Header */}
+      <div className="relative pt-6 pb-12 px-4 md:px-6">
+        <div className="absolute inset-0 bg-linear-to-b from-(--gold-primary)/5 to-transparent"></div>
 
-        <h1 className="relative z-10 text-5xl font-black tracking-wider mb-4 text-center text-[var(--gold-primary)]">
-          Contact Us
-        </h1>
+        <div className="relative max-w-4xl mx-auto text-center">
+          <Reveal>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-(--gold-primary) hover:text-(--gold-light) mb-6 transition-colors px-3 py-1.5 rounded-lg border border-(--gold-primary)/20 hover:border-(--gold-primary)/40 bg-white/0 hover:bg-white/5 backdrop-blur-xl"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>../back</span>
+            </button>
+          </Reveal>
 
-        <p className="relative z-10 text-center text-[var(--gold-light)]/90 text-sm tracking-wide mb-10">
-          We respond within 24 hours — support, complaints, feedback, anything.
-        </p>
-
-        {/* INPUTS */}
-        <div className="relative z-10">
-          <input
-            type="email"
-            placeholder="Your Email"
-            className="
-              w-full mb-4 px-4 py-3 bg-zinc-900/70 border border-[rgba(var(--gold-primary-rgb),0.2)] 
-              rounded-lg text-[var(--gold-light)] placeholder-zinc-500 tracking-wide
-              focus:outline-none focus:border-[var(--gold-primary)]
-            "
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <textarea
-            placeholder="Write your message..."
-            className="
-              w-full px-4 py-4 min-h-35 bg-zinc-900/70 border border-[rgba(var(--gold-primary-rgb),0.2)] 
-              rounded-lg text-[var(--gold-light)] placeholder-zinc-500 tracking-wide
-              focus:outline-none focus:border-[var(--gold-primary)]
-            "
-            value={msg}
-            onChange={(e) => setMsg(e.target.value)}
-          />
-
-          {/* BUTTON */}
-          <button
-            type="button"
-            onClick={send}
-            className="
-              shockwave-btn mt-6 w-full py-3 rounded-lg bg-[var(--gold-primary)] 
-              text-black font-semibold tracking-wider transition
-            "
-          >
-            Send Message
-          </button>
-
-          {/* STATUS */}
-          <p className="text-xs mt-4 opacity-75">{status}</p>
+          <Reveal className="opacity-0">
+            <h1 className="relative inline-block text-4xl md:text-5xl font-black mb-4 bg-linear-to-r from-(--gold-primary) to-(--gold-light) bg-clip-text text-transparent">
+              system.contact(support)
+              <span className="pointer-events-none absolute inset-x-0 -bottom-1 h-px bg-linear-to-r from-transparent via-(--gold-primary)/50 to-transparent" />
+            </h1>
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto font-mono text-sm md:text-base">
+              &gt; Establishing secure channel...
+              <br />
+              &gt; Latency: 12ms
+            </p>
+          </Reveal>
         </div>
       </div>
 
-      {/* Shockwave Button Style */}
-      <style>{`
-        .shockwave-btn {
-          position: relative;
-          overflow: hidden;
-        }
-        .shockwave-btn::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 70%);
-          opacity: 0;
-          transform: scale(0.4);
-          transition: transform .45s ease, opacity .45s ease;
-        }
-        .shockwave-btn:hover::after {
-          opacity: 1;
-          transform: scale(3.5);
-        }
-      `}</style>
+      {/* Content */}
+      <div className="flex-1 px-4 md:px-6 pb-8 flex items-center justify-center">
+        <div className="max-w-xl w-full">
+          <Reveal>
+            <TiltCard className="glass border border-(--gold-primary)/30 rounded-2xl p-8 md:p-10 bg-white/4 backdrop-blur-xl relative overflow-hidden">
+              {/* Decorative terminal header */}
+              <div className="absolute top-0 left-0 right-0 h-8 bg-zinc-900/50 border-b border-zinc-800 flex items-center px-4 gap-2">
+                 <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                 <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                 <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                 <div className="ml-4 text-xs font-mono text-zinc-500">root@emesis:~</div>
+              </div>
+
+              <div className="mt-6">
+                <h2 className="text-2xl font-bold text-(--gold-primary) mb-2 font-mono">Open_Ticket()</h2>
+                <p className="text-zinc-400 text-sm mb-8">
+                  Report bugs, request features, or submit feedback logs.
+                </p>
+
+                <div className="space-y-6">
+                  <div className="group">
+                    <label className="block text-xs font-mono text-(--gold-primary) mb-2 ml-1">var user_email =</label>
+                    <input
+                      type="email"
+                      placeholder="Enter your email..."
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 font-mono transition-colors outline-none"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="group">
+                    <label className="block text-xs font-mono text-(--gold-primary) mb-2 ml-1">const payload =</label>
+                    <textarea
+                      placeholder="Write your message..."
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 font-mono transition-colors outline-none min-h-32 resize-none"
+                      value={msg}
+                      onChange={(e) => setMsg(e.target.value)}
+                    />
+                  </div>
+
+                  <ShimmerButton onClick={send} className="w-full">
+                    <span>transmit_data()</span>
+                  </ShimmerButton>
+
+                  {status && (
+                    <div className="p-3 bg-zinc-900/80 border border-zinc-800 rounded font-mono text-xs text-(--gold-light) animate-pulse">
+                      {status}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TiltCard>
+          </Reveal>
+        </div>
+      </div>
     </div>
   );
 }

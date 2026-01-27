@@ -13,6 +13,9 @@ import {
   setDoc,
   deleteDoc,
   Firestore,
+  where,
+  addDoc,
+  Timestamp,
 } from "firebase/firestore";
 import Link from "next/link";
 
@@ -40,9 +43,37 @@ export default function NotificationsPage() {
 
   const followBack = async (fromUid: string) => {
     if (!user || !db) return;
-    await setDoc(doc(db as Firestore, `users/${user.uid}/following/${fromUid}`), { ts: Date.now() });
-    await setDoc(doc(db as Firestore, `users/${fromUid}/followers/${user.uid}`), { ts: Date.now() });
+    
+    // Check if already following
+    const q = query(
+      collection(db as Firestore, "follows"),
+      where("follower", "==", user.uid),
+      where("followed", "==", fromUid)
+    );
+    const snap = await getDocs(q);
+    
+    if (!snap.empty) {
+      alert("You are already following this user.");
+      return;
+    }
+
+    // Create follow relationship (using same collection as FeedPage)
+    await addDoc(collection(db as Firestore, "follows"), {
+      follower: user.uid,
+      followed: fromUid,
+    });
+
+    // Send notification to the user we are following back
+    await addDoc(collection(db as Firestore, `users/${fromUid}/notifications`), {
+      type: "follow",
+      fromUid: user.uid,
+      fromName: user.displayName || "User",
+      createdAt: Timestamp.now(),
+      read: false,
+    });
+
     load();
+    alert("Followed back!");
   };
 
   useEffect(() => {

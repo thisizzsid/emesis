@@ -295,23 +295,23 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
   }, [shareProgress]);
 
   return (
-    <div className="group relative w-full rounded-3xl bg-[#0a0a0a] border border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_-10px_rgba(var(--gold-primary-rgb),0.15)] hover:border-[rgba(var(--gold-primary-rgb),0.2)]">
+    <div className="group relative w-full rounded-3xl bg-[#0a0a0a] border border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_-10px_color-mix(in_srgb,var(--gold-primary),transparent_85%)] hover:border-(--gold-primary)/20">
         {/* Subtle background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         
         {/* Top highlight line */}
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-(--gold-primary)/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className="relative p-6 sm:p-8">
             {/* Header Section */}
             <div className="flex items-start justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                     {/* Avatar / User Icon */}
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[rgba(var(--gold-primary-rgb),0.1)] to-transparent border border-[rgba(var(--gold-primary-rgb),0.1)] flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-(--gold-primary)/10 to-transparent border border-(--gold-primary)/10 flex items-center justify-center shrink-0">
                         {post.anonymous ? (
                             <span className="text-lg">👻</span>
                         ) : (
-                            <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-[var(--gold-primary)] font-bold text-sm">
+                            <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-(--gold-primary) font-bold text-sm">
                                 {post.username?.[0]?.toUpperCase() || "U"}
                             </div>
                         )}
@@ -322,7 +322,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                             {post.anonymous ? (
                                 <span className="text-sm font-semibold text-zinc-300 tracking-wide">Anonymous</span>
                             ) : (
-                                <Link href={`/profile?uid=${post.uid}`} className="text-sm font-semibold text-zinc-200 hover:text-[var(--gold-primary)] transition-colors tracking-wide">
+                                <Link href={`/profile?uid=${post.uid}`} className="text-sm font-semibold text-zinc-200 hover:text-(--gold-primary) transition-colors tracking-wide">
                                     @{post.username}
                                 </Link>
                             )}
@@ -346,16 +346,16 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                             <div className="flex items-center gap-3 text-[10px] text-zinc-500 mt-0.5">
                                 {post.location && (
                                     <div className="flex items-center gap-1 group/loc">
-                                        <MapPin className="w-3 h-3 text-zinc-600 group-hover/loc:text-[var(--gold-primary)] transition-colors" />
-                                        <span className="truncate max-w-[120px] group-hover/loc:text-zinc-400 transition-colors">{post.location}</span>
+                                        <MapPin className="w-3 h-3 text-zinc-600 group-hover/loc:text-(--gold-primary) transition-colors" />
+                                        <span className="truncate max-w-30 group-hover/loc:text-zinc-400 transition-colors">{post.location}</span>
                                     </div>
                                 )}
                                 {post.device && (
                                     <div className="flex items-center gap-1 group/dev" title={`Posted from ${post.device}`}>
                                         {post.device === "iPhone" || post.device === "Android" ? (
-                                            <Smartphone className="w-3 h-3 text-zinc-600 group-hover/dev:text-[var(--gold-primary)] transition-colors" />
+                                            <Smartphone className="w-3 h-3 text-zinc-600 group-hover/dev:text-(--gold-primary) transition-colors" />
                                         ) : (
-                                            <Monitor className="w-3 h-3 text-zinc-600 group-hover/dev:text-[var(--gold-primary)] transition-colors" />
+                                            <Monitor className="w-3 h-3 text-zinc-600 group-hover/dev:text-(--gold-primary) transition-colors" />
                                         )}
                                         <span className="group-hover/dev:text-zinc-400 transition-colors">{post.device}</span>
                                     </div>
@@ -368,10 +368,10 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 {/* Options Menu */}
                 {post.uid === user?.uid && (
                     <div className="relative z-20">
-                        <button
+                        <button 
                             type="button"
                             onClick={() => setMenuOpen(!menuOpen)}
-                            className="p-2 -mr-2 text-zinc-500 hover:text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.05)] rounded-full transition-all"
+                            className="p-2 -mr-2 text-zinc-500 hover:text-(--gold-primary) hover:bg-(--gold-primary)/5 rounded-full transition-all"
                         >
                             <span className="text-lg leading-none">⋮</span>
                         </button>
@@ -381,7 +381,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                                 <button 
                                     type="button"
                                     onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
-                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-[var(--gold-primary)] hover:bg-white/5 transition-colors flex items-center gap-2"
+                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-(--gold-primary) hover:bg-white/5 transition-colors flex items-center gap-2"
                                 >
                                     <Pencil className="w-3.5 h-3.5" />
                                     Edit
@@ -406,7 +406,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                     <textarea
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
-                        className="w-full bg-zinc-900/50 p-4 rounded-xl border border-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-secondary)] text-[15px] leading-relaxed focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all min-h-[120px] resize-none"
+                        className="w-full bg-zinc-900/50 p-4 rounded-xl border border-(--gold-primary)/20 text-(--gold-secondary) text-[15px] leading-relaxed focus:outline-none focus:ring-1 focus:ring-(--gold-primary) transition-all min-h-30 resize-none"
                         placeholder="Edit your confession..."
                     />
                     <div className="mt-3 flex gap-2 justify-end">
@@ -421,7 +421,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                             type="button"
                             onClick={saveEdit} 
                             disabled={loading}
-                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-[var(--gold-primary)] text-black hover:bg-[var(--gold-light)] transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-(--gold-primary) text-black hover:bg-(--gold-light) transition-colors disabled:opacity-50"
                         >
                             {loading ? "Saving..." : "Save"}
                         </button>
@@ -429,7 +429,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 </div>
             ) : (
                 <div className="relative z-10 mb-6">
-                    <p className="text-[var(--gold-secondary)] text-[15px] sm:text-[16px] leading-relaxed font-light whitespace-pre-wrap tracking-wide">
+                    <p className="text-(--gold-secondary) text-[15px] sm:text-[16px] leading-relaxed font-light whitespace-pre-wrap tracking-wide">
                         {renderTextWithHashtags(post.text)}
                     </p>
                 </div>
@@ -442,7 +442,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                         <button 
                             type="button"
                             onClick={() => onUnfollow(post.uid)} 
-                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-[rgba(var(--gold-primary-rgb),0.05)] text-[var(--gold-primary)] border border-[rgba(var(--gold-primary-rgb),0.1)] text-xs font-semibold hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all"
+                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-(--gold-primary)/5 text-(--gold-primary) border border-(--gold-primary)/10 text-xs font-semibold hover:bg-(--gold-primary)/10 transition-all"
                         >
                             Following
                         </button>
@@ -450,7 +450,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                         <button 
                             type="button"
                             onClick={() => onFollow(post.uid)} 
-                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-[var(--gold-primary)] text-black text-xs font-bold hover:bg-[var(--gold-light)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.1)]"
+                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-(--gold-primary) text-black text-xs font-bold hover:bg-(--gold-light) hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-(--gold-primary)/10"
                         >
                             Follow
                         </button>
@@ -476,14 +476,14 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                     className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 transition-all flex items-center justify-center gap-2 text-xs font-medium"
                 >
                     <MessageCircle className="w-4 h-4" />
-                    <span>Comment</span>
+                    <span>{post.commentCount > 0 ? post.commentCount : "Comment"}</span>
                 </button>
 
                 <div className="relative flex-1 sm:flex-none">
                     <button
                         type="button"
                         onClick={() => setShareOpen((v) => !v)}
-                        className="w-full sm:w-auto h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-[var(--gold-primary)] transition-all flex items-center justify-center gap-2 text-xs font-medium group/share"
+                        className="w-full sm:w-auto h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-(--gold-primary) transition-all flex items-center justify-center gap-2 text-xs font-medium group/share"
                         ref={shareBtnRef}
                     >
                         <Share2 className="w-4 h-4 group-hover/share:scale-110 transition-transform" />
@@ -504,8 +504,8 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
             </div>
 
             {showComments && (
-                <div className="mt-4 pt-4 border-t border-[rgba(var(--gold-primary-rgb),0.1)] animate-fadeIn">
-                    <Comments postId={post.id} />
+                <div className="mt-4 pt-4 border-t border-(--gold-primary)/10 animate-fadeIn">
+                    <Comments postId={post.id} postAuthorId={post.uid} />
                 </div>
             )}
 

@@ -16,14 +16,17 @@ import {
   arrayUnion,
   arrayRemove,
   getDoc,
-  Firestore
+  Firestore,
+  onSnapshot,
+  Unsubscribe
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapPin, Send, Ghost, Hash } from "lucide-react";
 import Link from "next/link";
 import TrendingSidebar from "../components/TrendingSidebar";
 import Toast from "../components/Toast";
 import PostCard from "../components/PostCard";
+import { getPlaceName } from "../utils/geocoding";
 
 export default function FeedPage() {
   const { user } = useAuth();
@@ -35,6 +38,7 @@ export default function FeedPage() {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [deviceType, setDeviceType] = useState<string>("Web");
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+  const [feedType, setFeedType] = useState<"local" | "global">("local");
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -42,6 +46,34 @@ export default function FeedPage() {
     else if (/iPad/i.test(ua)) setDeviceType("iPad");
     else if (/Android/i.test(ua)) setDeviceType("Android");
     else setDeviceType("Web");
+
+    detectLocation();
+
+    if (!db) return;
+
+    // Real-time listener
+    const oneDayAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+    const q = query(
+      collection(db as Firestore, "posts"),
+      where("createdAt", ">", oneDayAgo),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const arr: any[] = [];
+      snap.forEach((d) => {
+        const data = d.data();
+        if (!Array.isArray(data.likes)) data.likes = [];
+        if (!data.uid) data.uid = "unknown";
+        arr.push({ id: d.id, ...data });
+      });
+      setPosts(arr);
+      loadFollows(arr);
+    }, (err) => {
+      console.error("Snapshot error:", err);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
@@ -67,54 +99,10 @@ export default function FeedPage() {
     setFollowMap(map);
   };
 
-  const load = async () => {
-    if (!db) return;
-    // 24 Hours Logic: Filter posts older than 24h
-    const oneDayAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
-    
-    try {
-      // Note: If you see an index error in console, click the link to create it.
-      // Query: Get posts where createdAt > 24h ago, ordered by createdAt desc.
-      const q = query(
-        collection(db as Firestore, "posts"),
-        where("createdAt", ">", oneDayAgo),
-        orderBy("createdAt", "desc")
-      );
-      
-      const snap = await getDocs(q);
-      const arr: any[] = [];
-      snap.forEach((d: any) => {
-        const data: any = d.data();
-        if (!Array.isArray(data.likes)) data.likes = [];
-        if (!data.uid) data.uid = "unknown";
-        arr.push({ id: d.id, ...data });
-      });
-      setPosts(arr);
-      loadFollows(arr);
-    } catch (error) {
-      console.error("Error loading posts (check console for index link):", error);
-      // Fallback: Client-side filtering if index is missing
-      const fallbackSnap = await getDocs(
-        query(collection(db as Firestore, "posts"), orderBy("createdAt", "desc"))
-      );
-      const arr: any[] = [];
-      fallbackSnap.forEach((d: any) => {
-        const data: any = d.data();
-        if (data.createdAt?.toMillis() > oneDayAgo.toMillis()) {
-             if (!Array.isArray(data.likes)) data.likes = [];
-             if (!data.uid) data.uid = "unknown";
-             arr.push({ id: d.id, ...data });
-        }
-      });
-      setPosts(arr);
-      loadFollows(arr);
-    }
-  };
-
   const createPost = async () => {
     if (!user || !db || !text.trim()) return;
     const hashtags = extractHashtags(text);
-    const docRef = await addDoc(collection(db as Firestore, "posts"), {
+    await addDoc(collection(db as Firestore, "posts"), {
       text,
       uid: user.uid,
       username: anonymous ? "Anonymous" : user.displayName,
@@ -125,24 +113,9 @@ export default function FeedPage() {
       createdAt: Timestamp.now()
     });
     
-    // Optimistic update
-    const newPost = {
-      id: docRef.id,
-      text,
-      uid: user.uid,
-      username: anonymous ? "Anonymous" : user.displayName,
-      anonymous,
-      likes: [],
-      hashtags,
-      location,
-      createdAt: Timestamp.now()
-    };
-    setPosts([newPost, ...posts]);
-    
     setText("");
     setAnonymous(false);
     showToast("Confession released into the void ✨");
-    // load(); // Removed to prevent full reload
   };
 
   const like = async (p: any) => {
@@ -151,10 +124,22 @@ export default function FeedPage() {
 
   const followUser = async (uid: string) => {
     if (!user || !db || uid === user.uid) return;
+    
+    // Create follow relationship
     await addDoc(collection(db as Firestore, "follows"), {
       follower: user.uid,
       followed: uid,
     });
+
+    // Send notification
+    await addDoc(collection(db as Firestore, `users/${uid}/notifications`), {
+      type: "follow",
+      fromUid: user.uid,
+      fromName: user.displayName || "User",
+      createdAt: Timestamp.now(),
+      read: false,
+    });
+
     setFollowMap({ ...followMap, [uid]: true });
   };
 
@@ -174,12 +159,6 @@ export default function FeedPage() {
 
   const [showUpcoming, setShowUpcoming] = useState(false);
 
-
-  useEffect(() => {
-    load();
-    detectLocation();
-  }, []);
-
   const detectLocation = () => {
     setDetectingLocation(true);
     if ("geolocation" in navigator) {
@@ -187,21 +166,8 @@ export default function FeedPage() {
         async (position) => {
           try {
             const { latitude, longitude } = position.coords;
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await response.json();
-            const address = data.address || {};
-            const place = address.amenity || address.shop || address.building || address.tourism || address.leisure || address.road || "";
-            const city = address.city || address.town || address.village || address.suburb || address.county || "Unknown City";
-            
-            let loc = city;
-            if (place) {
-                loc = `${place}, ${city}`;
-            } else if (address.country) {
-                loc = `${city}, ${address.country}`;
-            }
-            setLocation(loc);
+            const placeName = await getPlaceName(latitude, longitude);
+            setLocation(placeName || "Unknown Location");
           } catch (error) {
             setLocation("Location unavailable");
           }
@@ -223,6 +189,19 @@ export default function FeedPage() {
     return text.match(hashtagRegex) || [];
   };
 
+  // Filter posts based on feed type and location
+  const filteredPosts = posts.filter((post) => {
+    if (feedType === "local") {
+      // If location is unknown or detecting, we might want to wait or show nothing
+      // But for better UX, if we have a location, we enforce strict match
+      if (!location || location === "Unknown" || location === "Location disabled" || location === "Location unavailable" || location === "Location not supported") {
+         return false; 
+      }
+      return post.location === location;
+    }
+    return true; // Global feed shows everything
+  });
+
   if (!user) {
     return (
       <div className="h-screen bg-black text-yellow-300 flex items-center justify-center">
@@ -232,7 +211,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-[var(--gold-primary)] px-4 md:px-6 pt-20 pb-10">
+    <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) px-4 md:px-6 pt-20 pb-10">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
         {/* LEFT COLUMN - FEED */}
         <div className="flex-1 space-y-10 min-w-0">
@@ -328,20 +307,63 @@ export default function FeedPage() {
             </div>
           </div>
 
-          {/* POSTS LIST */}
-          <div className="space-y-6">
-            {posts.map((p: any) => (
+        {/* FEED TOGGLE & CONTENT */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <button
+            onClick={() => setFeedType("local")}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+              feedType === "local"
+                ? "bg-(--gold-primary) text-black shadow-[0_0_15px_rgba(245,194,107,0.3)]"
+                : "bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            📍 Local
+          </button>
+          <button
+            onClick={() => setFeedType("global")}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+              feedType === "global"
+                ? "bg-(--gold-primary) text-black shadow-[0_0_15px_rgba(245,194,107,0.3)]"
+                : "bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            🌍 Global
+          </button>
+        </div>
+
+        {/* POSTS LIST */}
+        <div className="space-y-6">
+          {detectingLocation && feedType === "local" ? (
+             <div className="text-center py-20 text-zinc-500 animate-pulse">
+               <MapPin className="w-8 h-8 mx-auto mb-3 text-(--gold-primary) opacity-50" />
+               <p>Triangulating local signals...</p>
+             </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="text-center py-20 text-zinc-600">
+              <Ghost className="w-12 h-12 mx-auto mb-4 opacity-20" />
+              <p className="text-lg font-medium text-zinc-500">
+                {feedType === "local" 
+                  ? (location && !location.includes("Unknown") && !location.includes("disabled") 
+                      ? `No confessions in ${location} yet.` 
+                      : "Location needed to see local confessions.")
+                  : "The void is silent..."}
+              </p>
+              <p className="text-sm mt-2 opacity-50">Be the first to whisper into the ether.</p>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
               <PostCard
-                key={p.id}
-                post={p}
+                key={post.id}
+                post={post}
                 user={user}
-                isFollowing={followMap[p.uid]}
-                onFollow={followUser}
-                onUnfollow={unfollowUser}
-                onRefresh={load}
+                isFollowing={!!followMap[post.uid]}
+                onFollow={() => followUser(post.uid)}
+                onUnfollow={() => unfollowUser(post.uid)}
+                onRefresh={() => {}}
               />
-            ))}
-          </div>
+            ))
+          )}
+        </div>
         </div>
 
         {/* RIGHT COLUMN - TRENDING SIDEBAR */}
@@ -361,9 +383,9 @@ export default function FeedPage() {
 
       {/* === MODAL === */}
       {showUpcoming && (
-        <div className="fixed inset-0 bg-[var(--dark-base)]/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
-          <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-[var(--gold-secondary)] shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.2)] animate-fadeIn">
-            <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-light)] bg-clip-text mb-6 text-center tracking-tight">
+        <div className="fixed inset-0 bg-(--dark-base)/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
+          <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-(--gold-secondary) shadow-2xl border border-(--gold-primary)/20 animate-fadeIn">
+            <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-(--gold-primary) to-(--gold-light) bg-clip-text mb-6 text-center tracking-tight">
               Upcoming Features
             </h2>
 
@@ -381,7 +403,7 @@ export default function FeedPage() {
 
             <button
               onClick={() => setShowUpcoming(false)}
-              className="modern-btn mt-8 w-full py-3 rounded-xl bg-linear-to-r from-[var(--gold-primary)] to-[var(--gold-secondary)] text-black font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.3)]"
+              className="modern-btn mt-8 w-full py-3 rounded-xl bg-linear-to-r from-(--gold-primary) to-(--gold-secondary) text-black font-bold hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-(--gold-primary)/30"
             >
               Close
             </button>

@@ -49,11 +49,11 @@ export default function TrendingSidebar() {
   if (loading) {
     return (
       <div className="hidden lg:block w-80 p-6">
-        <div className="glass rounded-2xl p-6 border border-[rgba(var(--gold-primary-rgb),0.2)] animate-pulse">
-          <div className="h-6 w-32 bg-[rgba(var(--gold-primary-rgb),0.2)] rounded mb-4"></div>
+        <div className="glass rounded-2xl p-6 border border-(--gold-primary)/20 animate-pulse">
+          <div className="h-6 w-32 bg-(--gold-primary)/20 rounded mb-4"></div>
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-4 w-full bg-[rgba(var(--gold-primary-rgb),0.1)] rounded"></div>
+              <div key={i} className="h-4 w-full bg-(--gold-primary)/10 rounded"></div>
             ))}
           </div>
         </div>
@@ -65,8 +65,8 @@ export default function TrendingSidebar() {
 
   return (
     <div className="hidden lg:block w-80 pl-6 sticky top-24 self-start">
-      <div className="glass rounded-2xl p-6 border border-[rgba(var(--gold-primary-rgb),0.2)] shadow-xl shadow-[rgba(var(--gold-primary-rgb),0.05)]">
-        <h3 className="text-xl font-bold text-[var(--gold-primary)] mb-4 flex items-center gap-2">
+      <div className="glass rounded-2xl p-6 border border-(--gold-primary)/20 shadow-xl shadow-(--gold-primary)/5">
+        <h3 className="text-xl font-bold text-(--gold-primary) mb-4 flex items-center gap-2">
           <TrendingUp className="w-5 h-5" /> Trending
         </h3>
         <div className="space-y-2">
@@ -75,20 +75,20 @@ export default function TrendingSidebar() {
               key={tag}
               href={`/explore?tag=${tag.replace('#', '')}`}
               aria-label={`Open trending tag ${tag} with ${count} posts`}
-              className="group flex items-center justify-between rounded-xl px-3 py-2 transition-all hover:bg-[rgba(var(--gold-primary-rgb),0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold-primary)]"
+              className="group flex items-center justify-between rounded-xl px-3 py-2 transition-all hover:bg-(--gold-primary)/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--gold-primary)"
             >
-              <span className="flex items-center gap-2 text-zinc-400 group-hover:text-[var(--gold-light)] transition-colors font-medium">
+              <span className="flex items-center gap-2 text-zinc-400 group-hover:text-(--gold-light) transition-colors font-medium">
                 <Hash className="w-4 h-4" />
                 {tag}
               </span>
-              <span className="text-[10px] bg-[rgba(var(--gold-primary-rgb),0.1)] text-[var(--gold-primary)] px-2 py-1 rounded-full group-hover:bg-[var(--gold-primary)] group-hover:text-black transition-all">
+              <span className="text-[10px] bg-(--gold-primary)/10 text-(--gold-primary) px-2 py-1 rounded-full group-hover:bg-(--gold-primary) group-hover:text-black transition-all">
                 {count} posts
               </span>
             </Link>
           ))}
         </div>
         
-        <div className="mt-6 pt-6 border-t border-[rgba(var(--gold-primary-rgb),0.1)]">
+        <div className="mt-6 pt-6 border-t border-(--gold-primary)/10">
           <p className="text-xs text-zinc-400 text-center">
             Topics people are whispering about right now.
           </p>

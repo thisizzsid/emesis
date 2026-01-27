@@ -11,7 +11,7 @@ export default function SignupPage() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black text-[var(--gold-primary)]">
+    <div className="flex items-center justify-center min-h-screen bg-black text-(--gold-primary)">
       Redirecting...
     </div>
   );

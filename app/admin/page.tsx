@@ -176,7 +176,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-(--gold-primary) to-(--gold-light) text-black font-bold py-4 rounded-xl hover:shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-(--gold-primary) to-(--gold-light) text-black font-bold py-4 rounded-xl hover:shadow-[0_0_20px_color-mix(in_srgb,var(--gold-primary),transparent_70%)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

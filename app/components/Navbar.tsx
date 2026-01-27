@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon } from "lucide-react";
+import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon, Handshake } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function Navbar() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCollabToast, setShowCollabToast] = useState(false);
   const sidebarTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Check for notifications on mount and interval
@@ -81,6 +82,19 @@ export default function Navbar() {
     setSidebarOpen(false);
   };
 
+  const handleCollaborate = () => {
+    // Show toast feedback
+    setShowCollabToast(true);
+    
+    // Close sidebar on mobile
+    setSidebarOpen(false);
+
+    // Auto-hide toast after a few seconds
+    setTimeout(() => {
+      setShowCollabToast(false);
+    }, 4000);
+  };
+
   const handleSidebarInteraction = () => {
     if (sidebarTimeoutRef.current) clearTimeout(sidebarTimeoutRef.current);
   };
@@ -122,16 +136,16 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 w-full h-16 glass border-b border-[rgba(var(--gold-primary-rgb),0.2)] z-50 flex items-center px-4 md:px-6">
+      <header className="fixed top-0 w-full h-16 glass border-b border-(--gold-primary)/20 z-50 flex items-center px-4 md:px-6">
         {/* Left: Menu Button (Mobile Only) */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden flex items-center justify-center w-12 h-12 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors"
+          className="md:hidden flex items-center justify-center w-12 h-12 rounded-lg hover:bg-(--gold-primary)/10 transition-colors"
           aria-label="Toggle sidebar"
           type="button"
         >
           <svg
-            className="w-6 h-6 text-[var(--gold-primary)]"
+            className="w-6 h-6 text-(--gold-primary)"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -162,7 +176,7 @@ export default function Navbar() {
               sizes="40px"
             />
           </div>
-          <span className="hidden sm:inline bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent font-black tracking-tighter">
+          <span className="inline bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent font-black tracking-tighter">
             EMESIS
           </span>
           <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-(--gold-primary) to-(--gold-light) group-hover:w-full transition-all duration-500"></div>
@@ -175,7 +189,7 @@ export default function Navbar() {
             className={`relative mr-3 min-w-11 min-h-11 flex items-center justify-center p-2 rounded-xl transition-all duration-300 active:scale-95 group overflow-hidden ${
               theme === "light"
                 ? "bg-zinc-900 text-white hover:bg-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)]"
-                : "bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.2)] hover:shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.4)] border border-[rgba(var(--gold-primary-rgb),0.3)]"
+                : "bg-(--gold-primary)/10 text-(--gold-primary) hover:bg-(--gold-primary)/20 hover:shadow-[0_0_20px] hover:shadow-(--gold-primary)/40 border border-(--gold-primary)/30"
             }`}
             aria-live="polite"
             type="button"
@@ -251,7 +265,7 @@ export default function Navbar() {
         {showThemeNotice && (
           <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
             {/* Ambient Background Glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[rgba(var(--gold-primary-rgb),0.15)] via-transparent to-transparent opacity-50 animate-pulse"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-(--gold-primary)/15 via-transparent to-transparent opacity-50 animate-pulse"></div>
             
             <div className="relative z-10 flex flex-col items-center">
                 {/* Sun / Moon Icon Container */}
@@ -283,7 +297,7 @@ export default function Navbar() {
 
       {/* SIDEBAR - Responsive (Mobile Slide-out, Desktop Fixed) */}
       <aside
-        className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-black/40 backdrop-blur-xl border-r border-[rgba(var(--gold-primary-rgb),0.15)] transition-transform duration-300 z-40 flex flex-col overflow-y-auto ${
+        className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-black/40 backdrop-blur-xl border-r border-(--gold-primary)/15 transition-transform duration-300 z-40 flex flex-col overflow-y-auto ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
         onMouseEnter={handleSidebarInteraction}
@@ -345,17 +359,28 @@ export default function Navbar() {
               </span>
             )}
           </div>
+
+          <div className="my-4 border-t border-(--gold-primary)/10 mx-2"></div>
+
+          <SidebarNavButton
+            href="https://wa.me/6205339833"
+            label="Collaborate"
+            icon={Handshake}
+            isActive={false}
+            onClick={handleCollaborate}
+            target="_blank"
+          />
         </div>
 
         {/* Notifications Section in Sidebar (Mobile Only mainly, but nice to have) */}
-        <div className="border-t border-[rgba(var(--gold-primary-rgb),0.15)] p-4 bg-gradient-to-t from-[rgba(var(--gold-primary-rgb),0.05)] to-transparent">
+        <div className="border-t border-(--gold-primary)/15 p-4 bg-linear-to-t from-(--gold-primary)/5 to-transparent">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xs font-bold text-(--gold-primary) uppercase tracking-wider flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${notificationCount > 0 ? "bg-red-500 animate-pulse" : "bg-zinc-700"}`}></span>
               Notifications
             </h3>
             {notificationCount > 0 && (
-              <span className="text-[10px] bg-[rgba(var(--gold-primary-rgb),0.2)] text-(--gold-primary) px-2 py-0.5 rounded-full">
+              <span className="text-[10px] bg-(--gold-primary)/20 text-(--gold-primary) px-2 py-0.5 rounded-full">
                 {notificationCount} New
               </span>
             )}
@@ -378,6 +403,19 @@ export default function Navbar() {
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
+
+      {/* Collaboration Toast */}
+      {showCollabToast && (
+        <div className="fixed top-24 right-6 z-50 bg-black/80 backdrop-blur-xl border border-[#25D366]/50 text-white px-6 py-4 rounded-2xl shadow-[0_0_30px_rgba(37,211,102,0.3)] animate-fadeIn flex items-center gap-4">
+          <div className="p-2 bg-[#25D366]/20 rounded-full">
+            <svg className="w-6 h-6 text-[#25D366]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <h4 className="font-bold text-[#25D366]">Opening WhatsApp...</h4>
+            <p className="text-xs text-zinc-400">Connecting you to our team.</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -389,30 +427,33 @@ function SidebarNavButton({
   icon: Icon,
   isActive,
   onClick,
+  target,
 }: {
   href: string;
   label: string;
   icon: any;
   isActive: boolean;
   onClick: () => void;
+  target?: string;
 }) {
   return (
     <Link
       href={href}
       onClick={onClick}
+      target={target}
       className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 overflow-hidden ${
         isActive
-          ? "text-(--gold-primary) shadow-[0_0_20px_rgba(var(--gold-primary-rgb),0.15)]"
+          ? "text-(--gold-primary) shadow-[0_0_20px_color-mix(in_srgb,var(--gold-primary),transparent_85%)]"
           : "text-zinc-400 hover:text-(--gold-light)"
       }`}
     >
       {/* Active Background Gradient */}
       {isActive && (
-        <div className="absolute inset-0 bg-linear-to-r from-[rgba(var(--gold-primary-rgb),0.15)] to-transparent opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-(--gold-primary)/15 to-transparent opacity-100 transition-opacity duration-300"></div>
       )}
       
       {/* Hover Background */}
-      <div className={`absolute inset-0 bg-[rgba(var(--gold-primary-rgb),0.05)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isActive ? 'hidden' : ''}`}></div>
+      <div className={`absolute inset-0 bg-(--gold-primary)/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isActive ? 'hidden' : ''}`}></div>
 
       {/* Active Indicator Bar */}
       {isActive && (
@@ -420,7 +461,7 @@ function SidebarNavButton({
       )}
 
       {/* Icon */}
-      <Icon className={`w-5 h-5 shrink-0 transition-all duration-500 ${isActive ? 'drop-shadow-[0_0_8px_rgba(var(--gold-primary-rgb),0.6)] scale-110' : 'group-hover:scale-110 group-hover:drop-shadow-[0_0_5px_rgba(var(--gold-primary-rgb),0.4)]'}`} />
+      <Icon className={`w-5 h-5 shrink-0 transition-all duration-500 ${isActive ? 'drop-shadow-[0_0_8px_color-mix(in_srgb,var(--gold-primary),transparent_40%)] scale-110' : 'group-hover:scale-110 group-hover:drop-shadow-[0_0_5px_color-mix(in_srgb,var(--gold-primary),transparent_60%)]'}`} />
 
       {/* Label */}
       <span className={`font-medium tracking-wide transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
@@ -428,7 +469,7 @@ function SidebarNavButton({
       </span>
       
       {/* Subtle Glow on Hover */}
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[rgba(var(--gold-primary-rgb),0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-(--gold-primary)/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </Link>
   );
 }

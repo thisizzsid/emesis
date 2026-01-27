@@ -34,13 +34,13 @@ export default function LoadingOverlay({ isLoading }: LoadingOverlayProps) {
             src="/logoemesis.png"
             alt="Loading..."
             fill
-            className="object-contain drop-shadow-[0_0_15px_rgba(var(--gold-primary-rgb),0.8)]"
+            className="object-contain drop-shadow-[0_0_15px_var(--gold-primary)]"
           />
         </div>
         <div className="mt-4 flex gap-2">
-          <div className="w-2 h-2 rounded-full bg-[var(--gold-primary)] animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 rounded-full bg-[var(--gold-primary)] animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 rounded-full bg-[var(--gold-primary)] animate-bounce"></div>
+          <div className="w-2 h-2 rounded-full bg-(--gold-primary) animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 rounded-full bg-(--gold-primary) animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 rounded-full bg-(--gold-primary) animate-bounce"></div>
         </div>
       </div>
     </div>

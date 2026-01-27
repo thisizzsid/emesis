@@ -17,7 +17,7 @@ export default function Toast({ message, type = "success", onClose }: ToastProps
   }, [onClose]);
 
   const colors = {
-    success: "border-[var(--gold-primary)] text-[var(--gold-primary)] shadow-[rgba(var(--gold-primary-rgb),0.2)]",
+    success: "border-(--gold-primary) text-(--gold-primary) shadow-(--gold-primary)/20",
     error: "border-red-500 text-red-500 shadow-red-500/20",
     info: "border-blue-500 text-blue-500 shadow-blue-500/20",
   };

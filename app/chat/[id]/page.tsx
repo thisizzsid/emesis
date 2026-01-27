@@ -92,6 +92,14 @@ export default function ChatRoom({ params }: { params: any }) {
     }
   }, [params]);
 
+  const isUserOnline = (lastSeen: any) => {
+    if (!lastSeen) return false;
+    const date = lastSeen.toDate ? lastSeen.toDate() : new Date(lastSeen);
+    const now = new Date();
+    const diff = (now.getTime() - date.getTime()) / 1000 / 60; // minutes
+    return diff < 5;
+  };
+
   const partnerUid =
     user && id
       ? id.startsWith(user.uid + "_")
@@ -251,7 +259,7 @@ export default function ChatRoom({ params }: { params: any }) {
   return (
     <div data-theme={theme} className="relative flex flex-col h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-black text-white overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-20 right-20 w-96 h-96 bg-[rgba(var(--gold-primary-rgb),0.05)] rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute top-20 right-20 w-96 h-96 bg-(--gold-primary)/5 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-zinc-900/50 rounded-full blur-3xl"></div>
 
       {/* Header */}
@@ -276,17 +284,25 @@ export default function ChatRoom({ params }: { params: any }) {
               </span>
             </div>
             {/* Online Indicator */}
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
+            {isUserOnline(otherUser?.lastSeen) && (
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
+            )}
           </div>
           
           <div className="flex flex-col min-w-0">
             <h2 className="font-bold text-zinc-100 truncate text-base leading-tight">
               {otherUser?.username || "Loading..."}
             </h2>
-            <p className="text-[10px] text-green-500 font-medium tracking-wide uppercase flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
-              Active Now
-            </p>
+            {isUserOnline(otherUser?.lastSeen) ? (
+              <p className="text-[10px] text-green-500 font-medium tracking-wide uppercase flex items-center gap-1">
+                <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
+                Active Now
+              </p>
+            ) : (
+              <p className="text-[10px] text-zinc-500 font-medium tracking-wide uppercase">
+                Offline
+              </p>
+            )}
           </div>
         </div>
 
@@ -345,9 +361,9 @@ export default function ChatRoom({ params }: { params: any }) {
 
                       {/* Bubble */}
                       <div
-                        className={`relative px-4 py-2.5 shadow-sm text-sm md:text-base break-words leading-relaxed
+                        className={`relative px-4 py-2.5 shadow-sm text-sm md:text-base wrap-break-word leading-relaxed
                           ${isMe 
-                            ? "bg-linear-to-br from-[var(--gold-primary)] to-[#F0C050] text-black rounded-2xl rounded-tr-sm" 
+                            ? "bg-linear-to-br from-(--gold-primary) to-[#F0C050] text-black rounded-2xl rounded-tr-sm" 
                             : "bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-sm border border-zinc-700/50"
                           }
                           ${isLast ? "mb-1" : "mb-0.5"}
@@ -375,7 +391,7 @@ export default function ChatRoom({ params }: { params: any }) {
                               ? new Date(m.createdAt.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                               : "Just now"}
                           </span>
-                          {isMe && <span className="text-[var(--gold-primary)]">✓</span>}
+                          {isMe && <span className="text-(--gold-primary)">✓</span>}
                         </div>
                       )}
                     </div>
@@ -411,14 +427,14 @@ export default function ChatRoom({ params }: { params: any }) {
                     value={text}
                     onChange={(e) => { setText(e.target.value); handleTyping(); }}
                     placeholder="Message..."
-                    className="relative w-full bg-zinc-900/90 text-zinc-100 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)]/50 placeholder:text-zinc-600 transition-all border border-zinc-800"
+                    className="relative w-full bg-zinc-900/90 text-zinc-100 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-(--gold-primary)/50 placeholder:text-zinc-600 transition-all border border-zinc-800"
                   />
                 </div>
                 
                 <button
                   type="submit"
                   disabled={!text.trim() || sending}
-                  className="h-[52px] w-[52px] flex items-center justify-center rounded-2xl bg-[var(--gold-primary)] text-black hover:bg-[var(--gold-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.2)] shrink-0"
+                  className="h-13 w-13 flex items-center justify-center rounded-2xl bg-(--gold-primary) text-black hover:bg-(--gold-light) disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-(--gold-primary)/20 shrink-0"
                 >
                    {sending ? (
                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">

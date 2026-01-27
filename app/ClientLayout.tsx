@@ -41,11 +41,11 @@ export default function ClientLayout({
     <>
       {showSplash && (
         <div 
-          className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--dark-base)] text-[var(--text-main)] transition-opacity duration-500 ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-(--dark-base) text-(--text-main) transition-opacity duration-500 ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
             <div className="text-center px-4">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-[var(--gold-primary)] animate-fadeIn">Welcome to EMESIS</h1>
-              <p className="text-lg md:text-xl text-[var(--text-main)] opacity-80 animate-slideInUp" style={{ animationDelay: '0.3s' }}>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-(--gold-primary) animate-fadeIn">Welcome to EMESIS</h1>
+              <p className="text-lg md:text-xl text-(--text-main) opacity-80 animate-slideInUp" style={{ animationDelay: '0.3s' }}>
                 A confession place for everyone
               </p>
             </div>

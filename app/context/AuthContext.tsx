@@ -143,6 +143,42 @@ export const AuthContextProvider = ({ children }: any) => {
     return () => unsub();
   }, []);
 
+  /** Real-time Presence System **/
+  useEffect(() => {
+    if (!user?.uid || !db) return;
+
+    const updatePresence = async () => {
+      if (document.visibilityState === "visible") {
+        try {
+          const ref = doc(db as Firestore, "users", user.uid);
+          await setDoc(ref, {
+            lastSeen: Timestamp.now(),
+            isOnline: true
+          }, { merge: true });
+        } catch (err) {
+          // silent fail
+        }
+      }
+    };
+
+    // Initial update
+    updatePresence();
+
+    // Heartbeat every 60s
+    const interval = setInterval(updatePresence, 60000);
+
+    // Update on visibility change
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") updatePresence();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [user?.uid]);
+
   return (
     <AuthContext.Provider
       value={{
