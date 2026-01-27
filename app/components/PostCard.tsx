@@ -405,13 +405,13 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 {renderTextWithHashtags(post.text)}
             </p>
 
-            <div className="mt-6 flex gap-4 text-sm items-center pt-4 border-t border-[rgba(var(--gold-primary-rgb),0.05)]">
+            <div className="mt-6 flex flex-wrap gap-2 sm:gap-4 text-sm items-center pt-4 border-t border-[rgba(var(--gold-primary-rgb),0.05)]">
               {post.uid !== user?.uid && (
                 isFollowing ? (
                   <button 
                     type="button"
                     onClick={() => onUnfollow(post.uid)} 
-                    className="px-4 py-3 bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg font-medium text-sm hover:bg-[rgba(var(--gold-primary-rgb),0.2)] transition-all min-h-11"
+                    className="px-3 sm:px-4 py-3 bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg font-medium text-sm hover:bg-[rgba(var(--gold-primary-rgb),0.2)] transition-all min-h-11"
                   >
                     Following
                   </button>
@@ -419,7 +419,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                   <button 
                     type="button"
                     onClick={() => onFollow(post.uid)} 
-                    className="px-4 py-3 bg-(--gold-primary) text-black rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-105 active:scale-95 transition-all min-h-11"
+                    className="px-3 sm:px-4 py-3 bg-(--gold-primary) text-black rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-105 active:scale-95 transition-all min-h-11"
                   >
                     Follow
                   </button>
@@ -430,7 +430,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 type="button"
                 onClick={like} 
                 title="Like"
-                className={`relative group flex items-center gap-2 px-4 py-3 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] active:scale-95 min-h-11 ${
+                className={`relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] active:scale-95 min-h-11 ${
                   post.likes?.includes(user?.uid) ? "text-red-500 bg-red-500/10" : "text-zinc-400"
                 }`}
               >
@@ -443,7 +443,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 type="button"
                 onClick={() => setShowComments(!showComments)} 
                 title="Comments"
-                className="relative group flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all hover:text-(--gold-primary) text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
+                className="relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all hover:text-(--gold-primary) text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
               >
                 <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
                 <MessageCircle className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
@@ -455,7 +455,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                   type="button"
                   onClick={() => setShareOpen((v) => !v)}
                   title="Share"
-                  className="relative group flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all text-zinc-400 hover:text-(--gold-primary) active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
+                  className="relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all text-zinc-400 hover:text-(--gold-primary) active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
                   aria-haspopup="menu"
                   aria-label="Share options"
                   ref={shareBtnRef}
