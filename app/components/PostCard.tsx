@@ -295,211 +295,212 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
   }, [shareProgress]);
 
   return (
-    <div className="glass glass-hover p-6 rounded-2xl relative border border-[rgba(var(--gold-primary-rgb),0.2)] group transition-all duration-300">
-        {post.uid === user?.uid && (
-          <div className="absolute right-4 top-4 z-20">
-              <button
-                    type="button"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="text-xl text-zinc-400 hover:text-[var(--gold-primary)] transition-colors"
-                >
-                    ⋮
-                </button>
-                
-                {menuOpen && (
-                  <div className="absolute right-0 top-8 bg-black/90 border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-xl text-sm shadow-xl overflow-hidden w-36 backdrop-blur-xl">
-                    <button 
-                      type="button"
-                      aria-label="Edit post"
-                      onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
-                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--gold-primary)"
-                    >
-                      <Pencil className="w-4 h-4" />
-                      <span>Edit</span>
-                    </button>
-                    <button 
-                      type="button"
-                      aria-label="Delete post"
-                      onClick={() => { removePost(); setMenuOpen(false); }} 
-                      className="w-full px-4 py-3 text-left transition-colors flex items-center gap-2 text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
-                )}
-            </div>
-        )}
+    <div className="group relative w-full rounded-3xl bg-[#0a0a0a] border border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_-10px_rgba(var(--gold-primary-rgb),0.15)] hover:border-[rgba(var(--gold-primary-rgb),0.2)]">
+        {/* Subtle background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        
+        {/* Top highlight line */}
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {isEditing ? (
-          <div className="animate-fadeIn">
-            <label htmlFor={`edit-textarea-${post.id}`} className="sr-only">Edit Post</label>
-            <textarea
-              id={`edit-textarea-${post.id}`}
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-black/50 p-4 border border-[rgba(var(--gold-primary-rgb),0.3)] rounded-xl text-(--gold-secondary) focus:outline-none focus:border-(--gold-primary) transition-all min-h-25"
-              placeholder="Edit your confession/thoughts/whisper..."
-            />
-            <div className="mt-4 flex gap-3 justify-end">
-              <button 
-                type="button"
-                onClick={() => setIsEditing(false)} 
-                className="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition-all text-sm"
-              >
-                Cancel
-              </button>
-              <button 
-                type="button"
-                onClick={saveEdit} 
-                disabled={loading}
-                className="px-6 py-2 bg-(--gold-primary) text-black rounded-xl font-bold hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] transition-all text-sm disabled:opacity-50"
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </button>
+        <div className="relative p-6 sm:p-8">
+            {/* Header Section */}
+            <div className="flex items-start justify-between gap-4 mb-6">
+                <div className="flex items-center gap-3">
+                    {/* Avatar / User Icon */}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[rgba(var(--gold-primary-rgb),0.1)] to-transparent border border-[rgba(var(--gold-primary-rgb),0.1)] flex items-center justify-center shrink-0">
+                        {post.anonymous ? (
+                            <span className="text-lg">👻</span>
+                        ) : (
+                            <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-[var(--gold-primary)] font-bold text-sm">
+                                {post.username?.[0]?.toUpperCase() || "U"}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            {post.anonymous ? (
+                                <span className="text-sm font-semibold text-zinc-300 tracking-wide">Anonymous</span>
+                            ) : (
+                                <Link href={`/profile?uid=${post.uid}`} className="text-sm font-semibold text-zinc-200 hover:text-[var(--gold-primary)] transition-colors tracking-wide">
+                                    @{post.username}
+                                </Link>
+                            )}
+                            
+                            {/* Time */}
+                            {post.createdAt && (
+                                <>
+                                    <span className="text-zinc-700 text-[10px]">•</span>
+                                    <span className="text-[11px] text-zinc-500 font-medium">
+                                        {new Date(post.createdAt.seconds * 1000).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        })}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Location & Device Metadata */}
+                        {(post.location || post.device) && (
+                            <div className="flex items-center gap-3 text-[10px] text-zinc-500 mt-0.5">
+                                {post.location && (
+                                    <div className="flex items-center gap-1 group/loc">
+                                        <MapPin className="w-3 h-3 text-zinc-600 group-hover/loc:text-[var(--gold-primary)] transition-colors" />
+                                        <span className="truncate max-w-[120px] group-hover/loc:text-zinc-400 transition-colors">{post.location}</span>
+                                    </div>
+                                )}
+                                {post.device && (
+                                    <div className="flex items-center gap-1 group/dev" title={`Posted from ${post.device}`}>
+                                        {post.device === "iPhone" || post.device === "Android" ? (
+                                            <Smartphone className="w-3 h-3 text-zinc-600 group-hover/dev:text-[var(--gold-primary)] transition-colors" />
+                                        ) : (
+                                            <Monitor className="w-3 h-3 text-zinc-600 group-hover/dev:text-[var(--gold-primary)] transition-colors" />
+                                        )}
+                                        <span className="group-hover/dev:text-zinc-400 transition-colors">{post.device}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Options Menu */}
+                {post.uid === user?.uid && (
+                    <div className="relative z-20">
+                        <button
+                            type="button"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            className="p-2 -mr-2 text-zinc-500 hover:text-[var(--gold-primary)] hover:bg-[rgba(var(--gold-primary-rgb),0.05)] rounded-full transition-all"
+                        >
+                            <span className="text-lg leading-none">⋮</span>
+                        </button>
+                        
+                        {menuOpen && (
+                            <div className="absolute right-0 top-full mt-2 bg-[#0F0F0F] border border-white/10 rounded-xl shadow-2xl overflow-hidden w-32 z-30 animate-fadeIn">
+                                <button 
+                                    type="button"
+                                    onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
+                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-[var(--gold-primary)] hover:bg-white/5 transition-colors flex items-center gap-2"
+                                >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                    Edit
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => { removePost(); setMenuOpen(false); }} 
+                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex items-start justify-between gap-3 flex-wrap pr-8">
-              <p className="text-xs opacity-50 font-medium tracking-tight flex items-center gap-2">
-                {post.anonymous ? (
-                    <span className="flex items-center gap-1">
-                        👻 Anonymous
-                    </span>
-                ) : (
-                    <Link href={`/profile?uid=${post.uid}`} className="hover:text-(--gold-primary) transition-colors">
-                        @{post.username}
-                    </Link>
-                )}
-              </p>
-              <div className="flex items-center gap-3 text-[10px] text-zinc-600">
-                {post.location && (
-                  <div className="flex items-center gap-1" title={post.location}>
-                    <MapPin className="w-3 h-3 opacity-50" />
-                    <span className="truncate max-w-25">{post.location}</span>
-                  </div>
-                )}
-                {post.device && (
-                  <div className="flex items-center gap-1" title={`Posted from ${post.device}`}>
-                    {post.device === "iPhone" || post.device === "Android" ? (
-                      <Smartphone className="w-3 h-3 opacity-50" />
+
+            {/* Content Section */}
+            {isEditing ? (
+                <div className="animate-fadeIn relative z-10">
+                    <textarea
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className="w-full bg-zinc-900/50 p-4 rounded-xl border border-[rgba(var(--gold-primary-rgb),0.2)] text-[var(--gold-secondary)] text-[15px] leading-relaxed focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all min-h-[120px] resize-none"
+                        placeholder="Edit your confession..."
+                    />
+                    <div className="mt-3 flex gap-2 justify-end">
+                        <button 
+                            type="button"
+                            onClick={() => setIsEditing(false)} 
+                            className="px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={saveEdit} 
+                            disabled={loading}
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-[var(--gold-primary)] text-black hover:bg-[var(--gold-light)] transition-colors disabled:opacity-50"
+                        >
+                            {loading ? "Saving..." : "Save"}
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="relative z-10 mb-6">
+                    <p className="text-[var(--gold-secondary)] text-[15px] sm:text-[16px] leading-relaxed font-light whitespace-pre-wrap tracking-wide">
+                        {renderTextWithHashtags(post.text)}
+                    </p>
+                </div>
+            )}
+
+            {/* Action Bar */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-5 border-t border-white/5">
+                {post.uid !== user?.uid && (
+                    isFollowing ? (
+                        <button 
+                            type="button"
+                            onClick={() => onUnfollow(post.uid)} 
+                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-[rgba(var(--gold-primary-rgb),0.05)] text-[var(--gold-primary)] border border-[rgba(var(--gold-primary-rgb),0.1)] text-xs font-semibold hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all"
+                        >
+                            Following
+                        </button>
                     ) : (
-                      <Monitor className="w-3 h-3 opacity-50" />
-                    )}
-                    <span>{post.device}</span>
-                  </div>
+                        <button 
+                            type="button"
+                            onClick={() => onFollow(post.uid)} 
+                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-[var(--gold-primary)] text-black text-xs font-bold hover:bg-[var(--gold-light)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[rgba(var(--gold-primary-rgb),0.1)]"
+                        >
+                            Follow
+                        </button>
+                    )
                 )}
-                {post.createdAt && (
-                  <span>
-                    {new Date(post.createdAt.seconds * 1000).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                )}
-              </div>
-            </div>
 
-            <p className="mt-4 text-(--gold-secondary) leading-relaxed font-normal whitespace-pre-wrap text-[15px]">
-                {renderTextWithHashtags(post.text)}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2 sm:gap-4 text-sm items-center pt-4 border-t border-[rgba(var(--gold-primary-rgb),0.05)]">
-              {post.uid !== user?.uid && (
-                isFollowing ? (
-                  <button 
+                <button 
                     type="button"
-                    onClick={() => onUnfollow(post.uid)} 
-                    className="px-3 sm:px-4 py-3 bg-[rgba(var(--gold-primary-rgb),0.1)] text-(--gold-primary) border border-[rgba(var(--gold-primary-rgb),0.2)] rounded-lg font-medium text-sm hover:bg-[rgba(var(--gold-primary-rgb),0.2)] transition-all min-h-11"
-                  >
-                    Following
-                  </button>
-                ) : (
-                  <button 
-                    type="button"
-                    onClick={() => onFollow(post.uid)} 
-                    className="px-3 sm:px-4 py-3 bg-(--gold-primary) text-black rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-[rgba(var(--gold-primary-rgb),0.2)] hover:scale-105 active:scale-95 transition-all min-h-11"
-                  >
-                    Follow
-                  </button>
-                )
-              )}
-
-              <button 
-                type="button"
-                onClick={like} 
-                title="Like"
-                className={`relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg transition-all focus:outline-none focus-visible:ring-2 ring-(--gold-primary) hover:bg-[rgba(var(--gold-primary-rgb),0.1)] active:scale-95 min-h-11 ${
-                  post.likes?.includes(user?.uid) ? "text-red-500 bg-red-500/10" : "text-zinc-400"
-                }`}
-              >
-                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
-                <Heart className={`w-5 h-5 transition-transform duration-300 ${post.likes?.includes(user?.uid) ? "scale-110" : "scale-100"}`} />
-                <span className="font-medium text-sm">{post.likes?.length || 0}</span>
-              </button>
-
-              <button 
-                type="button"
-                onClick={() => setShowComments(!showComments)} 
-                title="Comments"
-                className="relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all hover:text-(--gold-primary) text-zinc-400 active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
-              >
-                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
-                <MessageCircle className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
-                <span className="font-medium text-sm">Comment</span>
-              </button>
-
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShareOpen((v) => !v)}
-                  title="Share"
-                  className="relative group flex items-center gap-2 px-3 sm:px-4 py-3 rounded-lg hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-all text-zinc-400 hover:text-(--gold-primary) active:scale-95 focus:outline-none focus-visible:ring-2 ring-(--gold-primary) min-h-11"
-                  aria-haspopup="menu"
-                  aria-label="Share options"
-                  ref={shareBtnRef}
+                    onClick={like} 
+                    className={`flex-1 sm:flex-none h-10 px-4 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-all ${
+                        post.likes?.includes(user?.uid) 
+                        ? "bg-red-500/10 text-red-400 border border-red-500/20" 
+                        : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 border border-transparent"
+                    }`}
                 >
-                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-r from-transparent via-[rgba(var(--gold-primary-rgb),0.05)] to-transparent"></span>
-                  <Share2 className="w-5 h-5 transition-transform duration-300 group-active:scale-95" />
-                  <span className="font-medium text-sm">Share</span>
+                    <Heart className={`w-4 h-4 ${post.likes?.includes(user?.uid) ? "fill-current" : ""}`} />
+                    <span>{post.likes?.length || 0}</span>
                 </button>
-                {shareOpen && (
-                  <div
-                    ref={shareMenuRef}
-                    role="menu"
-                    className={`absolute z-50 top-full right-0 mt-2 w-56 glass rounded-xl border border-[rgba(var(--gold-primary-rgb),0.2)] shadow-xl overflow-hidden transform-gpu transition duration-300 ease-out ${shareOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
-                  >
+
+                <button 
+                    type="button"
+                    onClick={() => setShowComments(!showComments)} 
+                    className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 transition-all flex items-center justify-center gap-2 text-xs font-medium"
+                >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Comment</span>
+                </button>
+
+                <div className="relative flex-1 sm:flex-none">
                     <button
-                      type="button"
-                      className="w-full px-4 py-3 text-left hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors duration-300 ease-out text-xs focus:outline-none"
-                      onClick={() => handleShare("instagramStory")}
-                      role="menuitem"
-                      data-menuitem="true"
+                        type="button"
+                        onClick={() => setShareOpen((v) => !v)}
+                        className="w-full sm:w-auto h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-[var(--gold-primary)] transition-all flex items-center justify-center gap-2 text-xs font-medium group/share"
+                        ref={shareBtnRef}
                     >
-                      Instagram Story
+                        <Share2 className="w-4 h-4 group-hover/share:scale-110 transition-transform" />
+                        <span>Share</span>
                     </button>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-3 text-left hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors duration-300 ease-out text-xs focus:outline-none"
-                      onClick={() => handleShare("whatsapp")}
-                      role="menuitem"
-                      data-menuitem="true"
-                    >
-                      WhatsApp
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-3 text-left hover:bg-[rgba(var(--gold-primary-rgb),0.1)] transition-colors duration-300 ease-out text-xs focus:outline-none"
-                      onClick={() => handleShare("generic")}
-                      role="menuitem"
-                      data-menuitem="true"
-                    >
-                      Download Image
-                    </button>
-                  </div>
-                )}
-              </div>
+                    
+                    {shareOpen && (
+                        <div
+                            ref={shareMenuRef}
+                            className="absolute bottom-full right-0 mb-2 w-48 bg-[#0F0F0F] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-30 animate-fadeIn"
+                        >
+                            <button onClick={() => handleShare("instagramStory")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5">Instagram Story</button>
+                            <button onClick={() => handleShare("whatsapp")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5">WhatsApp</button>
+                            <button onClick={() => handleShare("generic")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors">Download Image</button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {showComments && (
@@ -516,8 +517,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 </div>
               </div>
             )}
-          </>
-        )}
+        </div>
     </div>
   );
 }

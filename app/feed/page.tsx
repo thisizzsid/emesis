@@ -258,7 +258,7 @@ export default function FeedPage() {
               {/* Minimal Header */}
               <div className="px-6 py-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
                  <div className="flex flex-col">
-                   <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Transmission</span>
+                   <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Confession</span>
                    <span className="text-[10px] text-zinc-600 mt-0.5">Disappears in 24h</span>
                  </div>
                  <div className="flex gap-1.5">
@@ -372,12 +372,11 @@ export default function FeedPage() {
               <li>Anonymous Stories</li>
               <li>Voice Confessions</li>
               <li>AI Soulmate Mode</li>
-              <li>Dark / Light Themes</li>
               <li>Location-based Connections</li>
               <li>Trending Feed Engine</li>
               <li>UI Upgrade</li>
-              <li>And much more...</li>
-              <li>V2.1</li>
+              
+              <li>V.3.1</li>
             </ul>
 
             <button

@@ -107,9 +107,9 @@ export default function ChatListPage() {
           /* Emesis AI Bot Card */
           <div className="glass glass-hover rounded-2xl p-6 md:p-8 shadow-2xl border border-[rgba(var(--gold-primary-rgb),0.25)] group relative overflow-hidden animate-fadeIn">
             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-purple-500"></div>
-            <div className="flex items-center justify-between gap-5 md:gap-6 relative z-10">
-              <div className="flex items-center gap-5 flex-1">
-                <div className="relative">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-5 md:gap-6 relative z-10">
+              <div className="flex items-center gap-5 w-full md:flex-1">
+                <div className="relative shrink-0">
                   <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-xl font-black text-2xl text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                     AI
                   </div>
@@ -127,10 +127,10 @@ export default function ChatListPage() {
                   </div>
                 </div>
               </div>
-              <div className="shrink-0">
+              <div className="w-full md:w-auto shrink-0">
                 <Link
                   href={`/chat/ai_${user.uid}`}
-                  className="modern-btn px-8 py-4 bg-linear-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
+                  className="modern-btn w-full md:w-auto px-8 py-4 bg-linear-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3"
                 >
                   Chat AI
                 </Link>
@@ -170,9 +170,9 @@ export default function ChatListPage() {
               >
                 <div className={`absolute top-0 left-0 w-full h-1 bg-linear-to-r from-green-500 to-emerald-500`}></div>
 
-                <div className="flex items-center justify-between gap-5 md:gap-6 relative z-10">
-                  <div className="flex items-center gap-5 flex-1">
-                    <div className="relative">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-5 md:gap-6 relative z-10">
+                  <div className="flex items-center gap-5 w-full md:flex-1">
+                    <div className="relative shrink-0">
                       <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-linear-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-xl font-black text-2xl text-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                         {u.username?.[0]?.toUpperCase() || "U"}
                       </div>
@@ -192,11 +192,11 @@ export default function ChatListPage() {
                     </div>
                   </div>
 
-                  <div className="shrink-0">
+                  <div className="w-full md:w-auto shrink-0">
                     {can ? (
                       <Link
                         href={`/chat/${chatId}`}
-                        className="modern-btn px-8 py-4 bg-linear-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3"
+                        className="modern-btn w-full md:w-auto px-8 py-4 bg-linear-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
@@ -207,7 +207,7 @@ export default function ChatListPage() {
                       <button
                         type="button"
                         disabled
-                        className="px-8 py-4 bg-linear-to-r from-zinc-800 to-zinc-900 text-zinc-600 rounded-2xl font-bold border-2 border-zinc-800 cursor-not-allowed flex items-center gap-3"
+                        className="w-full md:w-auto px-8 py-4 bg-linear-to-r from-zinc-800 to-zinc-900 text-zinc-600 rounded-2xl font-bold border-2 border-zinc-800 cursor-not-allowed flex items-center justify-center gap-3"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
