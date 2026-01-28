@@ -57,6 +57,23 @@ export default function ProfilePage() {
     totalViews: 0
   });
 
+  // Verification Logic: Check 5 conditions (Name, Bio, Avatar, Email, Phone)
+  const isVerified = useMemo(() => {
+    if (!data) return false;
+    const hasName = !!data.username;
+    const hasBio = !!data.bio;
+    const hasAvatar = !!data.photoURL;
+    // For private fields, check auth user if owner
+    const hasEmail = !!(data.email || (isOwner && user?.email));
+    const hasPhone = !!(data.phoneNumber || (isOwner && user?.phoneNumber));
+
+    return hasName && hasBio && hasAvatar && hasEmail && hasPhone;
+  }, [data, isOwner, user]);
+
+
+
+
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -261,28 +278,6 @@ export default function ProfilePage() {
         <div className="w-10 h-10 border-2 border-(--gold-primary) border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
-
-  // Verification Logic
-  const isVerified = useMemo(() => {
-    if (!data) return false;
-    // Strict Verification Check as requested
-    // 1. Complete Name (username)
-    // 2. Bio
-    // 3. Valid Email (from auth)
-    // 4. Verified Phone (from auth)
-    // 5. Profile Photo (from auth)
-    
-    const hasName = !!data.username && data.username.length > 0;
-    const hasBio = !!data.bio && data.bio.length > 0;
-    const hasEmail = !!user?.email; 
-    const hasPhone = !!user?.phoneNumber; 
-    const hasPhoto = !!user?.photoURL;
-
-    // Return true only if ALL conditions are met
-    // Note: Users signed up with Email might not have Phone linked, preventing verification.
-    // This is intended behavior for a "Verified" badge.
-    return hasName && hasBio && hasEmail && hasPhone && hasPhoto;
-  }, [data, user]);
 
   const BlueBadge = () => (
     <svg className="w-6 h-6 text-blue-500 inline-block align-text-bottom animate-badge-pop" viewBox="0 0 24 24" fill="currentColor">
