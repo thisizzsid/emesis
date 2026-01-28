@@ -79,9 +79,12 @@ function ExploreContent() {
     // Filter immediately if search is active
     if (search && viewMode === "users") {
         const keyword = search.toLowerCase();
-        setFilteredUsers(arr.filter(u => u.username?.toLowerCase().includes(keyword)));
+        setFilteredUsers(arr.filter(u => 
+            u.username?.toLowerCase().includes(keyword) || 
+            u.displayName?.toLowerCase().includes(keyword)
+        ));
     } else {
-        setFilteredUsers(arr);
+        setFilteredUsers([]);
     }
 
     // FOLLOWING
@@ -154,12 +157,19 @@ function ExploreContent() {
 
   const runSearch = () => {
     if (viewMode === "users") {
+        if (!search.trim()) {
+            setFilteredUsers([]);
+            return;
+        }
         const keyword = search.toLowerCase();
         const f = usersList.filter(
           (u) =>
-            u.username &&
+            (u.username &&
             typeof u.username === "string" &&
-            u.username.toLowerCase().includes(keyword)
+            u.username.toLowerCase().includes(keyword)) ||
+            (u.displayName &&
+            typeof u.displayName === "string" &&
+            u.displayName.toLowerCase().includes(keyword))
         );
         setFilteredUsers(f);
     } else {
@@ -170,7 +180,7 @@ function ExploreContent() {
   const clearSearch = () => {
     setSearch("");
     if (viewMode === "users") {
-        setFilteredUsers(usersList);
+        setFilteredUsers([]);
     } else {
         // Reload all posts? or just clear?
         // Let's reload all posts (latest)
@@ -287,7 +297,9 @@ function ExploreContent() {
             {viewMode === "users" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {filteredUsers.length === 0 && (
-                    <p className="text-center opacity-50 col-span-full">No users found.</p>
+                    <p className="text-center opacity-50 col-span-full">
+                        {search ? "No users found matching your search." : "Search above to find users."}
+                    </p>
                     )}
 
                     {filteredUsers.map((u) => {
