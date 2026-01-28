@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User } from "lucide-r
 import { db, auth } from "../../firebase";
 import { doc, setDoc, Firestore } from "firebase/firestore";
 
-export default function LoginPage() {
+function LoginContent() {
   const { googleLogin, loginWithEmail, signupWithEmail, resetPassword, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -366,5 +366,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-screen bg-black text-(--gold-primary)">
+        <div className="w-10 h-10 border-2 border-(--gold-primary) border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
