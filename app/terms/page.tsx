@@ -7,7 +7,7 @@ export default function TermsPage() {
   const router = useRouter();
 
   return (
-    <div className="relative min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white flex flex-col">
+    <div className="relative min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-white flex flex-col font-sans">
       <GlowBackground />
       
       {/* Header */}
@@ -19,31 +19,28 @@ export default function TermsPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-(--gold-primary) hover:text-(--gold-light) mb-6 transition-colors px-3 py-1.5 rounded-lg border border-(--gold-primary)/20 hover:border-(--gold-primary)/40 bg-white/0 hover:bg-white/5 backdrop-blur-xl"
+              className="inline-flex items-center gap-2 text-(--gold-primary) hover:text-(--gold-light) mb-8 transition-colors px-4 py-2 rounded-full border border-(--gold-primary)/20 hover:border-(--gold-primary)/40 bg-white/5 hover:bg-white/10 backdrop-blur-xl"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span>../back</span>
+              <span>Back</span>
             </button>
           </Reveal>
 
           <Reveal className="opacity-0">
-            <h1 className="relative inline-block text-4xl md:text-5xl font-black mb-4 bg-linear-to-r from-(--gold-primary) to-(--gold-light) bg-clip-text text-transparent">
-              system.terms(TOS)
-              <span className="pointer-events-none absolute inset-x-0 -bottom-1 h-px bg-linear-to-r from-transparent via-(--gold-primary)/50 to-transparent" />
+            <h1 className="text-4xl md:text-6xl font-black mb-6 bg-linear-to-r from-(--gold-primary) via-white to-(--gold-light) bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(245,194,107,0.3)]">
+              Terms of Service
             </h1>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto font-mono text-sm md:text-base">
-              &gt; Loading rules of engagement...
-              <br />
-              &gt; Compliance: Mandatory
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              Rules of engagement for a fair and safe community.
             </p>
           </Reveal>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-4 md:px-6 pb-8">
+      <div className="flex-1 px-4 md:px-6 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
           
           {/* Agreement */}
