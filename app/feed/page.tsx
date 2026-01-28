@@ -383,7 +383,7 @@ export default function FeedPage() {
 
       {/* === MODAL === */}
       {showUpcoming && (
-        <div className="fixed inset-0 bg-(--dark-base)/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
+        <div className="fixed inset-0 bg-(--dark-base)/90 backdrop-blur-xl flex items-center justify-center z-[1000] animate-fadeIn">
           <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-(--gold-secondary) shadow-2xl border border-(--gold-primary)/20 animate-fadeIn">
             <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-(--gold-primary) to-(--gold-light) bg-clip-text mb-6 text-center tracking-tight">
               Upcoming Features

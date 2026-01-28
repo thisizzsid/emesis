@@ -253,7 +253,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
       </div>
       <div className="flex gap-2">
         <input
-          className="flex-1 bg-black/50 border border-(--gold-primary)/20 rounded-lg px-3 py-2 text-sm"
+          className="flex-1 bg-black/50 border border-(--gold-primary)/20 rounded-lg px-4 py-3 text-base sm:text-sm"
           placeholder="Add a comment (markdown supported)"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -262,7 +262,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
         <button
           onClick={submit}
           type="button"
-          className="bg-(--gold-primary) text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-(--gold-secondary) active:scale-95 transition-all"
+          className="bg-(--gold-primary) text-black px-5 py-3 rounded-lg text-sm font-bold hover:bg-(--gold-secondary) active:scale-95 transition-all shrink-0"
           aria-label="Post comment"
         >
           Send
@@ -306,7 +306,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   <button
                     type="button"
                     onClick={() => vote(c, 1)}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10"
+                    className="px-3 py-2 min-w-[32px] rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10 active:scale-95 transition flex items-center justify-center"
                     aria-label="Upvote"
                   >
                     ▲
@@ -315,7 +315,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   <button
                     type="button"
                     onClick={() => vote(c, -1)}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10"
+                    className="px-3 py-2 min-w-[32px] rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10 active:scale-95 transition flex items-center justify-center"
                     aria-label="Downvote"
                   >
                     ▼
@@ -353,12 +353,12 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   {renderMD(c.text || "")}
                 </div>
               )}
-              <div className="flex items-center gap-3 text-[11px]">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs mt-2">
                 {remainingReplies > 0 && (
                   <button
                     type="button"
                     onClick={() => setReplyTexts((r) => ({ ...r, [c.id]: r[c.id] ?? "" }))}
-                    className="px-2 py-1 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) hover:bg-(--gold-primary)/10"
+                    className="px-3 py-1.5 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) hover:bg-(--gold-primary)/10 active:scale-95 transition"
                     aria-label="Reply"
                   >
                     Reply
@@ -367,7 +367,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                 <button
                   type="button"
                   onClick={() => setExpanded((e) => ({ ...e, [c.id]: !isExpanded }))}
-                  className="px-2 py-1 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-zinc-400 hover:bg-(--gold-primary)/10"
+                  className="px-3 py-1.5 rounded-lg bg-black/50 border border-(--gold-primary)/20 text-zinc-400 hover:bg-(--gold-primary)/10 active:scale-95 transition"
                   aria-label="Toggle thread"
                 >
                   {isExpanded ? "Collapse" : "Expand"}
@@ -376,7 +376,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   <button
                     type="button"
                     onClick={() => beginEdit(c)}
-                    className="text-(--gold-primary)"
+                    className="px-2 py-1 text-(--gold-primary) hover:underline"
                     aria-label="Edit"
                   >
                     Edit
@@ -386,7 +386,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   <button
                     type="button"
                     onClick={() => remove(c.id)}
-                    className="text-red-400"
+                    className="px-2 py-1 text-red-400 hover:underline"
                     aria-label="Delete"
                   >
                     Delete
@@ -404,16 +404,16 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                     });
                     alert("Reported");
                   }}
-                  className="text-zinc-500"
+                  className="px-2 py-1 text-zinc-500 hover:text-zinc-400"
                   aria-label="Report"
                 >
                   Report
                 </button>
               </div>
               {replyTexts[c.id] !== undefined && remainingReplies > 0 && (
-                <div className="mt-2 flex gap-2">
+                <div className="mt-3 flex gap-2">
                   <input
-                    className="flex-1 bg-black/50 border border-(--gold-primary)/20 rounded-lg px-3 py-2 text-sm"
+                    className="flex-1 bg-black/50 border border-(--gold-primary)/20 rounded-lg px-4 py-3 text-base sm:text-sm"
                     placeholder="Write a reply"
                     value={replyTexts[c.id]}
                     onChange={(e) =>
@@ -424,7 +424,7 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                   <button
                     type="button"
                     onClick={() => submitReply(c.id)}
-                    className="bg-(--gold-primary) text-black px-3 py-2 rounded-lg text-xs font-bold hover:bg-(--gold-secondary)"
+                    className="bg-(--gold-primary) text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-(--gold-secondary) shrink-0"
                     aria-label="Submit reply"
                   >
                     Send

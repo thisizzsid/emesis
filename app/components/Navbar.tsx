@@ -263,7 +263,7 @@ export default function Navbar() {
           </div>
         </div>
         {showThemeNotice && (
-          <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl animate-fadeIn">
             {/* Ambient Background Glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-(--gold-primary)/15 via-transparent to-transparent opacity-50 animate-pulse"></div>
             
@@ -441,7 +441,7 @@ function SidebarNavButton({
       href={href}
       onClick={onClick}
       target={target}
-      className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 overflow-hidden ${
+      className={`group relative flex items-center gap-4 px-4 py-4 md:py-3.5 min-h-[56px] md:min-h-0 rounded-2xl transition-all duration-300 overflow-hidden ${
         isActive
           ? "text-(--gold-primary) shadow-[0_0_20px_color-mix(in_srgb,var(--gold-primary),transparent_85%)]"
           : "text-zinc-400 hover:text-(--gold-light)"

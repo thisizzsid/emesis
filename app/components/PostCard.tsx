@@ -442,7 +442,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                         <button 
                             type="button"
                             onClick={() => onUnfollow(post.uid)} 
-                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-(--gold-primary)/5 text-(--gold-primary) border border-(--gold-primary)/10 text-xs font-semibold hover:bg-(--gold-primary)/10 transition-all"
+                            className="flex-1 sm:flex-none h-11 px-4 rounded-lg bg-(--gold-primary)/5 text-(--gold-primary) border border-(--gold-primary)/10 text-xs font-semibold hover:bg-(--gold-primary)/10 transition-all"
                         >
                             Following
                         </button>
@@ -450,7 +450,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                         <button 
                             type="button"
                             onClick={() => onFollow(post.uid)} 
-                            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-(--gold-primary) text-black text-xs font-bold hover:bg-(--gold-light) hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-(--gold-primary)/10"
+                            className="flex-1 sm:flex-none h-11 px-4 rounded-lg bg-(--gold-primary) text-black text-xs font-bold hover:bg-(--gold-light) hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-(--gold-primary)/10"
                         >
                             Follow
                         </button>
@@ -460,7 +460,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 <button 
                     type="button"
                     onClick={like} 
-                    className={`flex-1 sm:flex-none h-10 px-4 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-all ${
+                    className={`flex-1 sm:flex-none h-11 px-4 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-all ${
                         post.likes?.includes(user?.uid) 
                         ? "bg-red-500/10 text-red-400 border border-red-500/20" 
                         : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 border border-transparent"
@@ -473,7 +473,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 <button 
                     type="button"
                     onClick={() => setShowComments(!showComments)} 
-                    className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 transition-all flex items-center justify-center gap-2 text-xs font-medium"
+                    className="flex-1 sm:flex-none h-11 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200 transition-all flex items-center justify-center gap-2 text-xs font-medium"
                 >
                     <MessageCircle className="w-4 h-4" />
                     <span>{post.commentCount > 0 ? post.commentCount : "Comment"}</span>
@@ -483,7 +483,7 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                     <button
                         type="button"
                         onClick={() => setShareOpen((v) => !v)}
-                        className="w-full sm:w-auto h-10 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-(--gold-primary) transition-all flex items-center justify-center gap-2 text-xs font-medium group/share"
+                        className="w-full sm:w-auto h-11 px-4 rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-(--gold-primary) transition-all flex items-center justify-center gap-2 text-xs font-medium group/share"
                         ref={shareBtnRef}
                     >
                         <Share2 className="w-4 h-4 group-hover/share:scale-110 transition-transform" />
