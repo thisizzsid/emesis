@@ -37,11 +37,20 @@ if (!admin.apps.length) {
         credential: admin.credential.cert(serviceAccount),
       });
     } else {
-      console.warn("No service account provided. Falling back to applicationDefault() or unauthenticated mode.");
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'emesispro',
-      });
+      console.warn("⚠️ Firebase Admin: No 'serviceAccountKey.json' or 'FIREBASE_SERVICE_ACCOUNT_KEY' found.");
+      console.warn("   Attempting to use Application Default Credentials (ADC)...");
+      
+      try {
+        admin.initializeApp({
+          credential: admin.credential.applicationDefault(),
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'emesispro',
+        });
+      } catch (error) {
+        console.error("\n❌ FATAL: Failed to initialize Firebase Admin with Default Credentials.");
+        console.error("   To fix this:");
+        console.error("   1. Download service account key from Firebase Console -> Project Settings -> Service Accounts");
+        console.error("   2. Save as 'serviceAccountKey.json' in project root OR set FIREBASE_SERVICE_ACCOUNT_KEY in .env\n");
+      }
     }
   } catch (error) {
     console.error('Firebase Admin initialization error', error);
