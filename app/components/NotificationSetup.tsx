@@ -1,24 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
 import {
   getMessaging,
   getToken,
   onMessage,
   isSupported,
 } from "firebase/messaging";
-import { db } from "@/firebase";
+import { db, auth } from "@/firebase";
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, Firestore } from "firebase/firestore";
 
 export function useNotifications() {
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth();
 
   useEffect(() => {
     const setupNotifications = async () => {
       try {
+        if (!auth) {
+          setLoading(false);
+          return;
+        }
+
         const user = auth.currentUser;
         if (!user || !db) {
           setLoading(false);
@@ -97,7 +100,7 @@ export function useNotifications() {
     };
 
     setupNotifications();
-  }, [auth.currentUser]);
+  }, [auth?.currentUser]);
 
   return { notificationEnabled, loading };
 }

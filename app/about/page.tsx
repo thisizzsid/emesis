@@ -48,11 +48,11 @@ export default function AboutPage() {
               <div className="flex items-start gap-4 mb-2 md:mb-6">
                 <div className="text-4xl">🎯</div>
                 <div>
-                  <h2 className="text-2xl font-bold text-(--gold-primary) mb-3 font-mono">Core_Directive</h2>
+                  <h2 className="text-2xl font-bold text-(--gold-primary) mb-3">Our Mission</h2>
                   <p className="text-zinc-400 leading-relaxed">
-                    EMESIS is engineered to execute a global social handshake. We are refactoring the way humans connect,
-                    deprecating superficial interactions in favor of deep, authentic data exchange.
-                    Our runtime environment is optimized for safety, inclusivity, and meaningful signal-to-noise ratio.
+                    EMESIS is designed to redefine social connection. We are changing the way humans connect,
+                    moving away from superficial interactions to foster deep, authentic relationships.
+                    Our platform is built for safety, inclusivity, and meaningful conversations.
                   </p>
                 </div>
               </div>
@@ -62,9 +62,9 @@ export default function AboutPage() {
           {/* Founder Section */}
           <Reveal>
             <TiltCard className="glass border border-(--gold-primary)/30 rounded-2xl p-6 md:p-8 bg-white/4 backdrop-blur-xl">
-              <h2 className="text-2xl font-bold text-(--gold-primary) mb-8 flex items-center gap-3 font-mono">
+              <h2 className="text-2xl font-bold text-(--gold-primary) mb-8 flex items-center gap-3">
                 <span className="text-3xl">👨‍💻</span>
-                sudo user: root
+                The Visionary
               </h2>
 
               <div className="space-y-6">
@@ -78,16 +78,16 @@ export default function AboutPage() {
                   {/* Info */}
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-white mb-1">Mr X</h3>
-                    <p className="text-(--gold-primary) font-mono text-sm mb-4">Lead Architect & CEO</p>
+                    <p className="text-(--gold-primary) text-sm mb-4">Lead Architect & CEO</p>
                     <p className="text-zinc-400 leading-relaxed mb-4">
-                      Sid is a full-stack visionary with a recursive passion for digital transformation.
-                      Compiling years of development experience into a single executable vision, he deployed EMESIS
-                      to patch the vulnerabilities in modern social connectivity.
+                      Sid is a full-stack visionary with a passion for digital transformation.
+                      Combining years of development experience into a single vision, he built EMESIS
+                      to solve the problems of modern social connectivity.
                     </p>
-                    <div className="space-y-2 text-sm text-zinc-400 font-mono">
-                      <p><span className="text-(--gold-primary)">var focus =</span> ["Social Innovation", "UX/UI", "Scalable Arch"];</p>
-                      <p><span className="text-(--gold-primary)">const vision =</span> "Connect(people) -&gt; meaningful_bond";</p>
-                      <p><span className="text-(--gold-primary)">return</span> "Tech should empower, not divide";</p>
+                    <div className="space-y-2 text-sm text-zinc-400">
+                      <p><span className="text-(--gold-primary) font-semibold">Focus:</span> Social Innovation, UX/UI, Scalable Architecture</p>
+                      <p><span className="text-(--gold-primary) font-semibold">Vision:</span> Connecting people to create meaningful bonds</p>
+                      <p><span className="text-(--gold-primary) font-semibold">Motto:</span> "Tech should empower, not divide"</p>
                     </div>
                   </div>
                 </div>
@@ -98,26 +98,26 @@ export default function AboutPage() {
           {/* Values Section */}
           <Reveal>
             <TiltCard className="glass border border-(--gold-primary)/30 rounded-2xl p-6 md:p-8 bg-white/4 backdrop-blur-xl">
-              <h2 className="text-2xl font-bold text-(--gold-primary) mb-8 flex items-center gap-3 font-mono">
+              <h2 className="text-2xl font-bold text-(--gold-primary) mb-8 flex items-center gap-3">
                 <span className="text-3xl">💎</span>
-                System_Invariants
+                Our Values
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
-                  { icon: "🔒", title: "Encryption", desc: "Your data is obfuscated. Privacy is hardcoded." },
-                  { icon: "🤝", title: "Handshake", desc: "Establishing secure connections between nodes." },
-                  { icon: "🚀", title: "Velocity", desc: "Continuous deployment of new features." },
-                  { icon: "✨", title: "Source", desc: "Authenticity is the only valid input." },
-                  { icon: "🌍", title: "Global_Scope", desc: "Accessible to all instances, everywhere." },
-                  { icon: "⚡", title: "Performance", desc: "Optimized for low latency and high quality." },
+                  { icon: "🔒", title: "Privacy", desc: "Your data is secure. Privacy is our priority." },
+                  { icon: "🤝", title: "Connection", desc: "Building secure and meaningful relationships." },
+                  { icon: "🚀", title: "Innovation", desc: "Continuously improving your experience." },
+                  { icon: "✨", title: "Authenticity", desc: "Real people, real stories." },
+                  { icon: "🌍", title: "Global Reach", desc: "Accessible to everyone, everywhere." },
+                  { icon: "⚡", title: "Excellence", desc: "Optimized for the best quality." },
                 ].map((value, idx) => (
                   <div
                     key={idx}
                     className="p-4 rounded-xl bg-linear-to-br from-(--gold-primary)/10 to-(--gold-light)/10 border border-(--gold-primary)/20 hover:border-(--gold-primary)/50 transition-all duration-300 group"
                   >
                     <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{value.icon}</div>
-                    <h3 className="font-bold text-white mb-2 font-mono">{value.title}</h3>
+                    <h3 className="font-bold text-white mb-2">{value.title}</h3>
                     <p className="text-sm text-zinc-400">{value.desc}</p>
                   </div>
                 ))}
@@ -128,12 +128,12 @@ export default function AboutPage() {
           {/* Technology Section */}
           <Reveal>
             <TiltCard className="glass border border-(--gold-primary)/30 rounded-2xl p-6 md:p-8 bg-white/4 backdrop-blur-xl">
-              <h2 className="text-2xl font-bold text-(--gold-primary) mb-6 flex items-center gap-3 font-mono">
+              <h2 className="text-2xl font-bold text-(--gold-primary) mb-6 flex items-center gap-3">
                 <span className="text-3xl">⚙️</span>
-                Dependencies & Stack
+                Powered By Modern Tech
               </h2>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 font-mono text-xs md:text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs md:text-sm">
                 {["Next.js 14", "React Server Components", "TypeScript 5", "Firebase v10", "Tailwind CSS v4", "Gemini AI API"].map((tech, idx) => (
                   <div
                     key={idx}
@@ -149,17 +149,17 @@ export default function AboutPage() {
           {/* Join Us CTA */}
           <Reveal>
             <TiltCard className="glass border border-(--gold-primary)/20 rounded-2xl p-8 md:p-12 text-center bg-white/4 backdrop-blur-xl">
-              <h3 className="text-2xl md:text-3xl font-bold text-(--gold-primary) mb-4 font-mono">
-                &gt; git checkout -b new-journey
+              <h3 className="text-2xl md:text-3xl font-bold text-(--gold-primary) mb-4">
+                Start Your Journey
               </h3>
               <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
-                Initialize your session. Connect with the main branch of humanity.
+                Join the community. Connect with people worldwide.
               </p>
               <ShimmerButton onClick={() => router.push('/feed')}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span>Execute_Launch()</span>
+                <span>Get Started</span>
               </ShimmerButton>
             </TiltCard>
           </Reveal>

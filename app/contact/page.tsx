@@ -11,7 +11,7 @@ export default function ContactPage() {
   const [status, setStatus] = useState("");
 
   const send = async () => {
-    setStatus(">>> Pinging server...");
+    setStatus("Sending message...");
 
     try {
       const req = await fetch("/api/contact", {
@@ -22,14 +22,14 @@ export default function ContactPage() {
       const res = await req.json();
 
       if (res.success) {
-        setStatus(">>> Packet sent successfully. Awaiting ACK.");
+        setStatus("Message sent successfully! We'll get back to you soon.");
         setEmail("");
         setMsg("");
       } else {
-        setStatus(">>> Error: Connection reset by peer.");
+        setStatus("Error: Failed to send message.");
       }
     } catch (e) {
-      setStatus(">>> Fatal Error: Network unreachable.");
+      setStatus("Error: Network issue. Please try again.");
     }
   };
 
@@ -71,48 +71,40 @@ export default function ContactPage() {
         <div className="max-w-xl w-full">
           <Reveal>
             <TiltCard className="glass border border-(--gold-primary)/30 rounded-2xl p-8 md:p-10 bg-white/4 backdrop-blur-xl relative overflow-hidden">
-              {/* Decorative terminal header */}
-              <div className="absolute top-0 left-0 right-0 h-8 bg-zinc-900/50 border-b border-zinc-800 flex items-center px-4 gap-2">
-                 <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-                 <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                 <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
-                 <div className="ml-4 text-xs font-mono text-zinc-500">root@emesis:~</div>
-              </div>
-
               <div className="mt-6">
-                <h2 className="text-2xl font-bold text-(--gold-primary) mb-2 font-mono">Open_Ticket()</h2>
+                <h2 className="text-2xl font-bold text-(--gold-primary) mb-2">Start a Conversation</h2>
                 <p className="text-zinc-400 text-sm mb-8">
-                  Report bugs, request features, or submit feedback logs.
+                  Have a question or feedback? We'd love to hear from you.
                 </p>
 
                 <div className="space-y-6">
                   <div className="group">
-                    <label className="block text-xs font-mono text-(--gold-primary) mb-2 ml-1">var user_email =</label>
+                    <label className="block text-sm font-medium text-(--gold-primary) mb-2 ml-1">Email Address</label>
                     <input
                       type="email"
                       placeholder="Enter your email..."
-                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 font-mono transition-colors outline-none"
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 transition-colors outline-none"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
 
                   <div className="group">
-                    <label className="block text-xs font-mono text-(--gold-primary) mb-2 ml-1">const payload =</label>
+                    <label className="block text-sm font-medium text-(--gold-primary) mb-2 ml-1">Your Message</label>
                     <textarea
                       placeholder="Write your message..."
-                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 font-mono transition-colors outline-none min-h-32 resize-none"
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-(--gold-primary) rounded-lg px-4 py-3 text-white placeholder-zinc-600 transition-colors outline-none min-h-32 resize-none"
                       value={msg}
                       onChange={(e) => setMsg(e.target.value)}
                     />
                   </div>
 
                   <ShimmerButton onClick={send} className="w-full">
-                    <span>transmit_data()</span>
+                    <span>Send Message</span>
                   </ShimmerButton>
 
                   {status && (
-                    <div className="p-3 bg-zinc-900/80 border border-zinc-800 rounded font-mono text-xs text-(--gold-light) animate-pulse">
+                    <div className="p-3 bg-zinc-900/80 border border-zinc-800 rounded text-sm text-(--gold-light)">
                       {status}
                     </div>
                   )}
