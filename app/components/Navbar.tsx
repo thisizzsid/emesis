@@ -5,12 +5,14 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
+import { useNotifications } from "./NotificationSetup";
 import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon, Handshake } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { notificationEnabled } = useNotifications();
   const [notificationCount, setNotificationCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
