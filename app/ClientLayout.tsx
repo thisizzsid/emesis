@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import OnboardingTour from "./components/OnboardingTour";
@@ -48,6 +49,17 @@ export default function ClientLayout({
               <p className="text-lg md:text-xl text-(--text-main) opacity-80 animate-slideInUp" style={{ animationDelay: '0.3s' }}>
                 A confession place for everyone
               </p>
+
+              {/* Secured By Badge */}
+              <div className="mt-16 flex flex-col items-center gap-3 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
+                <p className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-mono">Powered & Secured By</p>
+                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-full backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:border-(--gold-primary)/40 transition-colors duration-500">
+                   <div className="relative w-6 h-6">
+                      <Image src="/google.png" alt="Google" fill className="object-contain opacity-90" />
+                   </div>
+                   <span className="text-sm font-semibold text-zinc-200 tracking-wide">Google Firebase</span>
+                </div>
+              </div>
             </div>
         </div>
       )}
