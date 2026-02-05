@@ -6,12 +6,12 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LoadingOverlay from "../components/LoadingOverlay";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User, Ghost } from "lucide-react";
 import { db, auth } from "../../firebase";
 import { doc, setDoc, Firestore } from "firebase/firestore";
 
 function LoginContent() {
-  const { googleLogin, loginWithEmail, signupWithEmail, resetPassword, user } = useAuth();
+  const { googleLogin, loginWithEmail, signupWithEmail, resetPassword, anonymousLogin, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -151,6 +151,22 @@ function LoginContent() {
         setError(e.message || "Google login failed");
     }
   };
+
+  const handleAnonymousLogin = async () => {
+    setLoading(true);
+    setError("");
+    try {
+        await anonymousLogin();
+    } catch (e: any) {
+         console.error(e);
+         setLoading(false);
+         if (e.code === 'auth/admin-restricted-operation') {
+           setError("Anonymous auth disabled. Enable it in Firebase Console.");
+         } else {
+           setError(e.message || "Anonymous login failed");
+         }
+     }
+   };
 
   return (
     <div className="min-h-dvh w-full relative flex items-center justify-center bg-(--background) selection:bg-(--gold-primary) selection:text-black py-10">
@@ -336,13 +352,24 @@ function LoginContent() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 group/google"
+            className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 group/google mb-3"
           >
             <div className="p-0.5 bg-white rounded-full">
                <Image src="/google.png" alt="Google" width={18} height={18} className="object-contain" />
             </div>
             <span>{mode === 'login' ? "Sign in with Google" : "Sign up with Google"}</span>
             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/google:opacity-100 group-hover/google:translate-x-0 transition-all duration-300 text-zinc-400" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAnonymousLogin}
+            disabled={loading}
+            className="w-full py-4 rounded-xl bg-zinc-900/50 border border-zinc-800 text-zinc-400 font-medium hover:bg-zinc-800/50 hover:text-zinc-200 hover:border-zinc-700 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 group/anon"
+          >
+            <Ghost className="w-5 h-5" />
+            <span>Continue Anonymously</span>
+            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/anon:opacity-100 group-hover/anon:translate-x-0 transition-all duration-300 text-zinc-500" />
           </button>
 
           {/* Footer */}

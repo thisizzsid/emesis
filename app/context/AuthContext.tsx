@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
   signOut,
   signInWithPhoneNumber,
+  signInAnonymously,
   Auth,
 } from "firebase/auth";
 import { auth } from "../../firebase";
@@ -35,25 +36,44 @@ export const AuthContextProvider = ({ children }: any) => {
         {
           uid: u.uid,
           email: u.email || "",
-          username: u.displayName || "",
+          username: u.displayName || "Anonymous",
           bio: "",
           age: "",
           gender: "",
           location: "",
           joined: Timestamp.now(),
+          isAnonymous: u.isAnonymous || false,
         },
         { merge: true }
       );
     } else {
-      await setDoc(
-        ref,
-        {
-          email: u.email || "",
-          username: u.displayName || "",
-        },
-        { merge: true }
-      );
+      const dataToUpdate: any = {
+        email: u.email || "",
+        isAnonymous: u.isAnonymous || false,
+      };
+
+      // Only overwrite username if Auth profile has one (e.g. Google)
+      // Preserves custom usernames for anonymous users
+      if (u.displayName) {
+        dataToUpdate.username = u.displayName;
+      }
+
+      await setDoc(ref, dataToUpdate, { merge: true });
     }
+  };
+
+  /** 
+   * Anonymous Login Flow:
+   * 1. Calls Firebase `signInAnonymously`.
+   * 2. Firebase generates a unique UID and persists the session.
+   * 3. `ensureUserProfile` creates a Firestore document for the user with `isAnonymous: true`.
+   * 4. The `username` is set to "Anonymous" by default.
+   * 5. User can later upgrade this account by linking email/Google (logic to be implemented if needed).
+   **/
+  const anonymousLogin = async () => {
+    if (!auth) return;
+    const res = await signInAnonymously(auth);
+    await ensureUserProfile(res.user);
   };
 
   /** Google Auth **/
@@ -191,6 +211,7 @@ export const AuthContextProvider = ({ children }: any) => {
         logout,
         sendOTP,
         verifyOTP,
+        anonymousLogin,
       }}
     >
       {children}
