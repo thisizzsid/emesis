@@ -6,7 +6,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useNotifications } from "./NotificationSetup";
-import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon, Handshake } from "lucide-react";
+import { Bell, Home, Compass, LayoutDashboard, User, MessageCircle, LogOut, Sun, Moon, Handshake, Globe } from "lucide-react";
+import { collection, onSnapshot, Firestore } from "firebase/firestore";
+import { db } from "@/firebase";
 
 export default function Navbar() {
   const router = useRouter();
@@ -17,7 +19,16 @@ export default function Navbar() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showCollabToast, setShowCollabToast] = useState(false);
+  const [totalPostsCount, setTotalPostsCount] = useState(0);
   const sidebarTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!db) return;
+    const unsub = onSnapshot(collection(db as Firestore, "posts"), (snap) => {
+      setTotalPostsCount(snap.size);
+    });
+    return () => unsub();
+  }, []);
 
   // Check for notifications on mount and interval
   useEffect(() => {
@@ -183,6 +194,18 @@ export default function Navbar() {
           </span>
           <div className="absolute -bottom-1 left-0 w-0 h-0.75 bg-linear-to-r from-(--gold-primary) to-(--gold-light) group-hover:w-full transition-all duration-500"></div>
         </button>
+
+        {/* Minimalist Live Counter */}
+        <div className="flex items-center gap-2 ml-4 md:ml-8 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+          <div className="relative">
+            <Globe className="w-3 md:w-3.5 h-3 md:h-3.5 text-(--gold-primary) animate-pulse" />
+            <div className="absolute inset-0 bg-(--gold-primary)/20 blur-sm rounded-full animate-ping"></div>
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="hidden sm:block text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest">Whispers</span>
+            <span className="text-[10px] md:text-xs font-black text-white tabular-nums">{totalPostsCount.toLocaleString()}</span>
+          </div>
+        </div>
 
         {/* Right: Logout Button (Center-aligned on desktop, right-aligned on mobile) */}
         <div className="flex-1 flex items-center justify-end md:justify-center">

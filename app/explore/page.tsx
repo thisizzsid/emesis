@@ -45,6 +45,7 @@ function ExploreContent() {
   const [posts, setPosts] = useState<any[]>([]);
   const [search, setSearch] = useState(initialTag || "");
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [trendingTags, setTrendingTags] = useState<{ tag: string; count: number }[]>([]);
   const [followingList, setFollowingList] = useState<string[]>([]);
   const [followersList, setFollowersList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -134,14 +135,27 @@ function ExploreContent() {
         }
 
         const arr: any[] = [];
+        const tagCounts: Record<string, number> = {};
+
         snap.forEach((d) => {
             const data = d.data();
-            // Client-side double check if fallback was used
             if (data.createdAt?.toMillis() > oneDayAgo.toMillis()) {
                 arr.push({ id: d.id, ...data });
+                if (data.hashtags && Array.isArray(data.hashtags)) {
+                    data.hashtags.forEach((tag: string) => {
+                        const normalized = tag.toLowerCase();
+                        tagCounts[normalized] = (tagCounts[normalized] || 0) + 1;
+                    });
+                }
             }
         });
         setPosts(arr);
+        setTrendingTags(
+            Object.entries(tagCounts)
+                .map(([tag, count]) => ({ tag, count }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10)
+        );
 
         // Also load following list to update UI state for PostCard
         const followingRef = collection(db as Firestore, `users/${uid}/following`);
@@ -294,6 +308,73 @@ function ExploreContent() {
           </div>
       ) : (
           <>
+            {/* SUGGESTIONS & TRENDING (only if no search) */}
+            {!search && (
+              <div className="max-w-6xl mx-auto mb-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Trending Tags */}
+                <div className="glass p-8 rounded-3xl border border-(--gold-primary)/10 shadow-2xl">
+                  <h2 className="text-2xl font-black text-(--gold-primary) mb-6 flex items-center gap-3">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Trending Topics
+                  </h2>
+                  <div className="flex flex-wrap gap-3">
+                    {trendingTags.length === 0 && <p className="text-zinc-600 text-sm italic">The void is currently silent...</p>}
+                    {trendingTags.map(({ tag, count }) => (
+                      <button
+                        key={tag}
+                        onClick={() => { setSearch(tag); setViewMode("posts"); }}
+                        className="group flex items-center gap-2 bg-zinc-900/50 hover:bg-(--gold-primary) border border-(--gold-primary)/20 px-4 py-2 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                      >
+                        <span className="text-zinc-400 group-hover:text-black font-bold">#{tag}</span>
+                        <span className="text-[10px] bg-(--gold-primary)/10 group-hover:bg-black/20 text-(--gold-primary) group-hover:text-black px-2 py-0.5 rounded-full font-black">
+                          {count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Suggested Users */}
+                <div className="glass p-8 rounded-3xl border border-(--gold-primary)/10 shadow-2xl">
+                  <h2 className="text-2xl font-black text-(--gold-primary) mb-6 flex items-center gap-3">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    People to Follow
+                  </h2>
+                  <div className="space-y-4">
+                    {usersList.filter(u => !followingList.includes(u.id)).slice(0, 4).length === 0 && (
+                       <p className="text-zinc-600 text-sm italic">You're already following everyone!</p>
+                    )}
+                    {usersList
+                      .filter(u => !followingList.includes(u.id))
+                      .slice(0, 4)
+                      .map(u => (
+                        <div key={u.id} className="flex items-center justify-between group">
+                          <Link href={`/profile?uid=${u.id}`} className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-(--gold-primary) font-black border border-zinc-700 group-hover:border-(--gold-primary) transition-colors">
+                              {(u.username || "U")[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-zinc-200 group-hover:text-(--gold-primary) transition-colors">{u.username}</p>
+                              <p className="text-[10px] text-zinc-500 truncate max-w-30">{u.bio || "No bio yet"}</p>
+                            </div>
+                          </Link>
+                          <button
+                            onClick={() => follow(u.id)}
+                            className="bg-(--gold-primary)/10 hover:bg-(--gold-primary) text-(--gold-primary) hover:text-black border border-(--gold-primary)/30 px-4 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95"
+                          >
+                            Follow
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {viewMode === "users" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {filteredUsers.length === 0 && (

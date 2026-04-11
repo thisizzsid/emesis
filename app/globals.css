@@ -4,14 +4,13 @@
   background-size: 50px 50px;
 }
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
-  text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
   touch-action: manipulation; /* Improve touch delay */
 }
 
@@ -121,10 +120,30 @@ body::-webkit-scrollbar-thumb {
 /* === UTILITIES === */
 .glass {
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+@keyframes story-progress {
+  from { width: 0% }
+  to { width: 100% }
+}
+
+/* Accent themes for profile without inline styles */
+.accent-f5c26b { --gold-primary: #F5C26B; --gold-light: #FFD56A; }
+.accent-ff8a00 { --gold-primary: #FF8A00; --gold-light: #FFB366; }
+.accent-4ade80 { --gold-primary: #4ADE80; --gold-light: #7EE8A9; }
+.accent-60a5fa { --gold-primary: #60A5FA; --gold-light: #93C5FD; }
+.accent-a78bfa { --gold-primary: #A78BFA; --gold-light: #C7B8FF; }
+.accent-f472b6 { --gold-primary: #F472B6; --gold-light: #F9A8D4; }
+
+.swatch-f5c26b { background-color: #F5C26B; }
+.swatch-ff8a00 { background-color: #FF8A00; }
+.swatch-4ade80 { background-color: #4ADE80; }
+.swatch-60a5fa { background-color: #60A5FA; }
+.swatch-a78bfa { background-color: #A78BFA; }
+.swatch-f472b6 { background-color: #F472B6; }
 
 .glass-hover:hover {
   background: rgba(255, 255, 255, 0.03);

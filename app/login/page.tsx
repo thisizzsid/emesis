@@ -6,9 +6,23 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LoadingOverlay from "../components/LoadingOverlay";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User, Ghost } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User, Ghost, Sparkles, MessageSquare, Shield, Zap } from "lucide-react";
 import { db, auth } from "../../firebase";
 import { doc, setDoc, Firestore } from "firebase/firestore";
+import { motion, AnimatePresence } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 function LoginContent() {
   const { googleLogin, loginWithEmail, signupWithEmail, resetPassword, anonymousLogin, user } = useAuth();
@@ -57,16 +71,16 @@ function LoginContent() {
     const goldPrimaryRgb = style.getPropertyValue('--gold-primary-rgb').trim() || "245, 194, 107";
 
     const particles: any[] = [];
-    const count = 60;
+    const count = 80;
 
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * c.width,
         y: Math.random() * c.height,
-        r: Math.random() * 2 + 0.5,
-        dx: (Math.random() - 0.5) * 0.3,
-        dy: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.5 + 0.1,
+        r: Math.random() * 1.5 + 0.5,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        opacity: Math.random() * 0.4 + 0.1,
         color: `rgba(${goldPrimaryRgb},`
       });
     }
@@ -75,7 +89,8 @@ function LoginContent() {
       if (!ctx || !c) return;
       ctx.clearRect(0, 0, c.width, c.height);
       
-      for (const p of particles) {
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `${p.color} ${p.opacity})`;
@@ -86,6 +101,19 @@ function LoginContent() {
         
         if (p.x < 0 || p.x > c.width) p.dx *= -1;
         if (p.y < 0 || p.y > c.height) p.dy *= -1;
+
+        // Draw connecting lines
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${goldPrimaryRgb}, ${0.1 * (1 - dist/100)})`;
+            ctx.stroke();
+          }
+        }
       }
       requestAnimationFrame(draw);
     }
@@ -169,228 +197,274 @@ function LoginContent() {
    };
 
   return (
-    <div className="min-h-dvh w-full relative flex items-center justify-center bg-(--background) selection:bg-(--gold-primary) selection:text-black py-10">
+    <div className="min-h-dvh w-full relative flex items-center justify-center bg-(--background) selection:bg-(--gold-primary) selection:text-black overflow-hidden">
       <LoadingOverlay isLoading={loading} />
       
       {/* Background Elements */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
-      <div className="absolute inset-0 bg-linear-to-br from-black/80 via-black/50 to-black/80 z-0" />
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,color-mix(in_srgb,var(--gold-primary),transparent_95%),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-black/90 via-black/70 to-black/90 z-0" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,color-mix(in_srgb,var(--gold-primary),transparent_98%),transparent_80%)] pointer-events-none" />
       
-      {/* Main Card */}
-      <div className={`relative z-10 w-full max-w-md p-4 md:p-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="glass-card rounded-3xl border border-(--glass-border) shadow-[0_0_50px_-10px_color-mix(in_srgb,var(--gold-primary),transparent_90%)] p-6 md:p-10 backdrop-blur-2xl bg-(--glass-bg) relative overflow-hidden group">
+      <div className="flex w-full max-w-6xl min-h-[85vh] m-4 md:m-10 relative z-10 glass-card rounded-[40px] border border-white/5 shadow-2xl overflow-hidden backdrop-blur-3xl">
+        
+        {/* Left Side: Branding (Desktop Only) */}
+        <motion.div 
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="hidden lg:flex flex-1 relative flex-col justify-between p-16 overflow-hidden border-r border-white/5"
+        >
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 bg-linear-to-br from-(--gold-primary)/5 via-transparent to-transparent animate-pulse" />
           
-          {/* Top highlight line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-(--gold-primary) to-transparent opacity-50" />
-          
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="relative inline-flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-500">
-              <div className="absolute inset-0 bg-(--gold-primary) blur-xl opacity-20 rounded-full"></div>
-              <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-(--dark-card) to-black border border-(--glass-border) flex items-center justify-center shadow-xl relative z-10">
-                <Image 
-                  src="/logoemesis.png" 
-                  alt="Emesis Logo" 
-                  width={48} 
-                  height={48} 
-                  className="object-contain"
-                  priority
-                />
+          <div className="relative z-10">
+            <Link href="/" className="inline-flex items-center gap-3 group">
+              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-(--dark-card) to-black border border-(--gold-primary)/30 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                <Image src="/logoemesis.png" alt="Logo" width={28} height={28} className="object-contain" />
+              </div>
+              <span className="text-2xl font-black tracking-tighter text-white font-[Orbitron]">EMESIS</span>
+            </Link>
+
+            <div className="mt-20 space-y-8">
+              <motion.h2 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="text-6xl font-black leading-tight text-white tracking-tight"
+              >
+                Release your <br />
+                <span className="text-(--gold-primary) italic">thoughts</span> <br />
+                into the void.
+              </motion.h2>
+              
+              <div className="space-y-6">
+                {[
+                  { icon: MessageSquare, title: "Safe Haven", desc: "A secure space for anonymous confessions." },
+                  { icon: Shield, title: "AI Moderated", desc: "Protected by advanced content analysis." },
+                  { icon: Zap, title: "Instant Reach", desc: "Share with the global community instantly." }
+                ].map((item, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 + (idx * 0.1), duration: 0.5 }}
+                    className="flex items-start gap-4"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-(--gold-primary)/10 border border-(--gold-primary)/20 flex items-center justify-center shrink-0">
+                      <item.icon className="w-5 h-5 text-(--gold-primary)" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold">{item.title}</h4>
+                      <p className="text-zinc-500 text-sm">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent tracking-wider font-[Orbitron] mb-2 bg-size-200 animate-textShine">
-              EMESIS
-            </h1>
-            <p className="text-(--gold-primary)/80 text-lg font-medium mb-1">
-                {mode === 'login' ? 'Welcome Back' : 'Join the Realm'}
-            </p>
-            <p className="text-zinc-400 text-sm">
-                {mode === 'login' ? 'Enter your credentials to access' : 'Create your account today'}
-            </p>
-            
-            <div className="mt-4 flex flex-col items-center justify-center gap-1.5 animate-fadeIn delay-100">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">Made with love in collaboration with</span>
-              <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 hover:border-(--gold-primary)/30 transition-colors group/trae cursor-default">
-                 {/* TRAE Logo Placeholder - Stylized T/AI Icon */}
-                 <svg className="w-4 h-4 text-(--gold-primary) group-hover/trae:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                 </svg>
-                 <span className="font-bold tracking-widest text-xs text-zinc-300 group-hover/trae:text-white transition-colors">TRAE</span>
-              </div>
+          </div>
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 text-zinc-500 text-sm">
+              <span className="flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-(--gold-primary)" /> 50k+ Users</span>
+              <span className="w-1 h-1 rounded-full bg-zinc-800" />
+              <span>Built with TRAE AI</span>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Right Side: Auth Form */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="w-full lg:w-[480px] flex flex-col p-8 md:p-12 bg-black/40"
+        >
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex justify-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-(--dark-card) to-black border border-(--gold-primary)/30 flex items-center justify-center shadow-xl">
+              <Image src="/logoemesis.png" alt="Logo" width={32} height={32} className="object-contain" />
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-3xl font-black text-white tracking-tight mb-2">
+              {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            </h3>
+            <p className="text-zinc-500 text-sm">
+              {mode === 'login' ? 'Please enter your details to sign in.' : 'Join the community of truth-seekers.'}
+            </p>
           </div>
 
           {/* Mode Toggle */}
-          <div className="flex p-1 bg-white/5 rounded-xl mb-8 relative border border-white/5">
-            <div 
-                className={`absolute inset-y-1 w-[calc(50%-4px)] bg-(--gold-primary) rounded-lg transition-all duration-300 shadow-lg ${
-                    mode === 'login' ? 'left-1' : 'left-[calc(50%+4px)]'
-                }`} 
+          <div className="flex p-1 bg-white/5 rounded-2xl mb-8 relative border border-white/5">
+            <motion.div 
+              layoutId="toggle"
+              className="absolute inset-y-1 w-[calc(50%-4px)] bg-(--gold-primary) rounded-xl shadow-lg"
+              initial={false}
+              animate={{ x: mode === 'login' ? 0 : '100%' }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
             <button 
-                onClick={() => setMode('login')} 
-                className={`flex-1 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 ${
-                    mode === 'login' ? 'text-black' : 'text-zinc-400 hover:text-white'
-                }`}
+              onClick={() => setMode('login')} 
+              className={`flex-1 py-3 text-sm font-black relative z-10 transition-colors duration-300 ${mode === 'login' ? 'text-black' : 'text-zinc-500 hover:text-white'}`}
             >
-                Log In
+              LOG IN
             </button>
             <button 
-                onClick={() => setMode('signup')} 
-                className={`flex-1 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 ${
-                    mode === 'signup' ? 'text-black' : 'text-zinc-400 hover:text-white'
-                }`}
+              onClick={() => setMode('signup')} 
+              className={`flex-1 py-3 text-sm font-black relative z-10 transition-colors duration-300 ${mode === 'signup' ? 'text-black' : 'text-zinc-500 hover:text-white'}`}
             >
-                Sign Up
+              SIGN UP
             </button>
           </div>
 
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center font-medium animate-fadeIn flex items-center justify-center gap-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              {error}
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ x: 10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -10, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {error && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center flex items-center justify-center gap-2"
+                >
+                  <ShieldCheck className="w-4 h-4 rotate-180" />
+                  {error}
+                </motion.div>
+              )}
 
-          {/* Form */}
-          <form onSubmit={handleAuth} className="space-y-4">
-            
-            {/* Username Field - Only for Signup */}
-            {mode === 'signup' && (
-                <div className="relative group animate-fadeIn">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
+              <form onSubmit={handleAuth} className="space-y-4">
+                {mode === 'signup' && (
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-(--gold-primary) transition-colors" />
                     <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
-                        required={mode === 'signup'}
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder:text-zinc-600 focus:border-(--gold-primary)/30 focus:ring-1 focus:ring-(--gold-primary)/20 outline-none transition-all"
+                      required
                     />
-                </div>
-            )}
+                  </div>
+                )}
 
-            <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
-                  required
-                />
-            </div>
-            
-            <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder={mode === 'signup' ? "Create a password" : "Password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
-                  required
-                />
-                <button 
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-(--gold-primary) transition-colors" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder:text-zinc-600 focus:border-(--gold-primary)/30 focus:ring-1 focus:ring-(--gold-primary)/20 outline-none transition-all"
+                    required
+                  />
+                </div>
+
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-(--gold-primary) transition-colors" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder:text-zinc-600 focus:border-(--gold-primary)/30 focus:ring-1 focus:ring-(--gold-primary)/20 outline-none transition-all"
+                    required
+                  />
+                  <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-(--gold-primary) transition-colors p-1"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                >
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-white transition-colors p-1"
+                  >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-            </div>
+                  </button>
+                </div>
 
-            {/* Confirm Password - Only for Signup */}
-            {mode === 'signup' && (
-                <div className="relative group animate-fadeIn">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-(--gold-primary) transition-colors duration-300" />
+                {mode === 'signup' && (
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-(--gold-primary) transition-colors" />
                     <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Confirm password"
-                        value={confirm}
-                        onChange={(e) => setConfirm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-(--dark-card)/50 border border-(--glass-border) text-(--gold-primary) placeholder:text-zinc-600 focus:border-(--gold-primary)/50 focus:ring-1 focus:ring-(--gold-primary)/50 focus:bg-(--dark-card) outline-none transition-all duration-300"
-                        required={mode === 'signup'}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder:text-zinc-600 focus:border-(--gold-primary)/30 focus:ring-1 focus:ring-(--gold-primary)/20 outline-none transition-all"
+                      required
                     />
-                </div>
-            )}
+                  </div>
+                )}
 
-            {mode === 'login' && (
-                <div className="flex justify-end pt-2">
-                    <button 
-                        type="button"
-                        onClick={handleReset}
-                        className="text-xs font-medium text-zinc-400 hover:text-(--gold-primary) transition-colors hover:underline decoration-(--gold-primary)/30 underline-offset-4"
-                    >
-                        Forgot password?
+                {mode === 'login' && (
+                  <div className="flex justify-end">
+                    <button type="button" onClick={handleReset} className="text-xs font-bold text-zinc-500 hover:text-(--gold-primary) transition-colors">
+                      Forgot password?
                     </button>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4 rounded-2xl bg-linear-to-r from-(--gold-primary) to-(--gold-light) text-black font-black text-sm hover:shadow-[0_0_30px_color-mix(in_srgb,var(--gold-primary),transparent_80%)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn mt-4"
+                >
+                  <span>{loading ? "PROCESSING..." : mode === 'login' ? "SIGN IN" : "CREATE ACCOUNT"}</span>
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </button>
+              </form>
+
+              <div className="relative flex items-center gap-4 py-2">
+                <div className="flex-1 h-px bg-white/5" />
+                <span className="text-[10px] font-black text-zinc-600 tracking-widest uppercase">Social Access</span>
+                <div className="flex-1 h-px bg-white/5" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-3 py-3.5 rounded-2xl bg-white/5 border border-white/5 text-white text-xs font-bold hover:bg-white/10 hover:border-white/20 transition-all group/google"
+                >
+                  <div className="p-0.5 bg-white rounded-full">
+                    <Image src="/google.png" alt="Google" width={16} height={16} className="object-contain" />
+                  </div>
+                  <span>GOOGLE</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleAnonymousLogin}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-3 py-3.5 rounded-2xl bg-zinc-900/50 border border-white/5 text-zinc-400 text-xs font-bold hover:bg-zinc-800 hover:text-white transition-all group/anon"
+                >
+                  <Ghost className="w-4 h-4" />
+                  <span>ANONYMOUS</span>
+                </button>
+              </div>
+
+              <div className="text-center pt-4">
+                <p className="text-zinc-500 text-xs font-bold">
+                  {mode === 'login' ? "New here? " : "Already joined? "}
+                  <button 
+                    onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                    className="text-(--gold-primary) hover:underline underline-offset-4"
+                  >
+                    {mode === 'login' ? "CREATE ACCOUNT" : "SIGN IN"}
+                  </button>
+                </p>
+                
+                <div className="mt-8 flex items-center justify-center gap-2 text-green-500/60 font-black text-[10px] tracking-widest uppercase">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Secure & Private</span>
                 </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 rounded-xl bg-linear-to-r from-(--gold-primary) to-(--gold-light) text-black font-bold text-base hover:shadow-[0_0_30px_color-mix(in_srgb,var(--gold-primary),transparent_70%)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn relative overflow-hidden mt-4"
-            >
-              <span className="relative z-10">
-                {loading ? (mode === 'login' ? "Signing in..." : "Creating Account...") : (mode === 'login' ? "Sign In" : "Sign Up")}
-              </span>
-              {!loading && <ArrowRight className="w-5 h-5 relative z-10 group-hover/btn:translate-x-1 transition-transform" />}
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 rounded-xl" />
-            </button>
-          </form>
-
-          <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-(--glass-border)"></div></div>
-              <div className="relative flex justify-center text-xs uppercase tracking-widest"><span className="px-4 bg-(--glass-bg) text-zinc-500 font-medium">Or continue with</span></div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 group/google mb-3"
-          >
-            <div className="p-0.5 bg-white rounded-full">
-               <Image src="/google.png" alt="Google" width={18} height={18} className="object-contain" />
-            </div>
-            <span>{mode === 'login' ? "Sign in with Google" : "Sign up with Google"}</span>
-            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/google:opacity-100 group-hover/google:translate-x-0 transition-all duration-300 text-zinc-400" />
-          </button>
-
-          <button
-            type="button"
-            onClick={handleAnonymousLogin}
-            disabled={loading}
-            className="w-full py-4 rounded-xl bg-zinc-900/50 border border-zinc-800 text-zinc-400 font-medium hover:bg-zinc-800/50 hover:text-zinc-200 hover:border-zinc-700 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 group/anon"
-          >
-            <Ghost className="w-5 h-5" />
-            <span>Continue Anonymously</span>
-            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/anon:opacity-100 group-hover/anon:translate-x-0 transition-all duration-300 text-zinc-500" />
-          </button>
-
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-zinc-400 text-sm mb-6">
-              {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-              <button 
-                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                className="text-(--gold-primary) font-bold hover:text-(--gold-light) hover:underline decoration-(--gold-primary)/50 underline-offset-4 transition-all"
-              >
-                {mode === 'login' ? "Sign up" : "Log in"}
-              </button>
-            </p>
-
-            <div className="flex items-center justify-center gap-2 text-green-500 font-medium text-xs opacity-90">
-              <ShieldCheck className="w-4 h-4" />
-              <span className="tracking-wide uppercase">End-to-End Encrypted</span>
-            </div>
-          </div>
-          
-        </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

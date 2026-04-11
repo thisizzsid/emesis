@@ -17,8 +17,25 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Moon, Sun, LogOut, Users } from "lucide-react";
+import { FadeIn, HoverScale } from "../../components/Motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Paperclip, 
+  Smile, 
+  Check, 
+  CheckCheck, 
+  Clock, 
+  Camera, 
+  Mic, 
+  MoreVertical,
+  Phone,
+  Video,
+  Info
+} from "lucide-react";
 import Toast from "../../components/Toast";
+import { cn } from "@/app/lib/utils";
+
+import { TypingIndicator, MessageStatusIcon } from "../../components/ChatUI";
 
 export default function ChatRoom({ params }: { params: any }) {
   const { user, logout } = useAuth();
@@ -30,6 +47,7 @@ export default function ChatRoom({ params }: { params: any }) {
   const [sending, setSending] = useState(false);
   const [otherUser, setOtherUser] = useState<any>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [partnerIsTyping, setPartnerIsTyping] = useState(false);
   const [showReactions, setShowReactions] = useState<string | null>(null);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -307,14 +325,22 @@ export default function ChatRoom({ params }: { params: any }) {
         </div>
 
         {/* Actions */}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors"
-          aria-label="Chat details"
-          title="Chat details"
-        >
-          <Users className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors hidden md:block" aria-label="Call">
+            <Phone className="w-5 h-5" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors hidden md:block" aria-label="Video Call">
+            <Video className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-full hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-colors"
+            aria-label="Chat details"
+            title="Chat details"
+          >
+            <Info className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex">
@@ -326,7 +352,7 @@ export default function ChatRoom({ params }: { params: any }) {
             {messages.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4 opacity-50">
                 <div className="w-16 h-16 rounded-2xl bg-zinc-900 flex items-center justify-center rotate-3">
-                   <Users className="w-8 h-8 opacity-50" />
+                   <Info className="w-8 h-8 opacity-50" />
                 </div>
                 <p className="text-sm font-medium">No messages yet. Start the conversation!</p>
               </div>
@@ -336,80 +362,94 @@ export default function ChatRoom({ params }: { params: any }) {
               const isMe = m.uid === user.uid;
               const isFirst = i === 0 || messages[i - 1].uid !== m.uid;
               const isLast = i === messages.length - 1 || messages[i + 1].uid !== m.uid;
+              const status = m.read ? "read" : m.delivered ? "delivered" : "sent";
               
               return (
-                <div
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   key={m.id}
-                  className={`flex w-full ${isMe ? "justify-end" : "justify-start"} group`}
+                  className={cn("flex w-full group", isMe ? "justify-end" : "justify-start")}
                 >
-                  <div className={`flex max-w-[85%] md:max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"} gap-2`}>
+                  <div className={cn("flex max-w-[85%] md:max-w-[70%] gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
                     
                     {/* Avatar (only for them, and only on last message of group) */}
                     {!isMe && (
-                      <div className={`w-8 h-8 shrink-0 flex flex-col justify-end ${!isLast ? "invisible" : ""}`}>
+                      <div className={cn("w-8 h-8 shrink-0 flex flex-col justify-end", !isLast && "invisible")}>
                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-400 border border-zinc-700">
                             {otherUser?.username?.[0]?.toUpperCase()}
                          </div>
                       </div>
                     )}
 
-                    <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                    <div className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
                       {/* Name (only first message of group, not me) */}
                       {!isMe && isFirst && (
                          <span className="text-[10px] text-zinc-500 ml-1 mb-1">{otherUser?.username}</span>
                       )}
 
                       {/* Bubble */}
-                      <div
-                        className={`relative px-4 py-2.5 shadow-sm text-sm md:text-base wrap-break-word leading-relaxed
-                          ${isMe 
-                            ? "bg-linear-to-br from-(--gold-primary) to-[#F0C050] text-black rounded-2xl rounded-tr-sm" 
-                            : "bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-sm border border-zinc-700/50"
-                          }
-                          ${isLast ? "mb-1" : "mb-0.5"}
-                        `}
-                      >
-                        {m.text}
-                        
-                        {/* Reactions */}
-                        {m.reactions?.length > 0 && (
-                          <div className={`absolute -bottom-3 ${isMe ? "-left-2" : "-right-2"} flex -space-x-1`}>
-                            {m.reactions.map((r: any, idx: number) => (
-                              <span key={idx} className="bg-zinc-900 border border-zinc-700 rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-xs">
-                                {r.emoji}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      <HoverScale>
+                        <div
+                          className={cn(
+                            "relative px-4 py-2.5 shadow-sm text-sm md:text-base wrap-break-word leading-relaxed transition-all",
+                            isMe 
+                              ? "bg-linear-to-br from-(--gold-primary) to-[#F0C050] text-black rounded-2xl rounded-tr-sm" 
+                              : "bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-sm border border-zinc-700/50",
+                            isLast ? "mb-1" : "mb-0.5"
+                          )}
+                        >
+                          {m.text}
+                          
+                          {/* Reactions */}
+                          <AnimatePresence>
+                            {m.reactions?.length > 0 && (
+                              <motion.div 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className={cn("absolute -bottom-3 flex -space-x-1", isMe ? "-left-2" : "-right-2")}
+                              >
+                                {m.reactions.map((r: any, idx: number) => (
+                                  <span key={idx} className="bg-zinc-900 border border-zinc-700 rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-xs">
+                                    {r.emoji}
+                                  </span>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </HoverScale>
 
                       {/* Timestamp & Status */}
                       {isLast && (
-                        <div className={`flex items-center gap-1 mt-1 text-[10px] text-zinc-600 ${isMe ? "mr-1" : "ml-1"}`}>
+                        <div className={cn("flex items-center gap-1 mt-1 text-[10px] text-zinc-600", isMe ? "mr-1" : "ml-1")}>
                           <span>
                             {m.createdAt?.toMillis
                               ? new Date(m.createdAt.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                               : "Just now"}
                           </span>
-                          {isMe && <span className="text-(--gold-primary)">✓</span>}
+                          {isMe && <MessageStatusIcon status={status} />}
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
             
             {/* Typing Indicator */}
-            {isTyping && (
-               <div className="flex justify-start w-full pl-10">
-                 <div className="bg-zinc-800 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1 items-center border border-zinc-700/50 w-16">
-                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce"></div>
-                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce animation-delay-100"></div>
-                    <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce animation-delay-200"></div>
-                 </div>
-               </div>
-            )}
+            <AnimatePresence>
+              {partnerIsTyping && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="flex justify-start w-full pl-10"
+                >
+                  <TypingIndicator />
+                </motion.div>
+              )}
+            </AnimatePresence>
             
             <div ref={bottomRef} />
           </div>
@@ -487,7 +527,7 @@ export default function ChatRoom({ params }: { params: any }) {
               
               <div className="space-y-2 mt-auto md:mt-0">
                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800/50 text-zinc-400 hover:text-red-400 transition-colors text-sm font-medium">
-                    <LogOut className="w-4 h-4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                     <span>Block User</span>
                  </button>
               </div>

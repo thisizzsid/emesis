@@ -4,9 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "../../firebase";
-import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc, Firestore } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, Timestamp, getDoc, Firestore, addDoc, collection } from "firebase/firestore";
 import Comments from "./Comments";
-import { Heart, MessageCircle, Share2, Pencil, Trash2, Smartphone, Monitor, MapPin } from "lucide-react";
+import { Heart, MessageCircle, Share2, Pencil, Trash2, Smartphone, Monitor, MapPin, Copy, Check } from "lucide-react";
+
+import { extractHashtags } from "../lib/utils";
 
 interface PostCardProps {
   post: any;
@@ -29,20 +31,27 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
   const shareBtnRef = useRef<HTMLButtonElement | null>(null);
   const shareMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const extractHashtags = (text: string): string[] => {
-    const hashtagRegex = /#[\w\u0590-\u05ff]+/gi;
-    return text.match(hashtagRegex) || [];
-  };
-
   const like = async () => {
     if (!user || !db) return;
     const ref = doc(db as Firestore, "posts", post.id);
     const hasLiked = Array.isArray(post.likes) && post.likes.includes(user.uid);
     
-    // Optimistic update locally would be nice, but for now just call API
     await updateDoc(ref, {
       likes: hasLiked ? arrayRemove(user.uid) : arrayUnion(user.uid)
     });
+
+    if (!hasLiked && post.uid !== user.uid) {
+      await addDoc(collection(db as Firestore, `users/${post.uid}/notifications`), {
+        type: "like",
+        fromUid: user.uid,
+        fromName: user.displayName || "Someone",
+        message: `liked your post`,
+        createdAt: Timestamp.now(),
+        read: false,
+        postId: post.id
+      });
+    }
+
     onRefresh();
   };
 
@@ -53,6 +62,17 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
     await deleteDoc(doc(db as Firestore, "posts", post.id));
     setLoading(false);
     onRefresh();
+  };
+
+  const reportPost = async () => {
+    if (!confirm("Report this post for community guideline violations?")) return;
+    if (!db || !user) return;
+    await addDoc(collection(db as Firestore, `posts/${post.id}/reports`), {
+      uid: user.uid,
+      reason: "Inappropriate content",
+      createdAt: Timestamp.now()
+    });
+    alert("Thank you. Our moderators will review this post.");
   };
 
   const saveEdit = async () => {
@@ -366,38 +386,52 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                 </div>
 
                 {/* Options Menu */}
-                {post.uid === user?.uid && (
-                    <div className="relative z-20">
-                        <button 
-                            type="button"
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            className="p-2 -mr-2 text-zinc-500 hover:text-(--gold-primary) hover:bg-(--gold-primary)/5 rounded-full transition-all"
-                        >
-                            <span className="text-lg leading-none">⋮</span>
-                        </button>
-                        
-                        {menuOpen && (
-                            <div className="absolute right-0 top-full mt-2 bg-[#0F0F0F] border border-white/10 rounded-xl shadow-2xl overflow-hidden w-32 z-30 animate-fadeIn">
+                <div className="relative z-20">
+                    <button 
+                        type="button"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        className="p-2 -mr-2 text-zinc-500 hover:text-(--gold-primary) hover:bg-(--gold-primary)/5 rounded-full transition-all"
+                    >
+                        <span className="text-lg leading-none">⋮</span>
+                    </button>
+                    
+                    {menuOpen && (
+                        <div className="absolute right-0 top-full mt-2 bg-[#0F0F0F] border border-white/10 rounded-xl shadow-2xl overflow-hidden w-40 z-30 animate-fadeIn">
+                            {user?.uid !== post.uid && (
                                 <button 
                                     type="button"
-                                    onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
-                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-(--gold-primary) hover:bg-white/5 transition-colors flex items-center gap-2"
+                                    onClick={() => { reportPost(); setMenuOpen(false); }} 
+                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-red-400 hover:bg-white/5 transition-colors flex items-center gap-2"
                                 >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                    Edit
+                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    Report
                                 </button>
-                                <button 
-                                    type="button"
-                                    onClick={() => { removePost(); setMenuOpen(false); }} 
-                                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center gap-2"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    Delete
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
+                            )}
+                            {user?.uid === post.uid && (
+                                <>
+                                    <button 
+                                        type="button"
+                                        onClick={() => { setEditText(post.text); setIsEditing(true); setMenuOpen(false); }} 
+                                        className="w-full px-4 py-2.5 text-left text-xs font-medium text-zinc-300 hover:text-(--gold-primary) hover:bg-white/5 transition-colors flex items-center gap-2 border-b border-white/5"
+                                    >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                        Edit
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => { removePost(); setMenuOpen(false); }} 
+                                        className="w-full px-4 py-2.5 text-left text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        Delete
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Content Section */}
@@ -495,9 +529,29 @@ export default function PostCard({ post, user, isFollowing, onFollow, onUnfollow
                             ref={shareMenuRef}
                             className="absolute bottom-full right-0 mb-2 w-48 bg-[#0F0F0F] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-30 animate-fadeIn"
                         >
-                            <button onClick={() => handleShare("instagramStory")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5">Instagram Story</button>
-                            <button onClick={() => handleShare("whatsapp")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5">WhatsApp</button>
-                            <button onClick={() => handleShare("generic")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors">Download Image</button>
+                            <button onClick={() => handleShare("instagramStory")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5 flex items-center gap-2">
+                              <Image src="/instagram.svg" width={14} height={14} alt="IG" className="opacity-70" />
+                              Instagram Story
+                            </button>
+                            <button onClick={() => handleShare("whatsapp")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5 flex items-center gap-2">
+                              <Image src="/whatsapp.svg" width={14} height={14} alt="WA" className="opacity-70" />
+                              WhatsApp
+                            </button>
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+                                setShareOpen(false);
+                                alert("Link copied to clipboard!");
+                              }} 
+                              className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors border-b border-white/5 flex items-center gap-2"
+                            >
+                              <Copy className="w-3.5 h-3.5 opacity-70" />
+                              Copy Link
+                            </button>
+                            <button onClick={() => handleShare("generic")} className="w-full px-4 py-3 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2">
+                              <Share2 className="w-3.5 h-3.5 opacity-70" />
+                              Download Image
+                            </button>
                         </div>
                     )}
                 </div>

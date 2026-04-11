@@ -26,7 +26,10 @@ import Link from "next/link";
 import TrendingSidebar from "../components/TrendingSidebar";
 import Toast from "../components/Toast";
 import PostCard from "../components/PostCard";
+import StoryFeature from "../components/StoryFeature";
 import { getPlaceName } from "../utils/geocoding";
+import { FadeIn, HoverScale } from "../components/Motion";
+import { extractHashtags, getDeviceName } from "../lib/utils";
 
 export default function FeedPage() {
   const { user } = useAuth();
@@ -39,6 +42,7 @@ export default function FeedPage() {
   const [deviceType, setDeviceType] = useState<string>("Web");
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   const [feedType, setFeedType] = useState<"local" | "global">("local");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -101,21 +105,51 @@ export default function FeedPage() {
 
   const createPost = async () => {
     if (!user || !db || !text.trim()) return;
-    const hashtags = extractHashtags(text);
-    await addDoc(collection(db as Firestore, "posts"), {
-      text,
-      uid: user.uid,
-      username: anonymous ? "Anonymous" : user.displayName,
-      anonymous,
-      likes: [],
-      hashtags,
-      location,
-      createdAt: Timestamp.now()
-    });
     
-    setText("");
-    setAnonymous(false);
-    showToast("Confession released into the void ✨");
+    setLoading(true);
+    try {
+      // AI Moderation
+      const modRes = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, mode: "moderate" }),
+      });
+      const modData = await modRes.json();
+      
+      if (modData.output?.toUpperCase().includes("UNSAFE")) {
+        showToast("Your post contains content that violates our community guidelines.", "error");
+        setLoading(false);
+        return;
+      }
+
+      const hashtags = extractHashtags(text);
+      const device = getDeviceName();
+      await addDoc(collection(db as Firestore, "posts"), {
+        text,
+        uid: user.uid,
+        username: anonymous ? "Anonymous" : user.displayName,
+        anonymous,
+        likes: [],
+        hashtags,
+        location,
+        device,
+        createdAt: Timestamp.now()
+      });
+
+      // Update user's last used device
+      await updateDoc(doc(db as Firestore, "users", user.uid), {
+        lastDevice: device
+      });
+      
+      setText("");
+      setAnonymous(false);
+      showToast("Confession released into the void ✨");
+    } catch (error) {
+      console.error("Post creation error:", error);
+      showToast("Failed to post. Please try again.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const like = async (p: any) => {
@@ -184,12 +218,6 @@ export default function FeedPage() {
     }
   };
 
-  const extractHashtags = (text: string): string[] => {
-    const hashtagRegex = /#[\w\u0590-\u05ff]+/gi;
-    return text.match(hashtagRegex) || [];
-  };
-
-  // Filter posts based on feed type and location
   const filteredPosts = posts.filter((post) => {
     if (feedType === "local") {
       // If location is unknown or detecting, we might want to wait or show nothing
@@ -214,101 +242,111 @@ export default function FeedPage() {
     <div className="min-h-screen bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) px-4 md:px-6 pt-20 pb-10">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
         {/* LEFT COLUMN - FEED */}
-        <div className="flex-1 space-y-10 min-w-0">
-        {/* WELCOME SECTION */}
-        <div className="text-center mb-12 animate-fadeIn">
-          <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent drop-shadow-lg">
-            Welcome back, {user?.displayName?.split(" ")[0]}!
-          </h1>
+        <div className="flex-1 space-y-6 min-w-0">
+        
+        {/* STORIES */}
+        <FadeIn direction="down">
+          <StoryFeature />
+        </FadeIn>
 
-          <p className="mt-6 text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed font-light tracking-tight">
-            emesis is a quiet place to release Confessions thoughts you don’t usually say out loud —
-            <span className="text-(--gold-primary) font-medium"> no judgement, just honesty.</span>
-          </p>
-        </div>
+        {/* WELCOME SECTION */}
+        <FadeIn delay={0.1}>
+          <div className="text-center mb-8 relative">
+            <h1 className="text-4xl font-black tracking-tighter bg-linear-to-r from-(--gold-primary) via-(--gold-light) to-(--gold-primary) bg-clip-text text-transparent drop-shadow-lg">
+              Welcome back, {user?.displayName?.split(" ")[0]}!
+            </h1>
+
+            <p className="mt-4 text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed font-light tracking-tight">
+              emesis is a quiet place to release Confessions thoughts you don’t usually say out loud —
+              <span className="text-(--gold-primary) font-medium"> no judgement, just honesty.</span>
+            </p>
+          </div>
+        </FadeIn>
 
         {/* CREATE POST */}
-        <div className="relative group">
-          {/* Subtle Monochrome Glow */}
-          <div className="absolute -inset-0.5 bg-(--gold-primary) rounded-3xl blur-sm opacity-5 group-hover:opacity-10 transition duration-1000"></div>
-            
-            <div className="relative bg-[#0A0A0A] rounded-3xl border border-zinc-800 overflow-hidden">
+        <FadeIn delay={0.2}>
+          <HoverScale>
+            <div className="relative group">
+              {/* Subtle Monochrome Glow */}
+              <div className="absolute -inset-0.5 bg-(--gold-primary) rounded-3xl blur-sm opacity-5 group-hover:opacity-10 transition duration-1000"></div>
               
-              {/* Minimal Header */}
-              <div className="px-6 py-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
-                 <div className="flex flex-col">
-                   <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Confession</span>
-                   <span className="text-[10px] text-zinc-600 mt-0.5">Disappears in 24h</span>
-                 </div>
-                 <div className="flex gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-                 </div>
-              </div>
-
-              {/* Text Area */}
-              <div className="p-2">
-                <label htmlFor="post-textarea" className="sr-only">Post</label>
-                <textarea
-                  id="post-textarea"
-                  className="w-full bg-transparent text-lg text-zinc-200 placeholder:text-zinc-600 p-4 min-h-40 focus:outline-none resize-none font-medium leading-relaxed tracking-wide selection:bg-(--gold-primary) selection:text-black"
-                  placeholder="What's on your mind?..."
-                  value={text}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
-                />
-              </div>
-
-              {/* Toolbar */}
-              <div className="px-4 py-3 bg-zinc-900/10 border-t border-zinc-800/50 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                
-                {/* Tools */}
-                <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-1">
-                  
-                  {/* Anonymous Toggle */}
-                  <button
-                    onClick={() => setAnonymous(!anonymous)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 border ${
-                      anonymous 
-                        ? "bg-zinc-800 text-(--gold-primary) border-zinc-700" 
-                        : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-900"
-                    }`}
-                  >
-                    <Ghost className="w-3.5 h-3.5" />
-                    {anonymous ? "Anonymous" : "Public"}
-                  </button>
-
-                  {/* Location Badge */}
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-zinc-500 text-xs font-medium whitespace-nowrap hover:bg-zinc-900 transition-colors">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span className="truncate max-w-30" title={location}>
-                      {detectingLocation ? "Locating..." : location}
-                    </span>
+              <div className="relative bg-[#0A0A0A] rounded-3xl border border-zinc-800 overflow-hidden">
+                {/* Minimal Header */}
+                <div className="px-6 py-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">New Confession</span>
+                    <span className="text-[10px] text-zinc-600 mt-0.5">Disappears in 24h</span>
                   </div>
-
-                  {/* Hashtag Counter */}
-                  {extractHashtags(text).length > 0 && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 text-zinc-400 text-xs font-medium">
-                      <Hash className="w-3 h-3" />
-                      <span>{extractHashtags(text).length}</span>
-                    </div>
-                  )}
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                    <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                  </div>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  onClick={createPost}
-                  disabled={!text.trim()}
-                  className="group flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-(--gold-primary) text-black font-bold tracking-tight transition-all duration-300 hover:bg-(--gold-light) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>Post</span>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
+                {/* Text Area */}
+                <div className="p-2">
+                  <label htmlFor="post-textarea" className="sr-only">Post</label>
+                  <textarea
+                    id="post-textarea"
+                    className="w-full bg-transparent text-lg text-zinc-200 placeholder:text-zinc-600 p-4 min-h-40 focus:outline-none resize-none font-medium leading-relaxed tracking-wide selection:bg-(--gold-primary) selection:text-black"
+                    placeholder="What's on your mind?..."
+                    value={text}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
+                  />
+                </div>
+
+                {/* Toolbar */}
+                <div className="px-4 py-3 bg-zinc-900/10 border-t border-zinc-800/50 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                  {/* Tools */}
+                  <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-1">
+                    {/* Anonymous Toggle */}
+                    <button
+                      onClick={() => setAnonymous(!anonymous)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 border ${
+                        anonymous 
+                          ? "bg-zinc-800 text-(--gold-primary) border-zinc-700" 
+                          : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-900"
+                      }`}
+                    >
+                      <Ghost className="w-3.5 h-3.5" />
+                      {anonymous ? "Anonymous" : "Public"}
+                    </button>
+
+                    {/* Location Badge */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-zinc-500 text-xs font-medium whitespace-nowrap hover:bg-zinc-900 transition-colors">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span className="truncate max-w-30" title={location}>
+                        {detectingLocation ? "Locating..." : location}
+                      </span>
+                    </div>
+
+                    {/* Hashtag Counter */}
+                    {extractHashtags(text).length > 0 && (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 text-zinc-400 text-xs font-medium">
+                        <Hash className="w-3 h-3" />
+                        <span>{extractHashtags(text).length}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    onClick={createPost}
+                    disabled={!text.trim() || loading}
+                    className="group flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-(--gold-primary) text-black font-bold tracking-tight transition-all duration-300 hover:bg-(--gold-light) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span>{loading ? "Analyzing..." : "Post"}</span>
+                    <Send className={`w-3.5 h-3.5 ${loading ? "animate-pulse" : ""}`} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </HoverScale>
+        </FadeIn>
 
         {/* FEED TOGGLE & CONTENT */}
-        <div className="flex items-center justify-center gap-4 mb-6">
+        <FadeIn delay={0.3}>
+          <div className="flex items-center justify-center gap-4 mb-6">
           <button
             onClick={() => setFeedType("local")}
             className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
@@ -330,6 +368,7 @@ export default function FeedPage() {
             🌍 Global
           </button>
         </div>
+        </FadeIn>
 
         {/* POSTS LIST */}
         <div className="space-y-6">
@@ -351,16 +390,17 @@ export default function FeedPage() {
               <p className="text-sm mt-2 opacity-50">Be the first to whisper into the ether.</p>
             </div>
           ) : (
-            filteredPosts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                user={user}
-                isFollowing={!!followMap[post.uid]}
-                onFollow={() => followUser(post.uid)}
-                onUnfollow={() => unfollowUser(post.uid)}
-                onRefresh={() => {}}
-              />
+            filteredPosts.map((post, index) => (
+              <FadeIn key={post.id} delay={0.1 * (index % 5)}>
+                <PostCard
+                  post={post}
+                  user={user}
+                  isFollowing={!!followMap[post.uid]}
+                  onFollow={() => followUser(post.uid)}
+                  onUnfollow={() => unfollowUser(post.uid)}
+                  onRefresh={() => {}}
+                />
+              </FadeIn>
             ))
           )}
         </div>
@@ -383,7 +423,7 @@ export default function FeedPage() {
 
       {/* === MODAL === */}
       {showUpcoming && (
-        <div className="fixed inset-0 bg-(--dark-base)/90 backdrop-blur-xl flex items-center justify-center z-[1000] animate-fadeIn">
+        <div className="fixed inset-0 bg-(--dark-base)/90 backdrop-blur-xl flex items-center justify-center z-1000 animate-fadeIn">
           <div className="glass rounded-3xl p-10 w-[90%] max-w-md text-(--gold-secondary) shadow-2xl border border-(--gold-primary)/20 animate-fadeIn">
             <h2 className="text-3xl font-black text-transparent bg-linear-to-r from-(--gold-primary) to-(--gold-light) bg-clip-text mb-6 text-center tracking-tight">
               Upcoming Features

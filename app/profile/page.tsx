@@ -265,6 +265,18 @@ export default function ProfilePage() {
     }
   }, [user, profileUid]);
 
+  const accentClass = useMemo(() => {
+    const map: Record<string, string> = {
+      "#F5C26B": "accent-f5c26b",
+      "#FF8A00": "accent-ff8a00",
+      "#4ADE80": "accent-4ade80",
+      "#60A5FA": "accent-60a5fa",
+      "#A78BFA": "accent-a78bfa",
+      "#F472B6": "accent-f472b6",
+    };
+    return map[accentColor || ""] || "";
+  }, [accentColor]);
+
   if (!user)
     return (
       <div className="flex items-center justify-center h-screen bg-black text-(--gold-primary)">
@@ -302,15 +314,7 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="min-h-full bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) py-10 px-4 md:px-6 flex flex-col items-center"
-      style={
-        accentColor
-          ? ({
-              ["--gold-primary" as any]: accentColor,
-              ["--gold-light" as any]: lighten(accentColor, 15),
-            } as any)
-          : undefined
-      }
+      className={`min-h-full bg-linear-to-br from-[#0A0A0A] via-black to-[#0A0A0A] text-(--gold-primary) py-10 px-4 md:px-6 flex flex-col items-center ${accentClass}`}
     >
       <div className="max-w-5xl w-full">
         {/* Hero */}
@@ -395,16 +399,26 @@ export default function ProfilePage() {
               <span className="text-xs text-zinc-500">Personalize your profile</span>
             </div>
             <div className="flex flex-wrap gap-3">
-              {["#F5C26B", "#FF8A00", "#4ADE80", "#60A5FA", "#A78BFA", "#F472B6"].map((hex) => (
-                <button
-                  key={hex}
-                  aria-label={`Set accent color ${hex}`}
-                  onClick={() => saveAccentColor(hex)}
-                  type="button"
-                  className={`w-9 h-9 rounded-full border ${accentColor === hex ? "ring-2 ring-white/80" : "border-white/20"}`}
-                  style={{ backgroundColor: hex }}
-                />
-              ))}
+              {["#F5C26B", "#FF8A00", "#4ADE80", "#60A5FA", "#A78BFA", "#F472B6"].map((hex) => {
+                const swatchMap: Record<string, string> = {
+                  "#F5C26B": "swatch-f5c26b",
+                  "#FF8A00": "swatch-ff8a00",
+                  "#4ADE80": "swatch-4ade80",
+                  "#60A5FA": "swatch-60a5fa",
+                  "#A78BFA": "swatch-a78bfa",
+                  "#F472B6": "swatch-f472b6",
+                };
+                const swatchClass = swatchMap[hex];
+                return (
+                  <button
+                    key={hex}
+                    aria-label={`Set accent color ${hex}`}
+                    onClick={() => saveAccentColor(hex)}
+                    type="button"
+                    className={`w-9 h-9 rounded-full border ${swatchClass} ${accentColor === hex ? "ring-2 ring-white/80" : "border-white/20"}`}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -428,6 +442,16 @@ export default function ProfilePage() {
                 <Image src="/location.png" width={20} height={20} alt="Location" />
                 <span className="text-zinc-400">Location</span>
                 <span className="ml-auto text-(--gold-primary)">{data.location || "N/A"}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 flex items-center justify-center text-zinc-400">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12" y2="18"></line>
+                  </svg>
+                </div>
+                <span className="text-zinc-400">Last Device</span>
+                <span className="ml-auto text-(--gold-primary)">{data.lastDevice || "Unknown"}</span>
               </div>
             </div>
           </div>

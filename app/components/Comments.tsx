@@ -72,6 +72,20 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
       downvotes: [],
       parentId: null,
     });
+
+    // Notify post author
+    if (postAuthorId && postAuthorId !== user.uid) {
+        await addDoc(collection(db as Firestore, `users/${postAuthorId}/notifications`), {
+          type: "comment",
+          fromUid: user.uid,
+          fromName: user.displayName || "Someone",
+          message: `commented on your post`,
+          createdAt: Timestamp.now(),
+          read: false,
+          postId,
+        });
+    }
+
     setText("");
     await load();
     await notifyMentions(text);
@@ -302,20 +316,20 @@ export default function Comments({ postId, postAuthorId }: { postId: string, pos
                     <div className="text-[10px] text-zinc-600">{timeAgo(c.createdAt)}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1 shrink-0 bg-zinc-900/50 p-1 rounded-xl border border-white/5">
                   <button
                     type="button"
                     onClick={() => vote(c, 1)}
-                    className="px-3 py-2 min-w-[32px] rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10 active:scale-95 transition flex items-center justify-center"
+                    className={`min-w-8 h-8 rounded-lg flex items-center justify-center transition-all ${c.upvotes?.includes(user?.uid) ? 'bg-(--gold-primary) text-black shadow-lg shadow-(--gold-primary)/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                     aria-label="Upvote"
                   >
                     ▲
                   </button>
-                  <div className="text-xs font-bold w-8 text-center">{score(c)}</div>
+                  <div className="text-xs font-bold w-6 text-center text-(--gold-primary)">{score(c)}</div>
                   <button
                     type="button"
                     onClick={() => vote(c, -1)}
-                    className="px-3 py-2 min-w-[32px] rounded-lg bg-black/50 border border-(--gold-primary)/20 text-(--gold-primary) text-xs hover:bg-(--gold-primary)/10 active:scale-95 transition flex items-center justify-center"
+                    className={`min-w-8 h-8 rounded-lg flex items-center justify-center transition-all ${c.downvotes?.includes(user?.uid) ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                     aria-label="Downvote"
                   >
                     ▼
